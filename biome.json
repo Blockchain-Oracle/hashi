@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!docs-site", "!.github/diagrams", "!**/next-env.d.ts", "!**/public"]
+    "includes": ["**", "!docs-site", "!.github/diagrams", "!.github/assets", "!**/next-env.d.ts", "!**/public"]
   },
   "formatter": {
     "enabled": true,

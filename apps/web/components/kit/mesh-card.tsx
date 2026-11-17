@@ -6,8 +6,8 @@ import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 /**
- * Tilted gradient stat cards, drawn live with Paper Shaders' MeshGradient (WebGL, Apache-2.0).
- * The colour sets are Hashi's candy pairs (violet→pink→orange, green→teal) and Hashi's vermilion.
+ * Tilted gradient stat cards, drawn live with Paper Shaders' MeshGradient (WebGL, Apache-2.0), in Hashi's candy
+ * colour sets (violet→pink→orange, green→teal) and its vermilion.
  */
 export const MESH_COLORS = {
   vermilion: ['#ff2f00', '#ff8a3d', '#fdc830', '#b81d79'],

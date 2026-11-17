@@ -3,10 +3,9 @@
 @import "shadcn/tailwind.css";
 
 /*
- * Hashi's "vermilion bridge" design system. Every value is
- * measured and tuned by hand:
- *   - cream paper, ink, one vermilion, Figtree + Geist Mono, the glossy button, the glow.
- *   - the "candy" two-stop gradients for chains, assets and states.
+ * Hashi's "vermilion bridge" design system:
+ *   - cream paper, ink, one vermilion, Figtree + Geist Mono, the glossy button, the glow;
+ *   - "candy" two-stop gradients for chains, assets and states;
  *   - mono uppercase labels.
  * Paper is light, ink is dark: the same palette inverted, not a second design.
  */

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="840" viewBox="0 0 1600 840">
 <style>
-@font-face { font-family: Figtree; font-weight: 400; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Regular.ttf"); }
-@font-face { font-family: Figtree; font-weight: 500; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Medium.ttf"); }
-@font-face { font-family: GeistMono; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/GeistMono-Medium.ttf"); }
+@font-face { font-family: Figtree; font-weight: 400; src: url("../../docs-site/assets/fonts/Figtree-Regular.ttf"); }
+@font-face { font-family: Figtree; font-weight: 500; src: url("../../docs-site/assets/fonts/Figtree-Medium.ttf"); }
+@font-face { font-family: GeistMono; src: url("../../docs-site/assets/fonts/GeistMono-Medium.ttf"); }
 .t { font: 500 19px Figtree; fill: #FFFAF5; letter-spacing: -0.3px; }
 .s { font: 400 16px Figtree; fill: #A29C97; }
 .l { font: 500 13px GeistMono; fill: #A29C97; letter-spacing: 1.4px; }

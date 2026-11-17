@@ -35,7 +35,8 @@ export const DEFAULT_SLIPPAGE_BPS = 100
 
 /**
  * How long a NEAR deposit address waits before refunding. 1Click: the deadline "must exceed the time required for
- * the deposit transaction to be mined": 1 hour, and 4 hours when the deposit is on a UTXO chain.
+ * the deposit transaction to be mined": 1 hour, and 4 hours when the deposit is on a UTXO chain (a Bitcoin Cash block
+ * can take 20 minutes or more).
  */
 export const NEAR_DEADLINE_MS = HOUR
 export const NEAR_UTXO_DEADLINE_MS = 4 * HOUR

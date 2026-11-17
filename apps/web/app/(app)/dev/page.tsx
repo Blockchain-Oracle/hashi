@@ -87,9 +87,8 @@ export default function DevPage() {
       <p className="label-mono">/ Dev — design system</p>
       <h1 className="mt-4 max-w-3xl text-display">The vermilion bridge.</h1>
       <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-        Cream paper, black ink and one vermilion, with candy colours for chains and states. Built on
-        Hashi&apos;s own tokens, glossy tiles and mono labels. Switch
-        the theme in the nav to see ink.
+        Cream paper, black ink and one vermilion, with candy colours for chains and states, glossy tiles and
+        mono labels. Switch the theme in the nav to see ink.
       </p>
       <nav className="mt-8 flex flex-wrap gap-2">
         {SECTIONS.map((s, i) => (

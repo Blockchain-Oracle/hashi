@@ -19,7 +19,7 @@ THEMES = {
 
 def svg(theme: str) -> str:
     t = THEMES[theme]
-    font = lambda name: (FONTS / name).as_uri()  # noqa: E731
+    font = lambda name: f"../../../docs-site/assets/fonts/{name}"  # noqa: E731  (relative to this folder)
     # The card: 1072 x 1394 px at 2x, shown 430 px wide on the right, bleeding off the bottom edge.
     card_w = 430
     card_h = card_w * 1394 / 1072

@@ -11,8 +11,8 @@ import { BCH_ASSETS } from '@/lib/constants/assets'
 import { CHAINS } from '@/lib/constants/chains'
 
 /**
- * The signature composition, as a specimen: the swap card on the vermilion glow, the amount in
- * large mono, the round swap button between the two sides, and the "finding routes" loading state.
+ * The signature composition, as a specimen: the swap card on the vermilion glow, the amount in large mono, the
+ * round swap button between the two sides, and the "finding routes" loading state.
  * No quote is invented here; the receive side and routes show their loading state.
  */
 export function SwapPreview() {

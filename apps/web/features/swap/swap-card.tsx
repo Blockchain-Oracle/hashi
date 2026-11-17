@@ -44,8 +44,7 @@ function pickedKey(asset: PickedAsset) {
 }
 
 /**
- * The swap card (stacked pay/receive panels, the route pick, the glossy button on a vermilion
- * glow). Prices appear from the first keystroke; the button walks the person through what is missing, one thing
+ * The swap card: stacked pay and receive panels, the route pick, and the glossy button, on a vermilion glow. Prices appear from the first keystroke; the button walks the person through what is missing, one thing
  * at a time, until the review.
  */
 export function SwapCard({

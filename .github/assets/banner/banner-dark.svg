@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
   <style>
-    @font-face { font-family: "Figtree"; font-weight: 400; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Regular.ttf"); }
-    @font-face { font-family: "Figtree"; font-weight: 500; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Medium.ttf"); }
-    @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/GeistMono-Medium.ttf"); }
+    @font-face { font-family: "Figtree"; font-weight: 400; src: url("../../../docs-site/assets/fonts/Figtree-Regular.ttf"); }
+    @font-face { font-family: "Figtree"; font-weight: 500; src: url("../../../docs-site/assets/fonts/Figtree-Medium.ttf"); }
+    @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("../../../docs-site/assets/fonts/GeistMono-Medium.ttf"); }
     .label { font: 500 15px "Geist Mono"; letter-spacing: 0.08em; fill: #A29C97; }
     .hero { font: 500 78px "Figtree"; letter-spacing: -3.4px; fill: #FFFAF5; }
     .sub { font: 400 25px "Figtree"; fill: #A29C97; }

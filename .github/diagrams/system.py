@@ -9,7 +9,8 @@ under the step it serves. The way back runs the same path in reverse.
 from pathlib import Path
 
 W, H = 1600, 840
-FONTS = Path("/Users/abu/dev/hackathon/hashi/docs-site/assets/fonts")
+# Relative to the SVGs written beside this file, so the render works from any checkout.
+FONTS = "../../docs-site/assets/fonts"
 
 THEMES = {
     "light": dict(bg="#FFFAF5", panel="#FBF6F0", box="#FFFFFF", text="#121111", muted="#6B6563", line="#121111",
@@ -45,9 +46,9 @@ def label(x, y, text, anchor="start", bg=None):
 def svg(t):
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">']
     out.append(f"""<style>
-@font-face {{ font-family: Figtree; font-weight: 400; src: url("file://{FONTS}/Figtree-Regular.ttf"); }}
-@font-face {{ font-family: Figtree; font-weight: 500; src: url("file://{FONTS}/Figtree-Medium.ttf"); }}
-@font-face {{ font-family: GeistMono; src: url("file://{FONTS}/GeistMono-Medium.ttf"); }}
+@font-face {{ font-family: Figtree; font-weight: 400; src: url("{FONTS}/Figtree-Regular.ttf"); }}
+@font-face {{ font-family: Figtree; font-weight: 500; src: url("{FONTS}/Figtree-Medium.ttf"); }}
+@font-face {{ font-family: GeistMono; src: url("{FONTS}/GeistMono-Medium.ttf"); }}
 .t {{ font: 500 19px Figtree; fill: {t["text"]}; letter-spacing: -0.3px; }}
 .s {{ font: 400 16px Figtree; fill: {t["muted"]}; }}
 .l {{ font: 500 13px GeistMono; fill: {t["muted"]}; letter-spacing: 1.4px; }}

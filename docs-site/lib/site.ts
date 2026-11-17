@@ -1,5 +1,12 @@
 /** The docs site's own constants: where things live, and the words used everywhere. */
 
+/**
+ * Where the app and the docs are served, read at build time (the Docker build's arguments, the same names the app
+ * uses), so a deploy on a temporary address links to itself. hashi.cash by default.
+ */
+const APP_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hashi.cash"
+const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL || "https://docs.hashi.cash"
+
 export const SITE = {
   name: "Hashi",
   title: "Hashi docs",
@@ -9,9 +16,9 @@ export const SITE = {
   tagline: "Dollars in, dollars out.",
   description:
     "Hashi brings USDC and USDT from eight chains to Bitcoin Cash as PUSD, MUSD or BCH, and back, through NEAR Intents, THORChain and Cauldron, with every route priced and every fee shown before you approve in your own wallet.",
-  url: "https://docs.hashi.cash",
-  app: "https://hashi.cash",
-  swap: "https://hashi.cash/swap",
+  url: DOCS_URL,
+  app: APP_URL,
+  swap: `${APP_URL}/swap`,
 } as const
 
 /** Where the docs start, and the first page of each section (the top tabs). */

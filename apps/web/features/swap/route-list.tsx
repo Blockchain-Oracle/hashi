@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { QUOTE_REFETCH_MS } from '@/lib/constants/limits'
 import { PROVIDERS, type Route, type RouteOutcome, type RouteVia } from '@/lib/engine/types'
 import { displayDecimals, formatAmount, formatDuration, formatUsd } from '@/lib/format'
+import { LINKS } from '@/lib/links'
 import { cn } from '@/lib/utils'
 import type { Swap } from './use-swap'
 
@@ -109,7 +110,15 @@ export function RouteList({ swap, onUseMinimum }: { swap: Swap; onUseMinimum: (a
   return (
     <section aria-label="Routes" className="flex flex-col gap-2">
       <div className="flex items-center justify-between px-2">
-        <span className="label-mono">/ Routes</span>
+        <span className="flex items-baseline gap-2">
+          <span className="label-mono">/ Routes</span>
+          <a
+            href={LINKS.routes}
+            className="text-muted-foreground text-xs underline decoration-border underline-offset-4 transition-colors hover:text-foreground focus-visible:text-foreground"
+          >
+            How they're ranked ↗
+          </a>
+        </span>
         {ranked.routes.length || ranked.unavailable.length ? (
           <RefreshRing updatedAt={updatedAt} fetching={fetching} />
         ) : null}

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { SiteFooter } from '@/components/shell/site-footer'
 import { SiteHeader } from '@/components/shell/site-header'
 import { BchWalletProvider } from '@/features/wallets/bch-wallet'
 import { EvmWalletProvider } from '@/features/wallets/evm-wallet'
@@ -15,7 +16,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             hidden, so the page does not become a scroll box and the sticky nav keeps working). */}
         <div className="flex min-h-dvh flex-col overflow-x-clip">
           <SiteHeader />
-          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pb-16 sm:px-6">{children}</main>
+          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pb-10 sm:px-6">{children}</main>
+          <SiteFooter />
         </div>
       </BchWalletProvider>
     </EvmWalletProvider>

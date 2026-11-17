@@ -47,6 +47,9 @@ export function LandingFooter() {
             <a href={env.NEXT_PUBLIC_DOCS_URL} className="w-fit transition-colors hover:text-primary">
               Docs
             </a>
+            <a href={env.NEXT_PUBLIC_REPO_URL} className="w-fit transition-colors hover:text-primary">
+              Source
+            </a>
           </div>
           <div className="flex flex-col gap-2.5">
             <p className="label-mono">/ Built on</p>

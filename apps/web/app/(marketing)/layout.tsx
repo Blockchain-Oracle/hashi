@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { BlazeBanner } from '@/components/shell/blaze-banner'
 import { LandingFooter } from '@/features/landing/landing-footer'
 import { LandingHeader } from '@/features/landing/landing-header'
 
@@ -6,6 +7,7 @@ import { LandingHeader } from '@/features/landing/landing-header'
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col overflow-x-clip">
+      <BlazeBanner />
       <LandingHeader />
       <main className="flex flex-1 flex-col">{children}</main>
       <LandingFooter />

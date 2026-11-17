@@ -1,0 +1,32 @@
+---
+title: Timing and minimums
+description: "How long each route takes, how long a quote and a deposit address last, and the smallest amount each bridge takes."
+icon: Timer
+---
+
+## Arrival estimates
+
+| Route | Estimate |
+|---|---|
+| NEAR Intents, into Bitcoin Cash | NEAR's own estimate from your deposit, + 15 s for the Cauldron step |
+| THORChain, into Bitcoin Cash | THORChain's swap time, + 15 s for the Cauldron step |
+| NEAR Intents, out of Bitcoin Cash | one Bitcoin Cash block (10 min on average) + NEAR's estimate, + 15 s when selling PUSD or MUSD |
+| THORChain, out of Bitcoin Cash | THORChain's swap time (10 min if it gives none), + 15 s when selling PUSD or MUSD |
+| Cauldron only | 15 s |
+
+Quoted estimates from live price quotes on 16 November 2026 (no swap has been timed end to end yet): 50 USDC on Ethereum → PUSD ~3 min through NEAR Intents; 20 PUSD → USDC on Ethereum ~10 min through THORChain; 10 PUSD → MUSD ~15 s on Cauldron.
+
+## How long things last
+
+| What | How long |
+|---|---|
+| A route's quote | fresh 10 s, refreshed every 15 s |
+| A NEAR Intents deposit address | 1 hour going in, 4 hours coming out |
+| A THORChain quote | until its expiry (THORChain sets it; going in, its router refuses later deposits) |
+| A swap that starts with a Cauldron trade, unstarted | 1 hour, then it ends as **Expired** |
+| A gasless authorisation | 30 minutes |
+| The tracker's status checks | every 5 seconds while the bridge works |
+
+## Minimums
+
+Each bridge sets its own, and they change. When an amount is too small the row says **Too small** with the reason, and offers **Use …** with the bridge's real minimum. A Cauldron trade too small for its own network fees says "Too small to cover the Bitcoin Cash network fees".

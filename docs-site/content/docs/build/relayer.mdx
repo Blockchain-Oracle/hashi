@@ -1,0 +1,20 @@
+---
+title: The gas relayer
+description: "Hashi's one server route: it pays Base gas for a USDC authorisation into a waiting NEAR deposit, and refuses everything else."
+icon: Fuel
+---
+
+`POST /api/relay` takes a signed USDC `transferWithAuthorization` (EIP-3009) and submits it on Base, paying the gas. The USDC moves straight from the signer to the NEAR Intents deposit address; the relayer only pays for the transaction.
+
+| Check | Rule |
+|---|---|
+| Set up | refuses with 503 until its key is configured |
+| Chain | Base only |
+| Time | already valid, and valid for at most one hour |
+| Amount | more than zero, and at least what the NEAR quote needs |
+| Destination | a NEAR Intents deposit address that is **waiting for a deposit** of Base USDC |
+| Replay | an authorisation already used is refused (409) |
+| Rate | 3 per payer and 10 per IP every 10 minutes (429) |
+| Safety | simulated before it is sent |
+
+`GET /api/relay` tells the app whether the relayer is ready: the swap screen offers [Pay no gas](/docs/guide/gasless) only when it holds at least 0.00005 ETH on Base. Today it holds none, so gasless is off.

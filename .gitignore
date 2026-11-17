@@ -1,0 +1,21 @@
+node_modules/
+.pnpm-store/
+dist/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.DS_Store
+*.log
+
+# Secrets and local state. Never commit these.
+.env
+.env.*
+!.env.example
+
+# Assistant working state and notes. Useful locally, not part of the product.
+.claude/
+.firecrawl/
+.21st/
+AGENTS.md
+CLAUDE.md

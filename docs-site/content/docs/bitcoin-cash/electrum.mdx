@@ -1,0 +1,25 @@
+---
+title: Electrum servers
+description: "Hashi reads your Bitcoin Cash coins and broadcasts your trades through public Electrum servers, five of them, tried in turn."
+icon: Radio
+---
+
+Bitcoin Cash's Electrum servers (Fulcrum) answer three questions for Hashi: which coins does this wallet hold, has anything new arrived, and please broadcast this transaction.
+
+| Server | Port |
+|---|---|
+| `bch.imaginary.cash` | wss 50004 |
+| `electrum.imaginary.cash` | wss 50004 |
+| `cashnode.bch.ninja` | wss 50004 |
+| `fulcrum.greyh.at` | wss 50004 |
+| `bch.loping.net` | wss 50004 |
+
+Protocol 1.5, tried in turn with an 8-second timeout, all answering on 16 November 2026.
+
+| Hashi asks | For |
+|---|---|
+| `blockchain.address.listunspent` (tokens included) | your coins, PUSD and MUSD |
+| `blockchain.address.get_history` | which derived addresses you have used |
+| `blockchain.address.subscribe` | a balance that updates within seconds of a payment |
+| `blockchain.headers.subscribe` | the latest block, for the status dot |
+| `blockchain.transaction.broadcast` | every Bitcoin Cash transaction you sign in Hashi |

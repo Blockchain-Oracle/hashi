@@ -1,0 +1,40 @@
+---
+title: Architecture
+description: "A Next.js app that runs in your browser and talks to the bridges, Cauldron and Electrum directly. One server route pays Base gas; there is no database."
+icon: Network
+---
+
+<Diagram name="system" alt="Hashi's system map: swap screen, route engine and swap runner in the browser; the money path from your EVM or Solana wallet through NEAR Intents or THORChain to your Bitcoin Cash wallet, then Cauldron for PUSD or MUSD; Reown AppKit, the Hashi relayer, WizardConnect and Electrum servers beneath" caption="Hashi in your browser, your dollars' path, and the services each step uses." />
+
+## The parts
+
+| Part | Where | What it does |
+|---|---|---|
+| Swap screen | browser | the card, picker, routes, review, settings |
+| Route engine | browser | asks NEAR Intents, THORChain and Cauldron for prices, adds the fees they leave out, ranks by what you keep |
+| Swap runner | browser | runs a swap one step at a time; each step saved in IndexedDB before the next (selling PUSD or MUSD, the sale and the send are saved together) |
+| Wallet layer | browser | Reown AppKit (EVM, Solana) and WizardConnect (Bitcoin Cash) |
+| `/api/relay` | server | pays Base gas for a gasless USDC deposit; nothing else |
+| Landing numbers | server | Cauldron's indexer, NEAR's prices and THORChain's halts, rebuilt at most once a minute |
+
+## The stack
+
+| Piece | Used for |
+|---|---|
+| Next.js 16, React 19 | the app, the landing page and the relayer route |
+| Tailwind CSS 4, Base UI | the interface |
+| TanStack Query 5 | quotes (fresh 10 s, refreshed 15 s, aborted when the request changes), prices, balances |
+| viem, wagmi, Reown AppKit | EVM transfers, allowances, THORChain deposits, EIP-3009 signatures |
+| @solana/web3.js, @solana/spl-token | Solana deposits |
+| @wizardconnect/react, libauth | the Bitcoin Cash wallet, addresses and transactions |
+| @electrum-cash/network | Bitcoin Cash coins, subscriptions and broadcasts |
+| idb-keyval | swaps saved in the browser |
+
+## Why the browser
+
+Every provider Hashi uses answers browsers directly, so the money path has no Hashi server in it: quotes, deposits, trades and broadcasts go from your browser to NEAR Intents, THORChain, Cauldron, Electrum and your wallets. The only server code is the gas relayer and the landing page's numbers.
+
+<Cards>
+  <Card icon={<Icon name="Plug" />} title="Integrations" href="/docs/build/integrations" description="Every outside service, what it does, and what is verified." />
+  <Card icon={<Icon name="Lock" />} title="Security and privacy" href="/docs/build/security-and-privacy" description="Headers, what leaves the browser, what is stored." />
+</Cards>

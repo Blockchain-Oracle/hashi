@@ -1,0 +1,23 @@
+{
+  "title": "Guide",
+  "description": "What Hashi is and every screen",
+  "icon": "Compass",
+  "root": true,
+  "pages": [
+    "index",
+    "quickstart",
+    "---The app---",
+    "swap-screen",
+    "tokens-and-pairs",
+    "routes-list",
+    "review",
+    "tracking",
+    "activity",
+    "settings",
+    "---Wallets---",
+    "wallets",
+    "gasless",
+    "---On Bitcoin Cash---",
+    "on-bitcoin-cash"
+  ]
+}

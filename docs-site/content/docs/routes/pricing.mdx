@@ -1,0 +1,33 @@
+---
+title: How a route is priced
+description: "Every fee in dollars, from live prices: the bridge, the Cauldron swap and the gas to start. Routes are ranked by what you keep."
+icon: Calculator
+---
+
+<Sheet src="/shots/wide/review-bridge.webp" alt="Review swap for 50 USDC on Ethereum to 49.80 PUSD with fee lines NEAR Intents $0.15, Cauldron swap $0.21, Ethereum network fee 0.000008 ETH $0.01, total $0.38" caption="The fee lines of a live quote (17 Nov 2026, 00:54 UTC), with example addresses." width={380} />
+
+## The fee lines
+
+Every line is in dollars, from NEAR Intents' live prices. Hashi never assumes a stablecoin is worth exactly $1.
+
+| Line | Into Bitcoin Cash | Out of Bitcoin Cash | On Bitcoin Cash |
+|---|---|---|---|
+| **The bridge** | what you pay, minus the BCH that crossed (fee and spread together) | the BCH that crossed, minus what you receive | – |
+| **Cauldron swap** | Router 0.1% + miner fee + price impact against the pre-trade price | the same, for the sale | the same; PUSD ⇄ MUSD adds the 0.1% in the sold token |
+| **Network fee** | gas to deposit on the paying chain | the Bitcoin Cash send to the bridge (300 sats) | – |
+
+The 1,000 sats a bought token carries, and any change, stay with you, so they are not counted.
+
+## Gas, measured
+
+| Route | Gas counted |
+|---|---|
+| NEAR Intents, EVM chains | one token transfer to a fresh address (measured per token, 51,900–80,200; Avalanche USDC copied from Base's identical contract) |
+| THORChain, EVM chains | one allowance (46,500–56,400) + the deposit (71,000, the highest of four real deposits, rounded up) |
+| Solana | the 5,000-lamport signature + rent for the deposit address's token account |
+
+Gas units × the chain's live gas price × the gas coin's live price. If your wallet holds less than that, the button says **Not enough ETH for gas on Base** (or, once Hashi's relayer is funded, offers [gasless USDC](/docs/guide/gasless)).
+
+## Ranking
+
+Routes are sorted by **what you keep**: the amount out minus the gas you pay outside the quote, restated in the token you receive. Ties go to the faster route. **Best return** is the first; **Fastest** shows only when a different route is quicker.

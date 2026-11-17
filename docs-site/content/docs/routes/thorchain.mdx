@@ -1,0 +1,31 @@
+---
+title: THORChain
+description: "Native swaps through THORChain's own pools, for USDC on Base and USDC and USDT on Ethereum, Avalanche and BNB Chain, with live halt checks."
+icon: Zap
+---
+
+<Logo name="thorchain" size={40} />
+
+THORChain swaps native assets through its own pools. Hashi reads it through the Liquify gateway, from your browser.
+
+| Hashi asks | For |
+|---|---|
+| `GET /quote/swap` | price, minimum, and on **Start swap** the vault, router, memo and expiry |
+| `GET /inbound_addresses` | which chains are halted (every 30 seconds) |
+| `GET /tx/status/{hash}` | the swap's progress, every 5 seconds |
+
+## Coverage
+
+USDC on Base; USDC and USDT on Ethereum, Avalanche and BNB Chain. Arbitrum, Optimism, Polygon and Solana are NEAR Intents only ("Not offered" on THORChain's row).
+
+## How Hashi uses it
+
+- **Slippage** goes as `liquidity_tolerance_bps`, THORChain's preferred setting. The older `tolerance_bps` also counts the fixed outbound fee, so small swaps failed at 1%.
+- **Halts**: if THORChain has halted or paused trading on the stablecoin's chain or on BCH, the route shows **Paused** with the chain's name.
+- **Minimum**: THORChain's recommended minimum; below it the row says so and offers it in one tap.
+- **Going in** (EVM): your wallet allows THORChain's router to move the exact amount (Hashi skips this when enough is already allowed), then calls `depositWithExpiry` with the memo.
+- **Refunds**: going in, your stablecoin wallet is sent as the refund address, and it rides in the memo. Coming out, THORChain refuses a refund address in a Bitcoin Cash memo ("generated memo too long for source chain"), so it refunds to the address of the deposit's first coin, and Hashi puts a coin from your receive address first.
+- **Addresses**: Bitcoin Cash addresses go without their `bitcoincash:` prefix, which THORChain's memo parser cannot read.
+- **Coming out** (Bitcoin Cash): one payment built to THORChain's rules: your coin is input 0, the vault is output 0, the memo is an OP_RETURN of at most 80 bytes, change returns to input 0's address.
+
+Status mapping: inbound seen → bridging; an outbound transaction → done (or "BCH arrived"); a planned refund → refunded.

@@ -1,0 +1,179 @@
+import { z } from 'zod'
+import { NEAR_ONE_CLICK_URL } from '@/lib/constants/providers'
+import { fetchJson, ProviderError } from '@/lib/http'
+
+/**
+ * NEAR Intents 1Click API (https://docs.near-intents.org). Schemas follow its OpenAPI file (fetched 2026-11-16).
+ * Called straight from the browser: every endpoint sends `access-control-allow-origin: *` and needs no key.
+ */
+
+const PROVIDER = 'NEAR Intents'
+
+const tokenSchema = z.object({
+  assetId: z.string(),
+  decimals: z.number(),
+  blockchain: z.string(),
+  symbol: z.string(),
+  price: z.number(),
+  priceUpdatedAt: z.string(),
+  contractAddress: z.string().optional(),
+})
+export type NearToken = z.infer<typeof tokenSchema>
+
+export function getNearTokens(signal?: AbortSignal) {
+  return fetchJson(
+    PROVIDER,
+    `${NEAR_ONE_CLICK_URL}/v0/tokens`,
+    z.array(tokenSchema),
+    signal ? { signal } : {},
+  )
+}
+
+export type NearSwapType = 'EXACT_INPUT' | 'EXACT_OUTPUT' | 'FLEX_INPUT'
+
+export interface NearQuoteInput {
+  /** True for a price only: no deposit address is issued. */
+  dry: boolean
+  swapType: NearSwapType
+  originAsset: string
+  destinationAsset: string
+  /** Base units of the origin asset (or of the destination asset for EXACT_OUTPUT). */
+  amount: bigint
+  recipient: string
+  refundTo: string
+  slippageBps: number
+  deadline: Date
+}
+
+const quoteSchema = z.object({
+  depositAddress: z.string().optional(),
+  depositMemo: z.string().optional(),
+  amountIn: z.string(),
+  amountInFormatted: z.string(),
+  amountInUsd: z.string(),
+  minAmountIn: z.string(),
+  amountOut: z.string(),
+  amountOutFormatted: z.string(),
+  amountOutUsd: z.string(),
+  minAmountOut: z.string(),
+  deadline: z.string().optional(),
+  timeWhenInactive: z.string().optional(),
+  /** Seconds, counted from when the deposit transaction is confirmed. */
+  timeEstimate: z.number(),
+  refundFee: z.string().optional(),
+  withdrawFee: z.string().optional(),
+})
+
+const quoteResponseSchema = z.object({
+  correlationId: z.string(),
+  timestamp: z.string(),
+  /** Must be kept with the quote: it is what settles a dispute. */
+  signature: z.string(),
+  quoteRequest: z.record(z.string(), z.unknown()),
+  quote: quoteSchema,
+})
+export type NearQuoteResponse = z.infer<typeof quoteResponseSchema>
+
+/** Who receives Hashi's swaps in NEAR's records. Not an account; just a label. */
+const REFERRAL = 'hashi'
+
+export async function getNearQuote(input: NearQuoteInput, signal?: AbortSignal): Promise<NearQuoteResponse> {
+  const body = {
+    dry: input.dry,
+    swapType: input.swapType,
+    slippageTolerance: input.slippageBps,
+    originAsset: input.originAsset,
+    depositType: 'ORIGIN_CHAIN',
+    destinationAsset: input.destinationAsset,
+    amount: input.amount.toString(),
+    refundTo: input.refundTo,
+    refundType: 'ORIGIN_CHAIN',
+    recipient: input.recipient,
+    recipientType: 'DESTINATION_CHAIN',
+    deadline: input.deadline.toISOString(),
+    referral: REFERRAL,
+  }
+  try {
+    return await fetchJson(PROVIDER, `${NEAR_ONE_CLICK_URL}/v0/quote`, quoteResponseSchema, {
+      method: 'POST',
+      body,
+      ...(signal ? { signal } : {}),
+    })
+  } catch (error) {
+    throw toMinimumError(error)
+  }
+}
+
+/** NEAR's minimum shows up as text: "Amount is too low for bridge, try at least 150000" (base units). */
+export class BelowMinimumError extends ProviderError {
+  constructor(
+    provider: string,
+    message: string,
+    readonly minimum: bigint,
+  ) {
+    super(provider, message)
+    this.name = 'BelowMinimumError'
+  }
+}
+
+function toMinimumError(error: unknown): unknown {
+  if (error instanceof ProviderError) {
+    const match = /try at least (\d+)/i.exec(error.message)
+    if (match?.[1]) return new BelowMinimumError(error.provider, error.message, BigInt(match[1]))
+  }
+  return error
+}
+
+export const NEAR_STATUSES = [
+  'KNOWN_DEPOSIT_TX',
+  'PENDING_DEPOSIT',
+  'INCOMPLETE_DEPOSIT',
+  'PROCESSING',
+  'SUCCESS',
+  'REFUNDED',
+  'FAILED',
+] as const
+export type NearStatus = (typeof NEAR_STATUSES)[number]
+
+const txDetailsSchema = z.object({ hash: z.string(), explorerUrl: z.string() })
+
+const statusSchema = z.object({
+  correlationId: z.string(),
+  /** The quote this deposit address belongs to (what it waits for, and its minimum). */
+  quoteResponse: z
+    .object({ quoteRequest: z.record(z.string(), z.unknown()), quote: quoteSchema.partial() })
+    .partial()
+    .optional(),
+  status: z.enum(NEAR_STATUSES),
+  updatedAt: z.string(),
+  swapDetails: z.object({
+    intentHashes: z.array(z.string()),
+    nearTxHashes: z.array(z.string()),
+    originChainTxHashes: z.array(txDetailsSchema),
+    destinationChainTxHashes: z.array(txDetailsSchema),
+    amountIn: z.string().optional(),
+    amountOut: z.string().optional(),
+    depositedAmount: z.string().optional(),
+    refundedAmount: z.string().optional(),
+    refundReason: z.string().optional(),
+    withdrawFee: z.string().optional(),
+  }),
+})
+export type NearStatusResponse = z.infer<typeof statusSchema>
+
+export function getNearStatus(depositAddress: string, signal?: AbortSignal) {
+  const url = `${NEAR_ONE_CLICK_URL}/v0/status?depositAddress=${encodeURIComponent(depositAddress)}`
+  return fetchJson(PROVIDER, url, statusSchema, signal ? { signal } : {})
+}
+
+/** Optional: telling NEAR the deposit's transaction hash can speed the swap up. */
+export function submitNearDeposit(txHash: string, depositAddress: string) {
+  return fetchJson(PROVIDER, `${NEAR_ONE_CLICK_URL}/v0/deposit/submit`, z.unknown(), {
+    method: 'POST',
+    body: { txHash, depositAddress },
+  })
+}
+
+export function isNearTerminal(status: NearStatus) {
+  return status === 'SUCCESS' || status === 'REFUNDED' || status === 'FAILED'
+}

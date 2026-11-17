@@ -1,0 +1,23 @@
+---
+title: Slippage and recipient
+description: "How far the price may move before a provider refunds you instead, and where the money lands when it isn't your connected wallet."
+icon: SlidersHorizontal
+---
+
+<Shot src="/shots/wide/settings.webp" alt="The settings popover over a PUSD to USDC on Ethereum swap: max slippage presets 0.5%, Auto, 2%, 3%, Other, and a Send to another address field" caption="Settings, opened from the gear on the swap card." />
+
+## Max slippage
+
+**0.5%** · **Auto** (1%, the default) · **2%** · **3%** · **Other** (0.01% to 50%). "If the price moves more than this before your swap fills, the provider refunds you instead." Above 3% it warns: "High slippage: you may receive noticeably less." Your choice is kept in this browser.
+
+## Send to another address
+
+Allowed for **plain BCH into Bitcoin Cash** and for **every swap out of Bitcoin Cash**. PUSD and MUSD always land in your connected Bitcoin Cash wallet, because that wallet signs the Cauldron swap; a swap on Bitcoin Cash lands in the wallet that signs it too.
+
+Hashi checks the address as you type:
+
+| Side | Refused |
+|---|---|
+| EVM | a Bitcoin Cash address, an invalid address, a token contract ("Funds sent there are lost."), the zero address |
+| Solana | an invalid address, a token mint |
+| Bitcoin Cash | an EVM address, mixed upper and lower case, a typo (checksum), a testnet address |

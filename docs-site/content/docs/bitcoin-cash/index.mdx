@@ -1,0 +1,25 @@
+---
+title: Bitcoin Cash's own dollars
+description: "PUSD and MUSD are dollars native to Bitcoin Cash. Hashi connects them to the stablecoins on eight bigger chains, and lets them swap with each other and with BCH."
+icon: Bitcoin
+---
+
+<Shot src="/shots/wide/landing-live.webp" alt="Hashi's landing page section Real liquidity. Real routes. Checked every minute: cards for PUSD liquidity on Cauldron, PUSD traded in the last 24 h, MUSD liquidity on Cauldron and the Bitcoin Cash price, with live service pills" caption="Live from Cauldron's indexer and the bridges, on Hashi's landing page." />
+
+Bitcoin Cash has dollars of its own: **PUSD** (ParyonUSD) and **MUSD** (MoriaUSD), issued as CashTokens and traded on Cauldron. Most of the world's dollars live elsewhere, as USDC and USDT. Hashi is the bridge between them, built from Bitcoin Cash's own tools:
+
+<Cards>
+  <Card icon={<Logo name="pusd.svg" size={22} />} title="PUSD and MUSD" href="/docs/bitcoin-cash/pusd-and-musd" description="What they are, their token ids, and where they trade." />
+  <Card icon={<Logo name="wizardconnect.png" size={22} />} title="WizardConnect" href="/docs/bitcoin-cash/wizardconnect" description="How your Bitcoin Cash wallet connects and signs Cauldron trades." />
+  <Card icon={<Icon name="AtSign" />} title="Addresses and tokens" href="/docs/bitcoin-cash/addresses-and-tokens" description="Why there are two forms of your address, and which receives what." />
+  <Card icon={<Icon name="Radio" />} title="Electrum servers" href="/docs/bitcoin-cash/electrum" description="How Hashi reads your coins and broadcasts your trades." />
+</Cards>
+
+## What Hashi does on Bitcoin Cash
+
+- Reads your wallet's coins, tokens included, through Electrum servers.
+- Asks Cauldron's Router to build each trade from your own coins.
+- Asks your wallet to sign over WizardConnect, then broadcasts the signed trade.
+- Builds the plain payments a bridge needs, to its rules (THORChain's memo included).
+
+Every Bitcoin Cash transaction is approved in your own wallet; Hashi holds no Bitcoin Cash keys.

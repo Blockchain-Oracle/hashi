@@ -1,0 +1,14 @@
+# Build context for apps/web/Dockerfile (the repo root). Keep it to the workspace files the app builds from.
+**/node_modules
+**/.next
+**/out
+**/.env
+**/.env.*
+!**/.env.example
+.git
+.github
+docs-site
+coverage
+**/*.tsbuildinfo
+**/.DS_Store
+.claude

@@ -1,0 +1,30 @@
+---
+title: Every route
+description: "A bridge carries the dollars between chains as BCH; Cauldron turns BCH into PUSD or MUSD on Bitcoin Cash. Hashi prices every combination and ranks them by what you keep."
+icon: Route
+---
+
+Neither NEAR Intents nor THORChain lists PUSD or MUSD: they move plain BCH, and PUSD and MUSD trade only on Cauldron. So every route Hashi shows is one of these:
+
+| Route | Into Bitcoin Cash | Out of Bitcoin Cash |
+|---|---|---|
+| **NEAR Intents** (+ Cauldron for PUSD, MUSD) | all 14 stablecoins | all 14 stablecoins |
+| **THORChain** (+ Cauldron for PUSD, MUSD) | 7: USDC Base; USDC and USDT on Ethereum, Avalanche, BNB Chain | the same 7 |
+| **Cauldron alone** | PUSD ⇄ MUSD ⇄ BCH, no bridge | |
+
+## Into Bitcoin Cash
+
+<Diagram name="into-bch" alt="Sequence for 50 USDC on Ethereum to PUSD through NEAR Intents and Cauldron, with two approvals" caption="50 USDC on Ethereum → 49.83 PUSD, live quote of 16 Nov 2026, 23:41 UTC." />
+
+## Out of Bitcoin Cash
+
+<Diagram name="out-of-bch" alt="Sequence for 20 PUSD to USDC on Ethereum through Cauldron and THORChain: approval 1 sells the PUSD on Cauldron, approval 2 sends the BCH to THORChain's vault with the memo, THORChain pays USDC on Ethereum" caption="20 PUSD → 19.5791 USDC on Ethereum, live quote of 16 Nov 2026, 23:38 UTC." />
+
+Selling PUSD or MUSD takes two approvals in your Bitcoin Cash wallet: the sale on Cauldron (held to your slippage, and saved), then the BCH to the bridge, which is quoted at that moment for exactly what the sale produced.
+
+<Cards>
+  <Card icon={<Icon name="Table" />} title="Chains and assets" href="/docs/routes/chains-and-assets" description="Every token on every chain, and who carries it." />
+  <Card icon={<Icon name="Calculator" />} title="How a route is priced" href="/docs/routes/pricing" description="Every fee line, gas included, no $1 peg assumed." />
+  <Card icon={<Icon name="Timer" />} title="Timing and minimums" href="/docs/routes/timing-and-minimums" description="Estimates, deadlines and the smallest amounts." />
+  <Card icon={<Icon name="ShieldCheck" />} title="Who holds the money" href="/docs/routes/trust" description="Where your money is at every step." />
+</Cards>

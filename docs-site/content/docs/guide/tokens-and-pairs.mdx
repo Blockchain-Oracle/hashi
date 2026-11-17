@@ -1,0 +1,58 @@
+---
+title: Tokens and pairs
+description: "Seventeen tokens on nine chains, and three kinds of pair: into Bitcoin Cash, out of it, or staying on it. Your pick always stays where you put it."
+icon: Coins
+---
+
+<Shot src="/shots/wide/picker.webp" alt="The token picker over the swap screen: Pay with, search a token or chain, chain filters, quick picks and the list of tokens" caption="The picker: search, chain filters and quick picks (balances appear once a wallet is connected)." />
+
+## The tokens
+
+| Side | Tokens |
+|---|---|
+| Bitcoin Cash | **PUSD** (ParyonUSD), **MUSD** (MoriaUSD), **BCH** |
+| Other chains | **USDC** and **USDT** on Ethereum, Avalanche, BNB Chain, Optimism, Polygon and Solana; **USDC** only on Base and Arbitrum |
+
+That is 14 stablecoins and 3 Bitcoin Cash tokens. [Every chain and who carries it →](/docs/routes/chains-and-assets)
+
+## Three kinds of pair
+
+| Pair | Example | Carried by |
+|---|---|---|
+| Into Bitcoin Cash | USDC on Base → PUSD | NEAR Intents or THORChain, then Cauldron for PUSD and MUSD |
+| Out of Bitcoin Cash | PUSD → USDC on Ethereum | Cauldron for PUSD and MUSD, then NEAR Intents or THORChain |
+| On Bitcoin Cash | PUSD → MUSD, BCH → PUSD | Cauldron alone, [no bridge](/docs/guide/on-bitcoin-cash) |
+
+A stablecoin for another stablecoin (USDC on Solana → USDC on Base) is not a Hashi route: one side of every swap is on Bitcoin Cash.
+
+## How a pick works
+
+| You pick | What happens |
+|---|---|
+| the token already on the other side | the two sides swap places |
+| a Bitcoin Cash token against a Bitcoin Cash token | a swap on Bitcoin Cash, e.g. PUSD → BCH |
+| a stablecoin against a Bitcoin Cash token | a bridged swap, in or out |
+| a stablecoin against a stablecoin | your pick stays; the other side becomes the Bitcoin Cash token last on screen, and the card says so |
+
+<Shot src="/shots/wide/notice.webp" alt="The swap card after picking USDT on Ethereum to receive while paying USDC on Base: the pay side is now PUSD, with the note 'You pay is now PUSD: one side of a Hashi swap is always on Bitcoin Cash.'" caption="A stablecoin picked against a stablecoin: the other side changes, and the card says why." />
+
+The amount you typed stays when both the old and the new paying token are dollar tokens (USDC, USDT, PUSD, MUSD); it clears when BCH comes in or goes out of the paying side.
+
+## The picker
+
+- **Pay with** / **Receive**, with **Search a token or chain** (Enter picks the first result).
+- **All** plus a filter for each of the nine chains.
+- Quick picks: USDC Base, USDC Ethereum, USDT Ethereum, USDC Solana, PUSD, MUSD.
+- With wallets connected, your balances, largest first, in dollars for USDC, USDT and BCH.
+
+## Links you can share
+
+The address bar follows the card, so any swap can be shared or bookmarked:
+
+```txt
+/swap?from=USDC.base&to=PUSD&amount=25
+/swap?from=PUSD&to=USDC.ethereum&amount=20
+/swap?from=PUSD&to=MUSD&amount=10
+```
+
+Stablecoins are written `SYMBOL.chain` (`USDC.base`, `USDT.bsc`, `USDC.solana` …); Bitcoin Cash tokens by name (`PUSD`, `MUSD`, `BCH`).

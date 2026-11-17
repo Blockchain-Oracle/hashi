@@ -1,0 +1,14 @@
+sequenceDiagram
+  autonumber
+  actor You
+  participant H as Hashi
+  participant C as Cauldron
+  participant B as Your Bitcoin Cash wallet
+  You->>H: 10 PUSD → MUSD
+  H->>C: price PUSD → MUSD in one trade
+  H-->>You: Cauldron, no bridge: 9.74 MUSD, at least 9.64, $0.16 in fees, ~15 s
+  You->>H: Start swap
+  H->>C: build one trade from your PUSD and a little BCH for the miner fee
+  H->>B: approval 1: sign the trade
+  B-->>H: signed (Hashi broadcasts it through Electrum)
+  C-->>B: 9.74 MUSD to your token (z…) address

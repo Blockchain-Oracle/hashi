@@ -1,0 +1,21 @@
+---
+title: Gasless USDC on Base
+description: "USDC on Base with no ETH for gas: sign an authorisation instead of sending, and Hashi's relayer pays the gas."
+icon: Fuel
+---
+
+Sending USDC needs a little ETH for gas. With **Pay no gas**, your Base wallet signs a USDC authorisation (EIP-3009) instead of a transaction, and Hashi's relayer submits it and pays the Base gas. The USDC still goes straight from your wallet to the NEAR Intents deposit address: the relayer never holds it.
+
+| | |
+|---|---|
+| Offered for | USDC on Base, into Bitcoin Cash, on the NEAR Intents route |
+| In the review | a **Pay no gas** switch: "Sign instead of sending; Hashi pays the Base gas for you." The network fee line reads **Paid by Hashi** |
+| Not enough ETH for the gas | the switch is on and locked: "You have no ETH on Base; you sign, and Hashi pays the gas." |
+| Approvals | "1 signature in your Base wallet" (plus 1 in your Bitcoin Cash wallet for PUSD or MUSD) |
+| Valid for | 30 minutes |
+
+<Callout title="Shown only when the relayer is ready">
+The switch appears only while Hashi's relayer is set up and holds enough Base ETH to pay for it. Today it holds none, so the switch does not appear and the swap screen asks for ETH as usual. Gasless has not yet been run with real money.
+</Callout>
+
+[What the relayer checks before it pays →](/docs/build/relayer)

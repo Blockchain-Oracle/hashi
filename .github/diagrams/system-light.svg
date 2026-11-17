@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="840" viewBox="0 0 1600 840">
+<style>
+@font-face { font-family: Figtree; font-weight: 400; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Regular.ttf"); }
+@font-face { font-family: Figtree; font-weight: 500; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Medium.ttf"); }
+@font-face { font-family: GeistMono; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/GeistMono-Medium.ttf"); }
+.t { font: 500 19px Figtree; fill: #121111; letter-spacing: -0.3px; }
+.s { font: 400 16px Figtree; fill: #6B6563; }
+.l { font: 500 13px GeistMono; fill: #6B6563; letter-spacing: 1.4px; }
+.e { font: 500 15px Figtree; fill: #121111; }
+.n { font: 500 15px GeistMono; fill: #FFFFFF; }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" fill="#121111"/>
+  </marker>
+  <marker id="dot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0 L10 5 L0 10 z" fill="#9A938F"/>
+  </marker>
+</defs>
+<rect width="1600" height="840" fill="#FFFAF5"/>
+<rect x="40" y="40" width="1520" height="176" rx="22" fill="#FBF6F0" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="66" y="74" text-anchor="start" class="l">/ HASHI, IN YOUR BROWSER</text>
+<rect x="80" y="98" width="400" height="92" rx="16" fill="#FFFFFF" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="280.0" y="138.0" text-anchor="middle" class="t">Swap screen</text>
+<text x="280.0" y="163.0" text-anchor="middle" class="s">pair · amount · live routes · review</text>
+<rect x="600.0" y="98" width="400" height="92" rx="16" fill="#FFFFFF" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="800.0" y="138.0" text-anchor="middle" class="t">Route engine</text>
+<text x="800.0" y="163.0" text-anchor="middle" class="s">prices every route · ranks by what you keep</text>
+<rect x="1120" y="98" width="400" height="92" rx="16" fill="#FFFFFF" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="1320.0" y="138.0" text-anchor="middle" class="t">Swap runner</text>
+<text x="1320.0" y="163.0" text-anchor="middle" class="s">one step at a time · saved in this browser</text>
+<line x1="486" y1="144.0" x2="592.0" y2="144.0" stroke="#121111" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="1006.0" y1="144.0" x2="1112" y2="144.0" stroke="#121111" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40.0" y="352" width="254" height="112" rx="16" fill="#FFFFFF" stroke="#FF2F00" stroke-width="2"/>
+<text x="167.0" y="402.0" text-anchor="middle" class="t">Your EVM or Solana wallet</text>
+<text x="167.0" y="427.0" text-anchor="middle" class="s">USDC · USDT · eight chains</text>
+<rect x="356.5" y="352" width="254" height="112" rx="16" fill="#FFFFFF" stroke="#FF2F00" stroke-width="2"/>
+<text x="483.5" y="402.0" text-anchor="middle" class="t">NEAR Intents or THORChain</text>
+<text x="483.5" y="427.0" text-anchor="middle" class="s">carries them as BCH</text>
+<rect x="673.0" y="352" width="254" height="112" rx="16" fill="#FFFFFF" stroke="#FF2F00" stroke-width="2"/>
+<text x="800.0" y="402.0" text-anchor="middle" class="t">Your Bitcoin Cash wallet</text>
+<text x="800.0" y="427.0" text-anchor="middle" class="s">BCH arrives (a BCH swap ends)</text>
+<rect x="989.5" y="352" width="254" height="112" rx="16" fill="#FFFFFF" stroke="#FF2F00" stroke-width="2"/>
+<text x="1116.5" y="402.0" text-anchor="middle" class="t">Cauldron</text>
+<text x="1116.5" y="427.0" text-anchor="middle" class="s">for PUSD or MUSD</text>
+<rect x="1306.0" y="362" width="254" height="92" rx="46.0" fill="#FFFFFF" stroke="#FF2F00" stroke-width="2"/>
+<text x="1433.0" y="402.0" text-anchor="middle" class="t">PUSD · MUSD</text>
+<text x="1433.0" y="427.0" text-anchor="middle" class="s">in your own wallet</text>
+<line x1="300.0" y1="408.0" x2="348.5" y2="408.0" stroke="#121111" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="324.25" cy="382.0" r="13" fill="#FF2F00"/>
+<text x="324.25" y="387.0" text-anchor="middle" class="n">1</text>
+<text x="324.25" y="438.0" text-anchor="middle" class="e">deposit</text>
+<line x1="616.5" y1="408.0" x2="665.0" y2="408.0" stroke="#121111" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="640.75" cy="382.0" r="13" fill="#FF2F00"/>
+<text x="640.75" y="387.0" text-anchor="middle" class="n">2</text>
+<text x="640.75" y="438.0" text-anchor="middle" class="e">BCH</text>
+<line x1="933.0" y1="408.0" x2="981.5" y2="408.0" stroke="#121111" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="957.25" cy="382.0" r="13" fill="#FF2F00"/>
+<text x="957.25" y="387.0" text-anchor="middle" class="n">3</text>
+<text x="957.25" y="438.0" text-anchor="middle" class="e">swap</text>
+<line x1="1249.5" y1="408.0" x2="1298.0" y2="408.0" stroke="#121111" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="1273.75" cy="382.0" r="13" fill="#FF2F00"/>
+<text x="1273.75" y="387.0" text-anchor="middle" class="n">4</text>
+<text x="1273.75" y="438.0" text-anchor="middle" class="e">tokens</text>
+<line x1="167.0" y1="216" x2="167.0" y2="346" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="75.0" y="242" width="184" height="28" rx="14" fill="#FFFAF5"/>
+<text x="167.0" y="261" text-anchor="middle" class="s">asks you to approve</text>
+<line x1="483.5" y1="216" x2="483.5" y2="346" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="391.5" y="242" width="184" height="28" rx="14" fill="#FFFAF5"/>
+<text x="483.5" y="261" text-anchor="middle" class="s">quote · status</text>
+<line x1="800.0" y1="216" x2="800.0" y2="346" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="708.0" y="242" width="184" height="28" rx="14" fill="#FFFAF5"/>
+<text x="800.0" y="261" text-anchor="middle" class="s">asks you to approve</text>
+<line x1="1116.5" y1="216" x2="1116.5" y2="346" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="1024.5" y="242" width="184" height="28" rx="14" fill="#FFFAF5"/>
+<text x="1116.5" y="261" text-anchor="middle" class="s">quote · build</text>
+<rect x="40.0" y="610" width="254" height="92" rx="16" fill="#FFFFFF" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="167.0" y="650.0" text-anchor="middle" class="t">Reown AppKit</text>
+<text x="167.0" y="675.0" text-anchor="middle" class="s">connects EVM and Solana wallets</text>
+<line x1="167.0" y1="610" x2="167.0" y2="472" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="356.5" y="610" width="254" height="92" rx="16" fill="#FFFFFF" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="483.5" y="650.0" text-anchor="middle" class="t">Hashi relayer</text>
+<text x="483.5" y="675.0" text-anchor="middle" class="s">Base gas for USDC to NEAR</text>
+<line x1="483.5" y1="610" x2="483.5" y2="472" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="673.0" y="610" width="254" height="92" rx="16" fill="#FFFFFF" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="800.0" y="650.0" text-anchor="middle" class="t">WizardConnect</text>
+<text x="800.0" y="675.0" text-anchor="middle" class="s">connects Bitcoin Cash wallets</text>
+<line x1="800.0" y1="610" x2="800.0" y2="472" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="989.5" y="610" width="254" height="92" rx="16" fill="#FFFFFF" stroke="#E4DDD6" stroke-width="1.5"/>
+<text x="1116.5" y="650.0" text-anchor="middle" class="t">Electrum servers</text>
+<text x="1116.5" y="675.0" text-anchor="middle" class="s">read coins · broadcast trades</text>
+<path d="M1116.5 610 L1116.5 472" stroke="#9A938F" stroke-width="1.6" stroke-dasharray="5 6" fill="none" marker-end="url(#dot)"/>
+<rect x="32" y="306" width="551.8000000000001" height="22" fill="#FFFAF5"/><text x="40" y="322" text-anchor="start" class="l">/ YOUR DOLLARS, INTO BITCOIN CASH (AND BACK THE SAME WAY)</text>
+<rect x="32" y="568" width="119.4" height="22" fill="#FFFAF5"/><text x="40" y="584" text-anchor="start" class="l">/ ALSO USED</text>
+<text x="40" y="800" class="s">Hashi never holds the money: you approve every step that spends it, and each bridge pays out to your own address.</text>
+</svg>

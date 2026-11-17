@@ -1,0 +1,25 @@
+sequenceDiagram
+  autonumber
+  actor You
+  participant H as Hashi
+  participant E as Your Ethereum wallet
+  participant N as NEAR Intents
+  participant B as Your Bitcoin Cash wallet
+  participant C as Cauldron
+  You->>H: 50 USDC on Ethereum → PUSD
+  H->>N: price-only quotes (THORChain too)
+  H->>C: price the BCH → PUSD leg
+  H-->>You: NEAR Intents → Cauldron: 49.83 PUSD, at least 49.33, $0.28 in fees, ~3 min
+  You->>H: Start swap
+  H->>N: real quote: a deposit address for this swap
+  H->>E: approval 1: send 50 USDC to that address
+  E->>N: 50 USDC
+  loop every 5 s until it settles
+    H->>N: status?
+  end
+  N->>B: BCH to your plain (q…) address
+  You->>H: Swap the BCH into PUSD
+  H->>C: build the trade from exactly those coins
+  H->>B: approval 2: sign the Cauldron trade
+  B-->>H: signed (Hashi broadcasts it through Electrum)
+  C-->>B: PUSD to your token (z…) address

@@ -1,0 +1,44 @@
+---
+title: What Hashi is
+description: "Dollars in, dollars out: USDC and USDT from eight chains to Bitcoin Cash as PUSD, MUSD or BCH, and back, from one screen."
+icon: Compass
+---
+
+<Shot src="/shots/wide/swap-usdc-base-pusd.webp" alt="Hashi's swap screen at full width: 100 USDC on Base paying, 99.40 PUSD receiving, with the NEAR Intents → Cauldron route marked Best return" caption="The swap screen, priced live: 100 USDC on Base → PUSD on Bitcoin Cash." />
+
+Hashi (橋, *bridge*) moves dollars between the big chains and Bitcoin Cash. Bring **USDC or USDT** from Base, Ethereum, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain or Solana, and receive **PUSD**, **MUSD** or plain **BCH** in your own Bitcoin Cash wallet. Or go the other way. Or swap PUSD, MUSD and BCH with each other on Bitcoin Cash alone.
+
+Neither NEAR Intents nor THORChain lists PUSD or MUSD. Hashi joins those two, which move plain BCH, (NEAR Intents and THORChain) to Cauldron, the exchange where PUSD and MUSD trade, and prices the whole trip as one route.
+
+<Brands />
+
+## Three kinds of swap
+
+<Cards>
+  <Card icon={<Icon name="ArrowDownToLine" />} title="Into Bitcoin Cash" href="/docs/guide/quickstart" description="USDC or USDT on eight chains → PUSD, MUSD or BCH. A bridge carries the dollars as BCH; Cauldron turns it into PUSD or MUSD." />
+  <Card icon={<Icon name="ArrowUpFromLine" />} title="Out of Bitcoin Cash" href="/docs/routes" description="PUSD, MUSD or BCH → USDC or USDT on any of the eight chains, the same path in reverse." />
+  <Card icon={<Icon name="Repeat" />} title="On Bitcoin Cash" href="/docs/guide/on-bitcoin-cash" description="PUSD ⇄ MUSD ⇄ BCH on Cauldron alone: one approval, about 15 seconds, no bridge." />
+</Cards>
+
+## How it works
+
+<Diagram name="system" alt="Hashi's system: the swap screen, route engine and swap runner in your browser above; your dollars' path below: your EVM or Solana wallet, deposit to NEAR Intents or THORChain, BCH to your Bitcoin Cash wallet (where a BCH swap ends), swap on Cauldron for PUSD or MUSD in your own wallet; Reown AppKit, the Hashi relayer (Base gas for USDC to NEAR), WizardConnect and Electrum servers beneath" caption="Your dollars move between your wallets and the service doing the work; Hashi prices, builds and asks you to approve." />
+
+1. **Every route, priced end to end.** NEAR Intents and THORChain are asked side by side, with Cauldron for the PUSD or MUSD leg, and ranked on what you keep after every fee and the gas to start.
+2. **Your own two wallets.** An EVM or Solana wallet through Reown AppKit (WalletConnect), and a Bitcoin Cash wallet through WizardConnect. Each approves its own steps.
+3. **One tracker across both chains.** Every step is saved in your browser, so a closed tab picks up where it stopped. The one exception is selling PUSD or MUSD: approve both prompts (the sale, then the send) without closing the tab.
+
+## The landing page
+
+[hashi.cash](https://hashi.cash) opens on the story and live numbers, rebuilt at most once a minute: PUSD and MUSD liquidity and the last 24 hours of PUSD trading on Cauldron, the BCH price, which bridges are open, and a real 100 USDC → PUSD quote. Its **Open the app** leads to the swap screen.
+
+<Callout title="No account, no Hashi fee">
+Hashi has no sign-up and adds no fee of its own: what a route shows is what NEAR Intents, THORChain, Cauldron and the networks charge. It never holds your money.
+</Callout>
+
+<Cards>
+  <Card icon={<Icon name="Rocket" />} title="Your first swap" href="/docs/guide/quickstart" description="From the amount to the tracker, step by step." />
+  <Card icon={<Icon name="Route" />} title="Routes and fees" href="/docs/routes" description="Who carries what, every fee, every minimum." />
+  <Card icon={<Icon name="Bitcoin" />} title="Bitcoin Cash" href="/docs/bitcoin-cash" description="PUSD, MUSD, WizardConnect and the token addresses." />
+  <Card icon={<Icon name="Wrench" />} title="Build" href="/docs/build" description="Architecture, integrations, security, run it yourself." />
+</Cards>

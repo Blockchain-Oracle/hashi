@@ -1,0 +1,22 @@
+---
+title: Integrations
+description: "Every outside service Hashi uses, what it does here, and how far each one is verified."
+icon: Plug
+---
+
+<Brands />
+
+| Service | What Hashi does with it | Verified |
+|---|---|---|
+| <Logo name="near" /> **NEAR Intents** (1Click) | token list and prices, route quotes, deposit addresses, status | prices and minimums live |
+| <Logo name="thorchain" /> **THORChain** (Liquify gateway) | quotes, vault and memo, halts, status | prices and halts live |
+| <Logo name="cauldron.png" /> **Cauldron Router** | best path through the pools, unsigned trades | quotes live; a token-for-token build checked live (unsigned) |
+| <Logo name="wizardconnect.png" /> **WizardConnect** | connects the Bitcoin Cash wallet, signs trades and payments | connection built on the official library |
+| <Logo name="walletconnect" /> **Reown AppKit** | EVM and Solana wallets; Solana reads | set up with Hashi's project |
+| <Logo name="bch" /> **Electrum servers** | Bitcoin Cash coins, subscriptions, broadcasts | five servers answering |
+| **Cauldron indexer** (Riften) | the landing page's liquidity, volume and prices | live per page build |
+| <Logo name="pusd.svg" /> **ParyonUSD**, <Logo name="musd.png" /> **MoriaUSD** | the two Bitcoin Cash dollars | token categories as the issuers publish them |
+
+<Callout type="warn" title="Real-money runs">
+Prices, halts, minimums and unsigned trade builds are checked live. No swap has been run end to end with real money yet; these docs will show those runs when they are done.
+</Callout>

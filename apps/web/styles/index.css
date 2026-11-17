@@ -1,0 +1,464 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Hashi's "vermilion bridge" design system. Every value is
+ * measured and tuned by hand:
+ *   - cream paper, ink, one vermilion, Figtree + Geist Mono, the glossy button, the glow.
+ *   - the "candy" two-stop gradients for chains, assets and states.
+ *   - mono uppercase labels.
+ * Paper is light, ink is dark: the same palette inverted, not a second design.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-figtree);
+  --font-heading: var(--font-figtree);
+  --font-mono: var(--font-geist-mono);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Hashi's own roles. */
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-vermilion: var(--vermilion);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-pending: var(--pending);
+  --color-hairline: var(--border);
+
+  /* 14px controls (the button), 12px chips, ~25px cards, ~36px panels. */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.857);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-toast-success-odd: toast-success-odd 0.32s cubic-bezier(0.5, 1, 0.89, 1);
+
+  --animate-toast-success-even: toast-success-even 0.32s cubic-bezier(0.5, 1, 0.89, 1);
+
+  --animate-toast-error-odd: toast-error-odd 0.28s cubic-bezier(0.5, 1, 0.89, 1);
+
+  --animate-toast-error-even: toast-error-even 0.28s cubic-bezier(0.5, 1, 0.89, 1);
+
+  --color-destructive-foreground: var(--destructive-foreground);
+  @keyframes toast-success-odd {
+    0% {
+      scale: 1;
+    }
+    30% {
+      scale: 1.025;
+    }
+    60% {
+      scale: 0.99;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+  @keyframes toast-error-odd {
+    0% {
+      translate: 0 0;
+    }
+    25% {
+      translate: -3px 0;
+    }
+    50% {
+      translate: 3px 0;
+    }
+    75% {
+      translate: -3px 0;
+    }
+    100% {
+      translate: 0 0;
+    }
+  }
+  @keyframes toast-success-even {
+    0% {
+      scale: 1;
+    }
+    30% {
+      scale: 1.025;
+    }
+    60% {
+      scale: 0.99;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+  @keyframes toast-error-even {
+    0% {
+      translate: 0 0;
+    }
+    25% {
+      translate: -3px 0;
+    }
+    50% {
+      translate: 3px 0;
+    }
+    75% {
+      translate: -3px 0;
+    }
+    100% {
+      translate: 0 0;
+    }
+  }
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+  --animate-meteor: meteor 5s linear infinite;
+  @keyframes meteor {
+    0% {
+      transform: rotate(var(--angle)) translateX(0);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(var(--angle)) translateX(-500px);
+      opacity: 0;
+    }
+  }
+}
+
+:root {
+  --radius: 0.875rem;
+
+  /* Paper (light). Wallet: page #FFFAF5, chip #F2EFEB, ink #121111, vermilion #FF2F00. */
+  --paper: #fffaf5;
+  --ink: #121111;
+  --vermilion: #ff2f00;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: var(--vermilion);
+  --primary-foreground: #ffffff;
+  --secondary: var(--ink);
+  --secondary-foreground: var(--paper);
+  --muted: #f2efeb;
+  --muted-foreground: rgb(18 17 17 / 0.62);
+  --accent: #f2efeb;
+  --accent-foreground: var(--ink);
+  --border: rgb(18 17 17 / 0.08);
+  --input: rgb(18 17 17 / 0.12);
+  --ring: rgb(255 47 0 / 0.45);
+
+  /* Candy pairs: [from, to] of a 225° gradient. */
+  --candy-violet-from: #673ab7;
+  --candy-violet-to: #512da8;
+  --candy-red-from: #f85032;
+  --candy-red-to: #e73827;
+  --candy-amber-from: #fdc830;
+  --candy-amber-to: #f37335;
+  --candy-green-from: #50b224;
+  --candy-green-to: #3f8c1c;
+
+  --success: #3f8c1c;
+  --warning: #e8650f;
+  --destructive: #e73827;
+  --pending: #512da8;
+  --info: var(--pending);
+
+  --chart-1: var(--vermilion);
+  --chart-2: var(--candy-violet-from);
+  --chart-3: var(--candy-green-from);
+  --chart-4: var(--candy-amber-to);
+  --chart-5: var(--ink);
+
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--vermilion);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f2efeb;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* The glossy button: layered white inner highlights and a vermilion drop. */
+  --shadow-gloss:
+    inset 0 2px 1px rgb(255 255 255 / 0.5), inset 0 0.6px 0.6px -1.25px rgb(255 255 255 / 0.72),
+    inset 0 2.3px 2.3px -2.5px rgb(255 255 255 / 0.64), 0 10px 20px -10px rgb(255 47 0 / 0.55);
+  --shadow-gloss-ink:
+    inset 0 1px 0 rgb(255 255 255 / 0.18), inset 0 0.6px 0.6px -1.25px rgb(255 255 255 / 0.4),
+    0 10px 20px -12px rgb(18 17 17 / 0.5);
+  --shadow-card: 0 1px 2px rgb(18 17 17 / 0.04), 0 12px 32px -12px rgb(18 17 17 / 0.12);
+  --shadow-float: 0 2px 4px rgb(18 17 17 / 0.04), 0 24px 48px -16px rgb(18 17 17 / 0.18);
+  --glow: rgb(255 72 20 / 0.62);
+  --destructive-foreground: var(--color-red-700);
+}
+
+.dark {
+  /* Ink (dark). Dark chapters: #121111 / #0F0F0F, panels #171717. */
+  --vermilion: #ff4419;
+
+  --background: #0f0e0e;
+  --foreground: var(--paper);
+  --card: #171616;
+  --card-foreground: var(--paper);
+  --popover: #1b1a19;
+  --popover-foreground: var(--paper);
+  --primary: var(--vermilion);
+  --primary-foreground: #ffffff;
+  --secondary: var(--paper);
+  --secondary-foreground: var(--ink);
+  --muted: #211f1e;
+  --muted-foreground: rgb(255 250 245 / 0.6);
+  --accent: #262423;
+  --accent-foreground: var(--paper);
+  --border: rgb(255 255 255 / 0.08);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: rgb(255 68 25 / 0.5);
+
+  --success: #6fd23f;
+  --warning: #fda24a;
+  --destructive: #ff6a4d;
+  --pending: #9b7bf0;
+  --info: var(--pending);
+
+  --sidebar: #0f0e0e;
+  --sidebar-foreground: var(--paper);
+  --sidebar-accent: #211f1e;
+  --sidebar-accent-foreground: var(--paper);
+
+  --shadow-gloss-ink:
+    inset 0 2px 1px rgb(255 255 255 / 0.9), inset 0 0.6px 0.6px -1.25px rgb(255 255 255 / 1),
+    0 10px 20px -12px rgb(0 0 0 / 0.6);
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -12px rgb(0 0 0 / 0.6);
+  --shadow-float: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 24px 48px -16px rgb(0 0 0 / 0.7);
+  --glow: rgb(255 68 25 / 0.45);
+  --destructive-foreground: var(--color-red-400);
+}
+
+/* Candy fills: glossy two-stop gradients for chain, asset and state tiles. */
+@utility candy-violet {
+  background-image: linear-gradient(225deg, var(--candy-violet-from), var(--candy-violet-to));
+}
+@utility candy-red {
+  background-image: linear-gradient(225deg, var(--candy-red-from), var(--candy-red-to));
+}
+@utility candy-amber {
+  background-image: linear-gradient(225deg, var(--candy-amber-from), var(--candy-amber-to));
+}
+@utility candy-green {
+  background-image: linear-gradient(225deg, var(--candy-green-from), var(--candy-green-to));
+}
+@utility candy-vermilion {
+  background-image: linear-gradient(225deg, #ff5a2a, var(--vermilion));
+}
+@utility candy-ink {
+  background-image: linear-gradient(225deg, #3a3634, var(--ink));
+}
+
+/* Headlines: Figtree 500, −4% tracking, line-height 0.97. */
+@utility text-display {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(3rem, 2rem + 4.5vw, 5.5rem);
+  letter-spacing: -0.04em;
+  line-height: 0.97;
+}
+@utility text-title {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+/* Labels: mono, small, tracked, uppercase, softened. */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Balances: amounts set large in mono, with tabular figures. */
+@utility text-amount {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility shadow-gloss {
+  box-shadow: var(--shadow-gloss);
+}
+@utility shadow-gloss-ink {
+  box-shadow: var(--shadow-gloss-ink);
+}
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+@utility shadow-float {
+  box-shadow: var(--shadow-float);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  ::selection {
+    background: rgb(255 47 0 / 0.2);
+  }
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Headline words sharpen into place (a blur-in), in CSS so it runs before any JavaScript loads. */
+@keyframes blur-in-word {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(0.12em);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@utility animate-blur-in-word {
+  animation: blur-in-word 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* An auto-advancing tab's progress fill: a transform, so the GPU animates it. */
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@utility animate-progress-fill {
+  animation: progress-fill var(--progress-duration, 6s) linear both;
+  transform-origin: left;
+}
+
+/* Hero cards fan out from behind the phone: each card's resting place is its own
+   transform; the animation only supplies where it starts. Transforms and opacity only, so the GPU runs it. */
+@keyframes fan-out {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px) rotate(0deg) scale(0.94);
+  }
+}
+
+@utility animate-fan-out {
+  animation: fan-out 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* The phone rises into place. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(56px) scale(0.97);
+  }
+}
+
+@utility animate-rise {
+  animation: rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* A slow float for 3D objects (coins, tilted cards). */
+@keyframes drift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -12px;
+  }
+}
+
+@utility animate-drift {
+  animation: drift 7s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

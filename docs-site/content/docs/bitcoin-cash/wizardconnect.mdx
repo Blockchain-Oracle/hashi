@@ -1,0 +1,27 @@
+---
+title: WizardConnect
+description: "Bitcoin Cash's wallet protocol: one QR code or phone link connects an HD wallet, and every Cauldron trade and payment is signed inside it."
+icon: Link
+---
+
+<Logo name="wizardconnect.png" size={40} />
+
+**WizardConnect** connects a Bitcoin Cash HD wallet to a web app without the app ever seeing a key. Hashi uses the official library (`@wizardconnect/react`) under the name **Hashi**.
+
+<Shot src="/shots/wide/wizardconnect.webp" alt="The Connect a Bitcoin Cash wallet dialog: three steps, a QR code and the Selene, Paytaca, Cashonize and Electron Cash tiles" caption="Connecting: scan with Selene, Paytaca, Cashonize or Electron Cash." />
+
+## Connecting
+
+The wallet shares one public key per path (receive and change). From those Hashi derives your addresses and scans them through Electrum (gap limit 10), so it sees your BCH, PUSD and MUSD. The session is kept in your browser until you disconnect.
+
+## Signing
+
+| Hashi sends | Why |
+|---|---|
+| the unsigned transaction | Cauldron's Router build, or Hashi's own payment |
+| every input's source output | so the wallet can show and check exactly what it signs |
+| the paths of your own inputs only | pool inputs keep the Router's unlocking code |
+| a short prompt | e.g. "Swap your BCH for PUSD", "Send BCH to NEAR Intents" |
+| `broadcast: false` | Hashi broadcasts the signed transaction itself, through Electrum |
+
+Your wallet shows the transaction and asks you. Nothing is signed without your tap.

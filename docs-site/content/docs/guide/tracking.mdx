@@ -1,0 +1,40 @@
+---
+title: Tracking a swap
+description: "One tracker across both chains: each step with its explorer link and the time left, what to do next, and whether it is safe to close the tab."
+icon: Activity
+---
+
+The tracker opens when you press **Start swap** and runs the swap itself: it asks your wallet for the deposit, checks the bridge every 5 seconds, and asks for the Cauldron step when the BCH arrives.
+
+<Diagram name="into-bch" alt="Sequence for 50 USDC on Ethereum to PUSD: Hashi prices NEAR Intents, THORChain and Cauldron; you start; NEAR issues a deposit address; approval 1 sends 50 USDC; Hashi checks status every 5 seconds; NEAR sends BCH to your plain address; you press Swap the BCH into PUSD; Hashi builds the Cauldron trade; approval 2 signs it; PUSD arrives at your token address" caption="Into Bitcoin Cash, step by step (numbers from a live quote, 16 Nov 2026)." />
+
+## What it shows
+
+| Part | Words |
+|---|---|
+| Headline | **Approve the deposit** · **Send the BCH to NEAR Intents** (after a PUSD or MUSD sale) · **Bridging into Bitcoin Cash** · **One approval left** · **Swap complete** · **Refunded** · **The swap failed** · **Quote expired** |
+| Under it | whether you can close the tab, e.g. "Safe to close this tab: the bridge delivers on its own." |
+| Amounts | "You paid" and "You receive ≈ …" (the quote), then "You received …" (what arrived) |
+| The one action | **Approve the deposit in your Base wallet**, **Swap the BCH into PUSD**, or "Checking with NEAR Intents every few seconds…" |
+| **/ Across both chains** | each step with its chain, its time or the time left ("~2 min", "any moment"), and **View transaction** |
+| **/ What happened** | every event, with its time |
+| **Details for support** | the deposit address, THORChain memo, addresses, swap id and NEAR quote id |
+
+## The steps
+
+| Into Bitcoin Cash | Out of Bitcoin Cash |
+|---|---|
+| Deposit 50 USDC | Sell 20 PUSD on Cauldron (PUSD and MUSD only) |
+| NEAR Intents turns it into BCH | Send the BCH to THORChain |
+| BCH arrives in your wallet | THORChain turns it into USDC |
+| Swap into PUSD on Cauldron (PUSD and MUSD only) | USDC on Ethereum arrives |
+
+Explorer links go to the chain's own explorer, the NEAR Intents explorer for the deposit address, and thorchain.net for THORChain's inbound transaction.
+
+## Taking longer than usual
+
+Past one and a half times the estimate, the tracker says why: going in, the bridge waits for confirmations on the paying chain and refunds on its own if it cannot fill; coming out, Bitcoin Cash blocks come every 10 minutes on average, sometimes 20 or more, and the bridge starts once the deposit confirms.
+
+## The finish
+
+A finished swap plays a short chime and a buzz on phones that support it (when the swap was started in that same visit), and shows **Done in N min** with **Swap again**. A refund, failure or expired quote turns the stopped step red, gives the reason when there is one, and offers **Try again with a new quote**. If prices move past a floor mid-swap, the tracker offers **Continue at the new price** instead of asking your wallet ([When something goes wrong](/docs/routes/refunds)).

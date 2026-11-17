@@ -1,0 +1,37 @@
+---
+title: Activity and resuming
+description: "Every swap you start is saved in your browser after each step, so closing the tab loses nothing; Activity lists them and reopens any one."
+icon: ListRestart
+---
+
+<Phones>
+  <Phone src="/shots/phone/activity-empty.webp" alt="The Activity page on a phone with no swaps yet: filters All, In progress, Completed and Refunded, failed or expired, and a Start a swap button" caption="Activity, before the first swap." />
+</Phones>
+
+## Activity
+
+**Your swaps** lists every swap started in this browser, newest first: "10 USDC → ≈ 9.94 PUSD", the chains, the route, how long ago, and its status. Filters with counts: **All**, **In progress**, **Completed**, **Refunded, failed or expired**. Swaps still on their way are re-checked every 20 seconds while the page is open, and the **Activity** link in the bar shows how many are in progress.
+
+## Closing the tab
+
+Each step is saved in your browser (IndexedDB) before the next one starts. When you come back:
+
+| Where the swap was | What happens |
+|---|---|
+| bridging | it picks up on its own and keeps checking every 5 seconds |
+| waiting for your deposit | it waits for your click: **Approve the deposit in your … wallet** |
+| PUSD or MUSD sold, the BCH not sent yet | **Send the BCH to NEAR Intents** (or THORChain): the bridge is quoted then, for exactly the BCH the sale produced |
+| BCH arrived, PUSD or MUSD to come | **Swap the BCH into PUSD**: one approval in your Bitcoin Cash wallet |
+| its quote ran out before your first approval | it ends as **Expired**, with nothing sent |
+
+On the swap page, a banner points at the swap that needs you: "Your BCH arrived. Finish: swap it into PUSD", "PUSD sold: send the BCH on", "A swap is waiting for its deposit", or "A swap is on its way".
+
+<Callout title="Selling PUSD or MUSD back to USDC or USDT">
+That swap asks your Bitcoin Cash wallet twice: sell on Cauldron, then send the BCH to the bridge. The sale is saved the moment it is out, so stopping between the two is safe: the swap reopens at the send, and the bridge is quoted then for the BCH the sale produced.
+</Callout>
+
+## Quotes that run out
+
+A swap that has moved nothing ends as **Expired** once its quote runs out: NEAR Intents' deposit deadline, THORChain's quote expiry, or an hour for a swap that starts with a Cauldron trade. Hashi never pays into an expired quote. Before ending a NEAR Intents swap it asks NEAR whether a deposit arrived after all (say, the tab closed just after you approved), and follows that deposit instead.
+
+Swaps live only in the browser that started them; there is no account and nothing is stored on a server.

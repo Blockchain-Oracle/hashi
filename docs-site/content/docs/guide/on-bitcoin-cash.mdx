@@ -1,0 +1,28 @@
+---
+title: Swaps on Bitcoin Cash
+description: "PUSD ⇄ MUSD ⇄ BCH on Cauldron alone: one approval in your Bitcoin Cash wallet, about 15 seconds, no bridge."
+icon: Repeat
+---
+
+<Phones>
+  <Phone src="/shots/phone/swap-bch-pusd.webp" alt="The swap card on a phone: 0.05 BCH paying, 10.36 PUSD receiving, one route: Cauldron · no bridge, Best return, about 15 seconds, 1 approval" caption="0.05 BCH → 10.36 PUSD." />
+  <Phone src="/shots/phone/swap-pusd-musd.webp" alt="The swap card on a phone: 10 PUSD paying, 9.77 MUSD receiving, one route: Cauldron · no bridge, Best return" caption="10 PUSD → 9.77 MUSD (a later quote than the card below)." />
+</Phones>
+
+Pick two Bitcoin Cash tokens and the swap never leaves Bitcoin Cash: one Cauldron trade, built from your own coins, signed once in your Bitcoin Cash wallet. Only that wallet is needed.
+
+<Quote ask="10 PUSD → MUSD" at="16 Nov 2026, 23:41 UTC">
+  <RouteCard legs={["cauldron"]} best amount="9.74" symbol="MUSD" eta="~15 s" fees="$0.16" approvals={1} />
+</Quote>
+
+<Diagram name="on-bch" alt="Sequence for 10 PUSD to MUSD: Hashi prices PUSD to MUSD in one trade on Cauldron; you start; Hashi builds one trade from your PUSD and a little BCH for the miner fee; approval 1 signs it; Hashi broadcasts it through Electrum; 9.74 MUSD arrives at your token address" caption="One trade, one approval." />
+
+| Pair | How it is built | Fees |
+|---|---|---|
+| BCH → PUSD or MUSD | the amount is everything that leaves your wallet; the pools get what remains after the fees | Cauldron 0.1% and the miner fee, from the BCH |
+| PUSD or MUSD → BCH | your tokens are sold; the fees come out of the proceeds | Cauldron 0.1% and the miner fee, from the proceeds |
+| PUSD ⇄ MUSD | one trade through both tokens' pools | Cauldron 0.1% in the sold token, **on top**; the miner fee from a little plain BCH in your wallet |
+
+For PUSD ⇄ MUSD keep a little plain BCH in the wallet: about 0.00014 BCH for a trade across 54 pools. If it is short, the button says **Needs … BCH for the network fee**. **Max** leaves room for the 0.1% on top.
+
+**You get at least** is enforced: the trade is built with that floor, and it settles at the built price or not at all.

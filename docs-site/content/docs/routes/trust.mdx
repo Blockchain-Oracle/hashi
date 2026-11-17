@@ -1,0 +1,18 @@
+---
+title: Who holds the money
+description: "Hashi never holds your money. At every step it moves from your wallet straight to the service doing the work, or back to your own address."
+icon: ShieldCheck
+---
+
+| Step | From | To |
+|---|---|---|
+| Deposit, NEAR Intents | your EVM or Solana wallet | the deposit address NEAR Intents issued for this swap |
+| Deposit, gasless | your USDC, by your signed authorisation | the same NEAR deposit address; Hashi's relayer pays only the gas |
+| Deposit, THORChain | your wallet | THORChain's router, into the quote's vault |
+| Bridge payout, going in | NEAR Intents or THORChain | your plain Bitcoin Cash address (or a custom one, for plain BCH) |
+| Cauldron buy | your own coins | the tokens to your token-aware address, change to your plain address |
+| Cauldron sale, coming out | your tokens | the BCH to your own address |
+| Bitcoin Cash deposit, coming out | your Bitcoin Cash wallet | NEAR's deposit address or THORChain's vault |
+| Bridge payout, coming out | NEAR Intents or THORChain | your stablecoin address (or a custom one) |
+
+Your wallets approve every step that spends your money: the deposits and the Cauldron trades. Payouts come from the bridge, to your own addresses. Hashi has one server route, the [gas relayer](/docs/build/relayer), which pays Base gas and never touches the USDC. There is no account, no Hashi fee, and no database: your swaps are saved in your own browser.

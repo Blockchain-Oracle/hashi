@@ -1,0 +1,19 @@
+{
+  "title": "Routes and fees",
+  "description": "Every route, every fee, every chain",
+  "icon": "Route",
+  "root": true,
+  "pages": [
+    "index",
+    "chains-and-assets",
+    "---The providers---",
+    "near-intents",
+    "thorchain",
+    "cauldron",
+    "---The money---",
+    "pricing",
+    "timing-and-minimums",
+    "refunds",
+    "trust"
+  ]
+}

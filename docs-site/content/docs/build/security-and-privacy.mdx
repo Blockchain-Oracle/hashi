@@ -1,0 +1,39 @@
+---
+title: Security and privacy
+description: "What protects the page, what leaves your browser and to whom, and what Hashi keeps: only your own swaps, in your own browser."
+icon: Lock
+---
+
+## Headers
+
+| Header | Value |
+|---|---|
+| Content-Security-Policy | `default-src 'self'`; scripts from Hashi itself plus inline scripts (`'unsafe-inline'`, needed by Next.js's bootstrap) and WebAssembly for the Bitcoin Cash library; images from any https origin; connections to any https or wss origin (the providers are called directly); frames only for WalletConnect's verify page; `frame-ancestors 'none'`, `object-src 'none'` |
+| X-Frame-Options | `DENY` |
+| X-Content-Type-Options | `nosniff` |
+| Referrer-Policy | `strict-origin-when-cross-origin` |
+
+## What leaves your browser
+
+| To | What |
+|---|---|
+| NEAR Intents | tokens, amount, slippage, deadline; your addresses once wallets are connected (placeholder addresses before); your deposit transaction |
+| THORChain | tokens, amount, slippage, your destination once connected; your deposit transaction |
+| Cauldron Router | the trade, and for a build your own coins and addresses |
+| Electrum servers | your wallet's addresses, and the transactions you sign |
+| WizardConnect relays | the connection and sign requests between Hashi and your wallet |
+| Reown | wallet sessions; Solana balance reads |
+| Chain RPCs (AppKit's default transports) | your EVM address, for balances on 7 chains every 30 s; gas prices |
+| Hashi's relayer | a gasless USDC authorisation, only when you use it |
+
+AppKit's analytics are off. The landing page asks the providers from the server with placeholder addresses: no visitor data.
+
+## What Hashi keeps
+
+| Where | What |
+|---|---|
+| your browser's IndexedDB | your swaps (`hashi-swap:…`), with their addresses and the bridge's signed quote |
+| your browser's localStorage | your slippage, your theme, the WizardConnect session, and Reown AppKit's and wagmi's own connection keys |
+| the server | a rate-limit counter for the relayer, in memory |
+
+No accounts, no database, no analytics of Hashi's own.

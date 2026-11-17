@@ -1,0 +1,40 @@
+packages:
+  - apps/*
+
+# Native/binary builds are opt-in; anything not listed is denied.
+# esbuild is needed by Vitest. The rest came with Reown AppKit (2026-11-16): AppKit's postinstall is not needed (we
+# draw our own wallet UI), and bigint-buffer, bufferutil, keccak and utf-8-validate are optional native builds with
+# pure-JS fallbacks. Checked and denied.
+allowBuilds:
+  "@reown/appkit": false
+  bigint-buffer: false
+  bufferutil: false
+  esbuild: true
+  keccak: false
+  utf-8-validate: false
+
+# Supply-chain rule: only releases at least two weeks old (minutes). Exceptions are listed below with a reason.
+minimumReleaseAge: 20160
+saveExact: true
+
+minimumReleaseAgeExclude:
+  # WizardConnect is BLAZE's required BCH wallet connection; these releases (2026-11-12/13) are what wallets speak
+  # now. The price-rounds workspace exempts the same three versions.
+  - "@wizardconnect/core@0.2.10"
+  - "@wizardconnect/dapp@0.2.7"
+  - "@wizardconnect/react@0.2.6"
+
+# One place for versions shared by the root and the app. Packages reference these with "catalog:".
+catalog:
+  typescript: 6.0.3
+  "@types/node": ^24.19.2
+
+# AppKit's wagmi adapter asks for `@wagmi/connectors >=5.9.9`, which resolves to the wagmi 3 line (8.x) next to
+# wagmi 2. Reown's FAQ names this @wagmi/core vs @wagmi/connectors mismatch as a build breaker; pin the adapter to
+# the connectors wagmi 2.19.5 itself uses.
+#
+# Base Account (inside AppKit and wagmi's connectors) takes `@coinbase/cdp-sdk ^1.0.0`; 1.53+ statically imports the
+# optional `@x402/*` payment packages, which Turbopack cannot build without. 1.52.0 is the last release without them.
+overrides:
+  "@reown/appkit-adapter-wagmi>@wagmi/connectors": 6.2.0
+  "@coinbase/cdp-sdk": 1.52.0

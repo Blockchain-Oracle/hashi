@@ -1,0 +1,40 @@
+---
+title: Routes
+description: "Every route for your pair, priced end to end and ranked by what you keep after gas, with the reason when one can't run."
+icon: Route
+---
+
+<Quote ask="50 USDC on Ethereum → MUSD" at="16 Nov 2026, 23:37 UTC">
+  <RouteCard legs={["near", "cauldron"]} best amount="48.87" symbol="MUSD" eta="~3 min" fees="$0.50" approvals={2} />
+  <RouteCard legs={["thorchain", "cauldron"]} fastest amount="48.6" symbol="MUSD" eta="~45 s" fees="$0.77" approvals={3} />
+</Quote>
+
+<Quote ask="20 PUSD → USDC on Ethereum" at="16 Nov 2026, 23:38 UTC">
+  <RouteCard legs={["cauldron", "thorchain"]} best amount="19.5791" symbol="USDC" eta="~10 min" fees="$0.37" approvals={2} />
+  <RouteCard legs={["cauldron", "near"]} amount="19.4564" symbol="USDC" eta="~12 min" fees="$0.49" approvals={2} />
+</Quote>
+
+## What a row says
+
+- **The legs, in order.** "NEAR Intents → Cauldron" going in, "Cauldron → THORChain" coming out, "Cauldron · no bridge" on Bitcoin Cash.
+- **What arrives**, after the bridge's fee, Cauldron's fee, the miner fee and the price impact.
+- **Time** (~3 min), **fees in dollars** (gas to start included) and **approvals**.
+- **Best return** goes to what you keep after gas; **Fastest** appears only when a different route is quicker.
+
+The best return is preselected; tap any row to take it. The ring by **Live** drains over 15 seconds, then the quotes refresh.
+
+## When a route can't run
+
+| Pill | Means | Example |
+|---|---|---|
+| **Paused** | the bridge has halted trading on a chain on this route | "THORChain has paused Base trading" |
+| **Too small** | below the bridge's minimum, or too small for the network fees | "Below THORChain’s minimum for this route" |
+| **Not offered** | the bridge has no pool for this token | "THORChain has no USDC pool on Solana" |
+| **Low liquidity** | the price would move past your slippage, or Cauldron's pools can't fill the amount | "The price would move more than your slippage allows"; "Not enough Cauldron liquidity for this amount" |
+| **Unavailable** | the provider answered with an error | – |
+
+When a bridge reports its minimum, the row offers it in one tap: **Use 0.8124 USDC** in the capture below (THORChain's minimum).
+
+<Shot src="/shots/wide/swap-too-small.webp" alt="The swap screen with 0.5 USDC on Ethereum to PUSD: the NEAR Intents route priced, and THORChain listed below as too small" caption="0.5 USDC on Ethereum: NEAR Intents carries it; THORChain says why it can't." />
+
+[How every fee is counted →](/docs/routes/pricing)

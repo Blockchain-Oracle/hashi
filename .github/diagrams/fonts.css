@@ -1,0 +1,6 @@
+/* Figtree for the diagrams (the renderer's Chrome has no system copy). */
+@font-face { font-family: "Figtree"; font-weight: 400; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Regular.ttf"); }
+@font-face { font-family: "Figtree"; font-weight: 500 700; src: url("file:///Users/abu/dev/hackathon/hashi/docs-site/assets/fonts/Figtree-Medium.ttf"); }
+/* Step numbers on a vermilion dot, as on the system map. */
+[id$="sequencenumber"] circle { fill: #ff2f00 !important; stroke: none !important; }
+.sequenceNumber { fill: #ffffff !important; font-weight: 600; }

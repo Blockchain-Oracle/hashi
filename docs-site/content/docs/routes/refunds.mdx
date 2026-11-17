@@ -1,0 +1,21 @@
+---
+title: When something goes wrong
+description: "If the price moves past your slippage or a deposit is late, the bridge refunds it; a Cauldron trade simply doesn't happen. Every swap keeps its record."
+icon: LifeBuoy
+---
+
+| Where | What can happen | What you get |
+|---|---|---|
+| NEAR Intents | the price moves past your slippage, or the deposit misses its deadline | a refund to the refund address in the review: your stablecoin wallet going in, your plain BCH address coming out |
+| THORChain | the price moves past your slippage | a refund of the deposit minus THORChain's network fee: to your stablecoin wallet going in (its address rides in the memo); coming out, to the address of the deposit's first coin, which Hashi makes your receive address |
+| Cauldron | someone trades the same pools first, or the price would fall below the trade's floor (**You get at least**, or your slippage on a PUSD or MUSD sale) | nothing is signed: **Continue at the new price**, or wait and try again |
+| The quote | it runs out before your first approval | the swap ends as **Expired**; nothing was sent |
+| Your wallet | you decline | "You declined in your wallet. Nothing was sent." Selling PUSD or MUSD, if you decline the **second** prompt the sale has already happened: the BCH is in your wallet, and the swap, saved after the sale, asks only for the send next time |
+
+Selling PUSD or MUSD back to a stablecoin, the bridge refunds **BCH**: the PUSD or MUSD was already sold on Cauldron in the first approval.
+
+## In the tracker
+
+A refunded, failed or expired swap turns the stopped step red, adds a last step with the reason when there is one, and offers **Try again with a new quote** (**Start again with a fresh quote** when it expired).
+
+When prices move past a floor mid-swap (the Cauldron buy after the BCH lands, the sale of PUSD or MUSD, or the bridge quoted after that sale), the tracker says what the trade would give now and what you accepted, and offers **Continue at the new price**. Nothing is signed until you choose; the BCH waits in your wallet. **Details for support** keeps the deposit address, THORChain memo, both addresses, the swap id and NEAR's quote id: everything a provider asks for.

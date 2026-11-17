@@ -1,0 +1,33 @@
+---
+title: NEAR Intents
+description: "Solvers carry the dollars between chains. Hashi asks NEAR Intents' 1Click API for prices and deposit addresses, straight from your browser."
+icon: Zap
+---
+
+<Logo name="near" size={40} />
+
+NEAR Intents moves value across chains through a network of solvers. Hashi uses its **1Click** API (`1click.chaindefuser.com`) from your browser, with no key and no Hashi server in between. It carries all 14 stablecoins on all eight chains, to and from BCH.
+
+| Hashi asks | When |
+|---|---|
+| `GET /v0/tokens` | the token list and USD prices (BCH, the gas coins) |
+| `POST /v0/quote` (dry) | every route price, refreshed every 15 seconds |
+| `POST /v0/quote` (real) | **Start swap**: issues a deposit address for this swap |
+| `POST /v0/deposit/submit` | right after your deposit, to point the solvers at it |
+| `GET /v0/status` | every 5 seconds until the swap settles |
+
+## How a swap runs
+
+1. **Start swap** asks for a real quote (selling PUSD or MUSD, right after the sale, for the BCH it produced); NEAR Intents returns a **deposit address** that belongs to this swap alone. Hashi keeps the signed quote on the swap, as NEAR asks integrators to.
+2. Your wallet sends the exact amount to that address: one transfer on an EVM chain or Solana, or one Bitcoin Cash payment coming out.
+3. Solvers fill it. Going in, the BCH arrives at your plain Bitcoin Cash address (NEAR doesn't accept token-aware `z…` addresses, so PUSD and MUSD come from the Cauldron step).
+
+| Setting | Value |
+|---|---|
+| Swap type | exact input |
+| Deadline | 1 hour going in; 4 hours coming out (a Bitcoin Cash deposit has to confirm) |
+| Refunds go to | your paying address: the stablecoin wallet going in, your plain BCH address coming out |
+| Minimum | read from NEAR's answer and offered as **Use …** in one tap |
+| Hashi's fee | none (the quote carries a `hashi` referral label, no fee) |
+
+Status mapping: **PROCESSING** → bridging; **SUCCESS** → done (or "BCH arrived" when PUSD or MUSD is next); **REFUNDED** → refunded, with NEAR's reason; **FAILED** → failed.

@@ -1,0 +1,62 @@
+---
+title: Your first swap
+description: Pick what you pay and what you receive, read the routes, connect your two wallets and approve. Hashi does the rest.
+icon: Rocket
+---
+
+<Phones>
+  <Phone src="/shots/phone/swap-usdc-base-pusd.webp" alt="The swap card on a phone: 100 USDC on Base paying, 99.37 PUSD receiving, the NEAR Intents → Cauldron route marked Best return" caption="1 · Amount and routes" eager />
+  <Phone src="/shots/phone/swap-bch-pusd.webp" alt="The swap card on a phone: 0.05 BCH paying, 10.36 PUSD receiving, Cauldron · no bridge" caption="2 · Or stay on Bitcoin Cash" eager />
+  <Phone src="/shots/phone/swap-usdc-eth-musd.webp" alt="The swap card on a phone: 50 USDC on Ethereum paying, 49.06 MUSD receiving, NEAR Intents → Cauldron marked Best return" caption="3 · The best route, preselected" eager />
+</Phones>
+
+<Steps>
+<Step>
+
+### Pick what you pay and what you receive
+
+Open **Swap**. The card starts on **USDC on Base → PUSD**. Tap either token to open the picker: search by name or chain, or use a quick pick. A shared link like `/swap?from=USDC.ethereum&to=MUSD&amount=50` opens the same swap.
+
+</Step>
+<Step>
+
+### Type an amount
+
+Prices appear from the first keystroke, before any wallet is connected. Every route shows what arrives **after every fee**, how long it takes, the fees in dollars and how many approvals it needs. The best return is chosen for you; tap another row to take it instead.
+
+</Step>
+<Step>
+
+### Connect your wallets
+
+The big button asks for what is missing, one thing at a time: **Connect an EVM wallet** (or **a Solana wallet**) for USDC and USDT, and **Connect a Bitcoin Cash wallet** for PUSD, MUSD and BCH. A swap that stays on Bitcoin Cash needs only the Bitcoin Cash wallet. [Wallets →](/docs/guide/wallets)
+
+</Step>
+<Step>
+
+### Review
+
+**Review swap** shows the rate, the least you can receive, the arrival time, every fee in dollars, the approvals each wallet will see and both addresses. Nothing moves until you approve in your wallet. [The review →](/docs/guide/review)
+
+</Step>
+<Step>
+
+### Start, approve, done
+
+**Start swap** opens the tracker, which asks your wallet for the deposit at once. While the bridge works you can close the tab. Swapping into PUSD or MUSD, you come back for one more approval that turns the arrived BCH into PUSD or MUSD on Cauldron. [Tracking →](/docs/guide/tracking)
+
+</Step>
+</Steps>
+
+## How many approvals
+
+| Swap | Your stablecoin wallet | Your Bitcoin Cash wallet |
+|---|---|---|
+| USDC/USDT → BCH, through NEAR Intents | 1 transfer | – |
+| USDC/USDT → PUSD or MUSD, through NEAR Intents | 1 transfer | 1 (the Cauldron swap) |
+| Through THORChain, into Bitcoin Cash | 2 (allow, then deposit) | +1 for PUSD or MUSD |
+| BCH → USDC/USDT | – | 1 |
+| PUSD or MUSD → USDC/USDT | – | 2 (sell on Cauldron, then send the BCH; the sale is saved in between) |
+| PUSD ⇄ MUSD ⇄ BCH | – | 1 |
+
+Hashi skips THORChain's "allow" step when your wallet has already allowed enough; the route still counts it, so you may see one prompt fewer than it says.

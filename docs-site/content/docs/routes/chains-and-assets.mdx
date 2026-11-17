@@ -1,0 +1,34 @@
+---
+title: Chains and assets
+description: "Fourteen stablecoins on eight chains, three tokens on Bitcoin Cash, and which bridge carries each one."
+icon: Table
+---
+
+## Stablecoins
+
+| Chain | USDC | USDT | Bridges |
+|---|---|---|---|
+| <Logo name="base" /> Base | ✓ | – | NEAR Intents, THORChain (USDC) |
+| <Logo name="ethereum" /> Ethereum | ✓ | ✓ | NEAR Intents, THORChain |
+| <Logo name="arbitrum" /> Arbitrum | ✓ | – | NEAR Intents |
+| <Logo name="optimism" /> Optimism | ✓ | ✓ | NEAR Intents |
+| <Logo name="polygon" /> Polygon | ✓ | ✓ | NEAR Intents |
+| <Logo name="avalanche" /> Avalanche | ✓ | ✓ | NEAR Intents, THORChain |
+| <Logo name="bsc" /> BNB Chain | ✓ | ✓ | NEAR Intents, THORChain |
+| <Logo name="solana" /> Solana | ✓ | ✓ | NEAR Intents |
+
+USDC and USDT on BNB Chain use 18 decimals; everywhere else, 6. The token lists of both bridges were read live on 16 November 2026, and their contract addresses agree.
+
+## Bitcoin Cash
+
+| Token | Name | Decimals | CashTokens category |
+|---|---|---|---|
+| <Logo name="pusd.svg" /> **PUSD** | ParyonUSD | 2 | `2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544` |
+| <Logo name="musd.png" /> **MUSD** | MoriaUSD | 2 | `b38a33f750f84c5c169a6f23cb873e6e79605021585d4f3408789689ed87f366` |
+| <Logo name="bch" /> **BCH** | Bitcoin Cash | 8 | the native coin |
+
+PUSD and MUSD trade only on Cauldron, so a route into or out of them always has a Cauldron leg. [PUSD and MUSD →](/docs/bitcoin-cash/pusd-and-musd)
+
+## Every pair
+
+14 stablecoins × 3 Bitcoin Cash tokens × 2 directions = **84 bridged pairs**: NEAR Intents carries all 84, THORChain 42. Plus **6 pairs on Bitcoin Cash** (PUSD, MUSD and BCH with each other) on Cauldron alone.

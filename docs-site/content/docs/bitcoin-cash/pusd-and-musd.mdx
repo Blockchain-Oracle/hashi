@@ -1,0 +1,27 @@
+---
+title: PUSD and MUSD
+description: "Two dollar tokens native to Bitcoin Cash, both backed by BCH collateral, both traded on Cauldron, both reachable from eight chains through Hashi."
+icon: CircleDollarSign
+---
+
+<div className="not-prose my-6 grid gap-3 sm:grid-cols-2">
+<div className="flex items-center gap-3 rounded-2xl border border-fd-border bg-fd-card p-4"><Logo name="pusd.svg" size={40} /><div><p className="font-medium">PUSD · ParyonUSD</p><p className="text-sm text-fd-muted-foreground">paryonusd.com</p></div></div>
+<div className="flex items-center gap-3 rounded-2xl border border-fd-border bg-fd-card p-4"><Logo name="musd.png" size={40} /><div><p className="font-medium">MUSD · MoriaUSD</p><p className="text-sm text-fd-muted-foreground">moria.money</p></div></div>
+</div>
+
+| | PUSD | MUSD |
+|---|---|---|
+| What it is | a dollar token borrowed against BCH: "create a PUSD loan by putting up BCH as collateral" ([ParyonUSD docs](https://paryonusd.com)) | "a decentralized borrowing protocol that lets users deposit BCH as collateral, and mint the stablecoin MUSD" ([Moria docs](https://docs.moria.money/general/)) |
+| CashTokens category | `2469acc5…a02544` | `b38a33f7…87f366` |
+| Decimals | 2 (0.01 is the smallest unit) | 2 |
+| Where it trades | Cauldron pools | Cauldron pools |
+
+ParyonUSD sponsors BCH BLAZE 2026, and PUSD is the token Hashi starts on.
+
+## Through Hashi
+
+- **In**: USDC or USDT on eight chains → PUSD or MUSD. A bridge delivers BCH; one Cauldron trade turns it into the token.
+- **Out**: PUSD or MUSD → USDC or USDT on eight chains. One Cauldron sale, then the BCH goes to the bridge.
+- **On Bitcoin Cash**: PUSD ⇄ MUSD ⇄ BCH in one Cauldron trade.
+
+Their dollar values in Hashi come from Cauldron's own pre-trade price for each token, times the live BCH price: never an assumed $1.

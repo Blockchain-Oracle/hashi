@@ -1,0 +1,32 @@
+---
+title: The review
+description: "The last look before any wallet is asked: the rate, the least you receive, every fee in dollars, the approvals per wallet and both addresses."
+icon: ListChecks
+---
+
+<div className="grid gap-4 sm:grid-cols-2">
+<Sheet src="/shots/wide/review-bridge.webp" alt="Review swap for 50 USDC on Ethereum → 49.80 PUSD through NEAR Intents → Cauldron: rate, at least 48.8 PUSD at 1.00% slippage, about 3 minutes, fees $0.15 NEAR Intents, $0.21 Cauldron swap, $0.01 Ethereum network fee, total $0.38, approvals and addresses" caption="A bridged swap, live quote of 17 Nov 2026, 00:54 UTC. Shown with example addresses (and, on this test page, a Start button that never starts); yours shows your own wallets." />
+<Sheet src="/shots/wide/review-local.webp" alt="Review swap for 10 PUSD → 9.74 MUSD on Cauldron alone: at least 9.64 MUSD, about 15 seconds, Cauldron swap $0.16, one approval in the Bitcoin Cash wallet" caption="A swap on Bitcoin Cash: one approval, no refund address (the trade happens or it doesn't)." />
+</div>
+
+**Review swap** opens from the big button. Its numbers keep refreshing while it is open.
+
+| Row | What it shows |
+|---|---|
+| **You pay / You receive** | both amounts, in dollars too, and the route's legs between them |
+| **Rate** | e.g. "1 USDC = 0.9966 PUSD" |
+| **You get at least** | the least the whole swap gives at your slippage, e.g. "48.8 PUSD · 1.00% slippage"; with a Cauldron leg, that leg's slippage counts too. Every Cauldron trade is built with a floor: on Bitcoin Cash, this number; into PUSD or MUSD, the buy after the BCH lands is built with this number; selling PUSD or MUSD, the sale is held to your slippage and the bridge, quoted after it, must still pay at least this. If prices move past a floor, nothing is signed and the tracker offers **Continue at the new price** |
+| **Arrives in** | the route's estimate |
+| **Fees** | the bridge, the Cauldron swap and the network fee, each in dollars (the gas amount too), then **Total** |
+| **Approvals** | per wallet, e.g. "1 approval in your Ethereum wallet, 1 approval in your Bitcoin Cash wallet" |
+| **From / To / Refunds go to** | the addresses, each with a copy button. For NEAR Intents the refund address is sent with the quote; for THORChain going in, it rides in the memo. Coming out, a Bitcoin Cash memo has no room for one, so THORChain refunds to the address of the deposit's first coin: Hashi puts a coin from the receive address shown here first (when that address holds plain BCH, as it does after a PUSD or MUSD sale) |
+
+The note at the bottom says what happens if the price moves:
+
+| Route | Note |
+|---|---|
+| NEAR Intents | "If the price moves past your slippage or the deposit is late, NEAR Intents refunds it to the refund address." |
+| THORChain | "If the price moves past your slippage, THORChain refunds the deposit to the refund address, minus its network fee." (coming out, the deposit's first coin; see above) |
+| Cauldron only | "Cauldron settles in one Bitcoin Cash transaction, at the built price or not at all: if the pools move past your slippage first, nothing leaves your wallet." |
+
+**Start swap** asks the bridge for a real quote (NEAR Intents issues a deposit address for this swap; THORChain names its vault and memo; selling PUSD or MUSD, the bridge is asked right after the sale instead, for the BCH it produced), saves the swap in your browser and opens the tracker. Nothing has moved yet: the tracker asks your wallet next.

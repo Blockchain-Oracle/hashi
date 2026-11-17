@@ -25,7 +25,7 @@ Hashi is a bridge between the stablecoins of the big chains and Bitcoin Cash's o
 
 Built for **BCH BLAZE 2026 · Stablecoin Bridge bounty**. Jump to [how Hashi meets the hackathon](#how-hashi-meets-the-hackathon).
 
-*Hashi* (橋) is Japanese for bridge. Its mark is the arched drum bridge of Japanese gardens, lacquered vermilion.
+_Hashi_ (橋) is Japanese for bridge. Its mark is the arched drum bridge of Japanese gardens, lacquered vermilion.
 
 ## The problem
 
@@ -46,10 +46,10 @@ Hashi joins the two ends. You pick an amount, see every route priced end to end 
 
 **A real quote.** Asking for 50 USDC on Ethereum → MUSD on 17 November 2026 at 00:21 UTC gave two routes:
 
-| Route | You receive | Time | Fees | Approvals |
-|---|---|---|---|---|
+| Route                                     | You receive    | Time        | Fees  | Approvals                                                       |
+| ----------------------------------------- | -------------- | ----------- | ----- | --------------------------------------------------------------- |
 | NEAR Intents → Cauldron · **Best return** | **48.89 MUSD** | about 3 min | $0.50 | 2: one in your Ethereum wallet, one in your Bitcoin Cash wallet |
-| THORChain → Cauldron · **Fastest** | 48.69 MUSD | about 45 s | $0.70 | 3: allow, deposit, then the Cauldron swap |
+| THORChain → Cauldron · **Fastest**        | 48.69 MUSD     | about 45 s  | $0.70 | 3: allow, deposit, then the Cauldron swap                       |
 
 <p align="center">
   <picture>
@@ -105,34 +105,34 @@ The cover opens the same swap on the live app. The recorded walkthrough will be 
 
 ### Built on
 
-| Piece | What it does in Hashi | Where in the code |
-|---|---|---|
-| [NEAR Intents](https://near-intents.org) (1Click API) | Quotes, deposit addresses and status on all eight chains | [`lib/providers/near.ts`](apps/web/lib/providers/near.ts) |
-| [THORChain](https://thorchain.org) | Quotes, vaults and memos, halts, status; the Bitcoin Cash deposit is built to its rules | [`lib/providers/thorchain.ts`](apps/web/lib/providers/thorchain.ts), [`lib/bch/tx.ts`](apps/web/lib/bch/tx.ts) |
-| [Cauldron](https://cauldron.quest) Router and indexer | PUSD, MUSD and BCH trades built from your own coins; live liquidity on the landing page | [`lib/providers/cauldron.ts`](apps/web/lib/providers/cauldron.ts), [`lib/bch/cauldron-trade.ts`](apps/web/lib/bch/cauldron-trade.ts) |
-| [WizardConnect](https://docs.riftenlabs.com/wizardconnect) | Connects Selene, Paytaca, Cashonize or Electron Cash, and signs every Bitcoin Cash transaction | [`features/wallets/bch-wallet.tsx`](apps/web/features/wallets/bch-wallet.tsx), [`lib/bch/sign.ts`](apps/web/lib/bch/sign.ts) |
-| [Reown AppKit](https://reown.com/appkit) (WalletConnect) | EVM and Solana wallets: transfers, THORChain deposits, gasless signatures | [`features/wallets/evm-wallet.tsx`](apps/web/features/wallets/evm-wallet.tsx), [`lib/evm/`](apps/web/lib/evm) |
-| [ParyonUSD](https://paryonusd.com) and [Moria](https://moria.money) | PUSD and MUSD, the Bitcoin Cash dollars | [`lib/constants/assets.ts`](apps/web/lib/constants/assets.ts) |
-| Electrum (Fulcrum servers) | Your coins with their tokens, live, and every broadcast | [`lib/bch/electrum.ts`](apps/web/lib/bch/electrum.ts) |
+| Piece                                                               | What it does in Hashi                                                                          | Where in the code                                                                                                                    |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| [NEAR Intents](https://near-intents.org) (1Click API)               | Quotes, deposit addresses and status on all eight chains                                       | [`lib/providers/near.ts`](apps/web/lib/providers/near.ts)                                                                            |
+| [THORChain](https://thorchain.org)                                  | Quotes, vaults and memos, halts, status; the Bitcoin Cash deposit is built to its rules        | [`lib/providers/thorchain.ts`](apps/web/lib/providers/thorchain.ts), [`lib/bch/tx.ts`](apps/web/lib/bch/tx.ts)                       |
+| [Cauldron](https://cauldron.quest) Router and indexer               | PUSD, MUSD and BCH trades built from your own coins; live liquidity on the landing page        | [`lib/providers/cauldron.ts`](apps/web/lib/providers/cauldron.ts), [`lib/bch/cauldron-trade.ts`](apps/web/lib/bch/cauldron-trade.ts) |
+| [WizardConnect](https://docs.riftenlabs.com/wizardconnect)          | Connects Selene, Paytaca, Cashonize or Electron Cash, and signs every Bitcoin Cash transaction | [`features/wallets/bch-wallet.tsx`](apps/web/features/wallets/bch-wallet.tsx), [`lib/bch/sign.ts`](apps/web/lib/bch/sign.ts)         |
+| [Reown AppKit](https://reown.com/appkit) (WalletConnect)            | EVM and Solana wallets: transfers, THORChain deposits, gasless signatures                      | [`features/wallets/evm-wallet.tsx`](apps/web/features/wallets/evm-wallet.tsx), [`lib/evm/`](apps/web/lib/evm)                        |
+| [ParyonUSD](https://paryonusd.com) and [Moria](https://moria.money) | PUSD and MUSD, the Bitcoin Cash dollars                                                        | [`lib/constants/assets.ts`](apps/web/lib/constants/assets.ts)                                                                        |
+| Electrum (Fulcrum servers)                                          | Your coins with their tokens, live, and every broadcast                                        | [`lib/bch/electrum.ts`](apps/web/lib/bch/electrum.ts)                                                                                |
 
 ## How Hashi meets the hackathon
 
-The bounty, in the organiser's words: *"Build a project that allows users to bridge or swap stablecoins into & out of BCH - Ie. to be able to convert stablecoins on other chains to BCH stablecoins (eg USDC on ETH into PUSD on BCH)"*.
+The bounty, in the organiser's words: _"Build a project that allows users to bridge or swap stablecoins into & out of BCH - Ie. to be able to convert stablecoins on other chains to BCH stablecoins (eg USDC on ETH into PUSD on BCH)"_.
 
-| Requirement (verbatim) | How Hashi meets it | Check it |
-|---|---|---|
-| "convert stablecoins on other chains to BCH stablecoins (eg USDC on ETH into PUSD on BCH)" | USDC or USDT on eight chains → PUSD, MUSD or BCH, through NEAR Intents or THORChain, then Cauldron | [the app](http://hashi.84.46.247.92.sslip.io/swap?from=USDC.ethereum&to=PUSD&amount=50), [`lib/engine/quote.ts`](apps/web/lib/engine/quote.ts) |
-| "And vice-versa, BCH stables to other-chain stables (eg PUSD on BCH into USDC on ETH)" | PUSD, MUSD or BCH → USDC or USDT on any of the eight chains | [the app](http://hashi.84.46.247.92.sslip.io/swap?from=PUSD&to=USDC.ethereum&amount=20), [`lib/engine/runner.ts`](apps/web/lib/engine/runner.ts) |
-| "from BCH stables to multiple/any other ecosystems would be even better" | Eight chains: seven EVM chains and Solana, 14 stablecoins | [Chains and assets](http://docs.hashi.84.46.247.92.sslip.io/docs/routes/chains-and-assets) |
-| "The faster, cheaper, and easier to use the bridge is - the better." | Routes ranked by what you keep after every fee, with the fastest marked; one screen; gasless USDC on Base; a closed tab resumes where it stopped | [How a route is priced](http://docs.hashi.84.46.247.92.sslip.io/docs/routes/pricing) |
-| "On the BCH side, WizardConnect is highly recommended." | Every Bitcoin Cash transaction is signed over WizardConnect | [`features/wallets/bch-wallet.tsx`](apps/web/features/wallets/bch-wallet.tsx) |
-| "On the other chain side, WalletConnect is probably essential" | Reown AppKit (WalletConnect and browser wallets) for EVM chains and Solana | [`features/wallets/evm-wallet.tsx`](apps/web/features/wallets/evm-wallet.tsx) |
-| Stretch: "supporting multiple would be better" | PUSD and MUSD, plus BCH itself | [PUSD and MUSD](http://docs.hashi.84.46.247.92.sslip.io/docs/bitcoin-cash/pusd-and-musd) |
-| Stretch: "route through large popular and existing multicoin providers like ShapeShift, ThorChain etc." | THORChain and NEAR Intents side by side, priced against each other | [Every route](http://docs.hashi.84.46.247.92.sslip.io/docs/routes) |
-| "ParyonUSD is sponsoring BLAZE this year, so they are an excellent choice for first priority integration & demo purposes." | PUSD is the default destination | [the app](http://hashi.84.46.247.92.sslip.io/swap) |
-| "Must have WizardConnect or XO Template integration" | WizardConnect | above |
-| "Must be able to make BCH mainnet transactions" | Every swap into PUSD or MUSD, every sale and every swap on Bitcoin Cash is a mainnet transaction you sign | [`lib/bch/sign.ts`](apps/web/lib/bch/sign.ts) |
-| "Must have a banner with" the Widget Factory deck, the repository and a CashTokens address | The top of the [home page](http://hashi.84.46.247.92.sslip.io) | [`components/shell/blaze-banner.tsx`](apps/web/components/shell/blaze-banner.tsx) |
+| Requirement (verbatim)                                                                                                     | How Hashi meets it                                                                                                                               | Check it                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| "convert stablecoins on other chains to BCH stablecoins (eg USDC on ETH into PUSD on BCH)"                                 | USDC or USDT on eight chains → PUSD, MUSD or BCH, through NEAR Intents or THORChain, then Cauldron                                               | [the app](http://hashi.84.46.247.92.sslip.io/swap?from=USDC.ethereum&to=PUSD&amount=50), [`lib/engine/quote.ts`](apps/web/lib/engine/quote.ts)   |
+| "And vice-versa, BCH stables to other-chain stables (eg PUSD on BCH into USDC on ETH)"                                     | PUSD, MUSD or BCH → USDC or USDT on any of the eight chains                                                                                      | [the app](http://hashi.84.46.247.92.sslip.io/swap?from=PUSD&to=USDC.ethereum&amount=20), [`lib/engine/runner.ts`](apps/web/lib/engine/runner.ts) |
+| "from BCH stables to multiple/any other ecosystems would be even better"                                                   | Eight chains: seven EVM chains and Solana, 14 stablecoins                                                                                        | [Chains and assets](http://docs.hashi.84.46.247.92.sslip.io/docs/routes/chains-and-assets)                                                       |
+| "The faster, cheaper, and easier to use the bridge is - the better."                                                       | Routes ranked by what you keep after every fee, with the fastest marked; one screen; gasless USDC on Base; a closed tab resumes where it stopped | [How a route is priced](http://docs.hashi.84.46.247.92.sslip.io/docs/routes/pricing)                                                             |
+| "On the BCH side, WizardConnect is highly recommended."                                                                    | Every Bitcoin Cash transaction is signed over WizardConnect                                                                                      | [`features/wallets/bch-wallet.tsx`](apps/web/features/wallets/bch-wallet.tsx)                                                                    |
+| "On the other chain side, WalletConnect is probably essential"                                                             | Reown AppKit (WalletConnect and browser wallets) for EVM chains and Solana                                                                       | [`features/wallets/evm-wallet.tsx`](apps/web/features/wallets/evm-wallet.tsx)                                                                    |
+| Stretch: "supporting multiple would be better"                                                                             | PUSD and MUSD, plus BCH itself                                                                                                                   | [PUSD and MUSD](http://docs.hashi.84.46.247.92.sslip.io/docs/bitcoin-cash/pusd-and-musd)                                                         |
+| Stretch: "route through large popular and existing multicoin providers like ShapeShift, ThorChain etc."                    | THORChain and NEAR Intents side by side, priced against each other                                                                               | [Every route](http://docs.hashi.84.46.247.92.sslip.io/docs/routes)                                                                               |
+| "ParyonUSD is sponsoring BLAZE this year, so they are an excellent choice for first priority integration & demo purposes." | PUSD is the default destination                                                                                                                  | [the app](http://hashi.84.46.247.92.sslip.io/swap)                                                                                               |
+| "Must have WizardConnect or XO Template integration"                                                                       | WizardConnect                                                                                                                                    | above                                                                                                                                            |
+| "Must be able to make BCH mainnet transactions"                                                                            | Every swap into PUSD or MUSD, every sale and every swap on Bitcoin Cash is a mainnet transaction you sign                                        | [`lib/bch/sign.ts`](apps/web/lib/bch/sign.ts)                                                                                                    |
+| "Must have a banner with" the Widget Factory deck, the repository and a CashTokens address                                 | The top of the [home page](http://hashi.84.46.247.92.sslip.io)                                                                                   | [`components/shell/blaze-banner.tsx`](apps/web/components/shell/blaze-banner.tsx)                                                                |
 
 The docs walk through [the bounty line by line](http://docs.hashi.84.46.247.92.sslip.io/docs/build/bounty).
 

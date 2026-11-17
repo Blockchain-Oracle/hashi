@@ -44,7 +44,9 @@ const config: NextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-Frame-Options', value: 'DENY' },
           // Production is HTTPS only (Coolify's proxy holds the certificate); tell browsers to keep it that way.
-          ...(dev ? [] : [{ key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' }]),
+          ...(dev
+            ? []
+            : [{ key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' }]),
         ],
       },
     ]

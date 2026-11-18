@@ -25,9 +25,9 @@ Bring USDC or USDT from eight chains to Bitcoin Cash as PUSD, MUSD or BCH, and b
 
 | Field                       | Link                                                                                                 |
 | --------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Project website / live demo | http://hashi.84.46.247.92.sslip.io (becomes https://hashi.cash)                                      |
+| Project website / live demo | https://hashi.cash                                                                                   |
 | GitHub                      | https://github.com/Blockchain-Oracle/hashi                                                           |
-| Docs                        | http://docs.hashi.84.46.247.92.sslip.io (becomes https://docs.hashi.cash)                            |
+| Docs                        | https://docs.hashi.cash                                                                              |
 | Demo video                  | the YouTube link, once recorded                                                                      |
 | Widget Factory deck         | https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing |
 
@@ -46,11 +46,11 @@ Paste [story.md](story.md). Upload these images where it says so, in this order:
 | Required                                    | Status                                                                                                                   |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Registered and submitted on DoraHacks       | to do by the team                                                                                                        |
-| A live demo anyone can open                 | live at a temporary HTTP address; wallets connect once https://hashi.cash is registered                                  |
+| A live demo anyone can open                 | done: https://hashi.cash, over HTTPS                                                                                     |
 | The app can make a BCH mainnet transaction  | built; no swap recorded on mainnet yet                                                                                   |
 | WizardConnect integration                   | done                                                                                                                     |
 | Banner: Widget Factory deck                 | done                                                                                                                     |
-| Banner: repository link                     | done (public once the repository goes public)                                                                            |
+| Banner: repository link                     | done (public)                                                                                                            |
 | Banner: CashTokens address                  | done: `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`, with its QR code, in the banner, the README and the deck |
 | Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                                                        |
 | Roll call                                   | closed before the team joined (low-priority queue, not disqualification)                                                 |

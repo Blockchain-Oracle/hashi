@@ -8,7 +8,7 @@ Hashi is a bridge between the stablecoins of the big chains and Bitcoin Cash's o
 
 Built for the BCH BLAZE 2026 Stablecoin Bridge bounty. _Hashi_ (橋) is Japanese for bridge.
 
-**Try it:** http://hashi.84.46.247.92.sslip.io · **Docs:** http://docs.hashi.84.46.247.92.sslip.io · **Code:** https://github.com/Blockchain-Oracle/hashi
+**Try it:** https://hashi.cash · **Docs:** https://docs.hashi.cash · **Code:** https://github.com/Blockchain-Oracle/hashi
 
 **Widget Factory deck:** https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing · **CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`
 
@@ -63,7 +63,7 @@ With the NEAR Intents route, you approve one USDC transfer. NEAR Intents deliver
 - Stretch, _"route through large popular and existing multicoin providers like ShapeShift, ThorChain etc."_: THORChain and NEAR Intents side by side, priced against each other.
 - _"ParyonUSD ... first priority integration & demo purposes"_: PUSD is the default destination.
 
-The docs walk through the bounty line by line: http://docs.hashi.84.46.247.92.sslip.io/docs/build/bounty
+The docs walk through the bounty line by line: https://docs.hashi.cash/docs/build/bounty
 
 ## Also in Hashi
 
@@ -76,7 +76,6 @@ The docs walk through the bounty line by line: http://docs.hashi.84.46.247.92.ss
 ## Honest limits
 
 - No swap has been completed end to end on mainnet yet. The quotes, deposit addresses and unsigned Cauldron builds are live. Every wallet step is built and checked in code, but waits for its first funded run.
-- The live address is temporary and plain HTTP until hashi.cash is registered, and wallets connect only over HTTPS.
 - Selling PUSD or MUSD takes two approvals (sell, then send).
 - Gasless deposits are off until the relayer holds a little Base ETH.
 - Each bridge holds the money while it carries it, for seconds to minutes.

@@ -45,18 +45,25 @@ export async function signRouterBuild(
     return [i, owner.path, owner.index]
   })
 
-  const response = await manager.signTransaction(
-    {
-      transaction: {
-        transaction: build.unsigned_tx_hex,
-        sourceOutputs,
-        broadcast: false,
-        userPrompt: prompt,
+  const response = await manager
+    .signTransaction(
+      {
+        transaction: {
+          transaction: build.unsigned_tx_hex,
+          sourceOutputs,
+          broadcast: false,
+          userPrompt: prompt,
+        },
+        inputPaths,
       },
-      inputPaths,
-    },
-    signal ? { signal } : undefined,
-  )
+      signal ? { signal } : undefined,
+    )
+    .catch((cause: unknown) => {
+      // Right after a refresh the stored session's relay is still coming back: say what to do, not the library's words.
+      if (cause instanceof Error && /not connected/i.test(cause.message))
+        throw new Error('Reconnecting to your wallet. Open it, then try again.')
+      throw cause
+    })
   if (response.error) throw new Error(response.error)
   return response.signedTransaction
 }

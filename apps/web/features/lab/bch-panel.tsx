@@ -33,10 +33,10 @@ function stamp() {
 
 /** Connect the Bitcoin Cash wallet and see what it holds. */
 export function BchWalletCard() {
-  const { wc, scan } = useBchWallet()
+  const { wc, paired, scan } = useBchWallet()
   const [copied, setCopied] = useState(false)
 
-  if (wc.state !== 'connected') {
+  if (!paired) {
     const waiting = wc.state === 'connecting' || wc.state === 'reconnecting'
     return (
       <div className="flex flex-col items-start gap-5 rounded-3xl border border-border bg-card p-6 shadow-card">
@@ -157,14 +157,14 @@ type Phase =
  * Router build the transaction, asks the wallet to sign it, and broadcasts it over Electrum.
  */
 export function CauldronTradePanel({ onLog }: { onLog: (entry: LogEntry) => void }) {
-  const { wc, scan } = useBchWallet()
+  const { wc, paired, scan } = useBchWallet()
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
   const [asset, setAsset] = useState<'PUSD' | 'MUSD'>('PUSD')
   const [text, setText] = useState('1')
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' })
   const log = (step: string, detail: string) => onLog({ at: stamp(), step, detail })
 
-  const connected = wc.state === 'connected' && wc.manager && scan.data
+  const connected = paired && wc.manager && scan.data
   const receive = scan.data?.addresses.find((a) => a.path === 'receive')
 
   async function build() {

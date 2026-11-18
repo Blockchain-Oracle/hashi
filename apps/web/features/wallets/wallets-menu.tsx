@@ -17,8 +17,9 @@ import { useEvmWallet } from './evm-wallet'
  */
 export function WalletsMenu() {
   const evm = useEvmWallet()
-  const { wc, receive, openConnect } = useBchWallet()
-  const bchConnected = wc.state === 'connected'
+  const { wc, paired, receive, openConnect } = useBchWallet()
+  // Paired includes a session restored after a refresh, whose relay is still reconnecting.
+  const bchConnected = paired
   const logos = [
     evm.evmAddress ? 'ethereum' : null,
     evm.solanaAddress ? 'solana' : null,
@@ -81,7 +82,7 @@ export function WalletsMenu() {
             name={wc.walletName ?? 'Bitcoin Cash wallet'}
             hint="WizardConnect: Selene, Paytaca, Cashonize"
             address={bchConnected ? receive?.token : undefined}
-            pending={wc.state === 'connecting' || wc.state === 'reconnecting'}
+            pending={!paired && (wc.state === 'connecting' || wc.state === 'reconnecting')}
             onConnect={openConnect}
             onDisconnect={() => void wc.disconnect()}
           />

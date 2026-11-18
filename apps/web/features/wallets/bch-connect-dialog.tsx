@@ -30,16 +30,20 @@ const WALLETS = [
  */
 export function BchConnectDialog({
   wc,
+  paired,
   open,
   onOpenChange,
 }: {
   wc: UseWizardConnectResult
+  /** A wallet is paired, including a stored session restored after a refresh (see bch-wallet.tsx). */
+  paired: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
   const [copied, setCopied] = useState(false)
   const [showQr, setShowQr] = useState(false)
   const started = useRef(false)
+  const clearing = useRef(false)
   const wasOpenWhileConnecting = useRef(false)
 
   // Start one session per opening; a failed attempt waits for "Try again" instead of looping.
@@ -48,16 +52,24 @@ export function BchConnectDialog({
       started.current = false
       return
     }
-    if (!started.current && (wc.state === 'idle' || wc.state === 'disconnected')) {
+    if (started.current || paired) return
+    if (wc.state === 'idle' || wc.state === 'disconnected') {
       started.current = true
       wc.connect()
+    } else if (!wc.uri && !clearing.current) {
+      // A stored session that came back without the wallet's keys: no code would ever show. Drop it; once the
+      // hook is idle this effect runs again and pairs afresh (a connect() made now would still see the old state).
+      clearing.current = true
+      void wc.disconnect().finally(() => {
+        clearing.current = false
+      })
     }
-  }, [open, wc])
+  }, [open, paired, wc])
 
   useEffect(() => {
-    if (open && (wc.state === 'connecting' || wc.state === 'reconnecting'))
+    if (open && !paired && (wc.state === 'connecting' || wc.state === 'reconnecting'))
       wasOpenWhileConnecting.current = true
-    if (open && wc.state === 'connected') {
+    if (open && paired) {
       onOpenChange(false)
       if (wasOpenWhileConnecting.current) {
         toastManager.add({
@@ -68,7 +80,7 @@ export function BchConnectDialog({
       }
       wasOpenWhileConnecting.current = false
     }
-  }, [open, wc.state, wc.walletName, onOpenChange])
+  }, [open, paired, wc.state, wc.walletName, onOpenChange])
 
   const copy = () => {
     if (!wc.uri) return

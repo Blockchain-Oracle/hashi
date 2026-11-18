@@ -11,10 +11,17 @@ import { BchConnectDialog } from './bch-connect-dialog'
  * The Bitcoin Cash wallet, over WizardConnect (BLAZE's required connection). The session is kept in localStorage,
  * so a returning visitor reconnects without scanning a QR again. Its own storage key keeps it apart from other
  * WizardConnect dapps on the same browser.
+ *
+ * After a refresh the hook rebuilds the session from storage: the wallet's keys are back at once, while the relay
+ * reconnects behind the scenes. The hook's state then stays "connecting" (no pairing code) or "reconnecting", never
+ * "connected": on a reconnect the dapp tells the wallet it already knows it, so no new "wallet ready" arrives. That is
+ * still a paired wallet, so `paired` counts it, and its addresses and coins show at once.
  */
 
 interface BchWallet {
   wc: UseWizardConnectResult
+  /** A wallet is paired: connected now, or a stored session restored after a refresh. */
+  paired: boolean
   /** Addresses and coins, refreshed whenever any of them changes on chain. */
   scan: ReturnType<typeof useQuery<WalletScan>>
   /** The wallet's first receive address: where bridged BCH (q…) and PUSD/MUSD (z…) land. */
@@ -27,15 +34,19 @@ const BchWalletContext = createContext<BchWallet | null>(null)
 
 export function BchWalletProvider({ children }: { children: ReactNode }) {
   const wc = useWizardConnect({ dappName: 'Hashi', sessionKey: 'hashi-wizardconnect' })
-  const connected = wc.state === 'connected' && wc.manager !== null
+  const { manager, state } = wc
+  // A restored session: a manager rebuilt from storage, with no pairing code (only a new pairing shows one).
+  const resuming = manager !== null && (state === 'reconnecting' || (state === 'connecting' && !wc.uri))
+  const sessionPaths = manager?.getSessionPaths() ?? []
+  const paired = manager !== null && (state === 'connected' || (resuming && sessionPaths.length > 0))
   // The receive xpub identifies the wallet; a different wallet means a different scan.
-  const walletId = connected ? (wc.manager?.getSessionPaths()[0]?.xpub ?? 'unknown') : 'none'
+  const walletId = paired ? (sessionPaths[0]?.xpub ?? 'unknown') : 'none'
   const queryClient = useQueryClient()
 
   const scan = useQuery({
     queryKey: ['bch-wallet', 'scan', walletId],
-    queryFn: () => scanWallet(wc.manager as NonNullable<typeof wc.manager>),
-    enabled: connected,
+    queryFn: () => scanWallet(manager as NonNullable<typeof manager>),
+    enabled: paired,
     staleTime: 60_000,
   })
 
@@ -57,13 +68,17 @@ export function BchWalletProvider({ children }: { children: ReactNode }) {
 
   const [connectOpen, setConnectOpen] = useState(false)
   const openConnect = useCallback(() => setConnectOpen(true), [])
-  const receive = scan.data?.addresses.find((a) => a.path === 'receive')
+  // Kept only while paired, so a disconnect hides the last scan's addresses at once.
+  const receive = paired ? scan.data?.addresses.find((a) => a.path === 'receive') : undefined
 
-  const value = useMemo(() => ({ wc, scan, receive, openConnect }), [wc, scan, receive, openConnect])
+  const value = useMemo(
+    () => ({ wc, paired, scan, receive, openConnect }),
+    [wc, paired, scan, receive, openConnect],
+  )
   return (
     <BchWalletContext.Provider value={value}>
       {children}
-      <BchConnectDialog wc={wc} open={connectOpen} onOpenChange={setConnectOpen} />
+      <BchConnectDialog wc={wc} paired={paired} open={connectOpen} onOpenChange={setConnectOpen} />
     </BchWalletContext.Provider>
   )
 }

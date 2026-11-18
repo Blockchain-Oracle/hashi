@@ -1,6 +1,12 @@
+import { binToHex } from '@bitauth/libauth'
 import { describe, expect, it } from 'vitest'
+import { arrivalContract } from '@/lib/bch/arrival/contract'
+import { completeArrivalTrade } from '@/lib/bch/arrival/trade'
+import { verifyInVm } from '@/lib/bch/arrival/vm'
 import { STABLES } from '@/lib/constants/assets'
+import { prepareArrival } from '@/lib/engine/arrival-terms'
 import { PLACEHOLDER_ADDRESS } from '@/lib/engine/placeholders'
+import { getRouter } from './cauldron'
 import { getNearQuote, getNearStatus, getNearTokens } from './near'
 import { getThorInbound, getThorPools, getThorQuote, getThorStatus, isThorHaltError } from './thorchain'
 
@@ -67,5 +73,37 @@ describe.runIf(live)('live provider contracts', { timeout: 60_000 }, () => {
     const done = await getThorStatus(THOR_DONE)
     expect(done.tx?.id?.toUpperCase()).toBe(THOR_DONE)
     expect(done.out_txs?.length).toBeGreaterThan(0)
+  })
+
+  it('Cauldron: a trade funded by a real swap contract is valid in the 2026 VM (built, never broadcast)', async () => {
+    const owner = 'bitcoincash:zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqweyg7usz'
+    // A floor well under the market (1 unit per 6,000 sats), so a live price never trips it in this test.
+    const arrival = prepareArrival({
+      bchAsset: 'PUSD',
+      ownerAddress: owner,
+      minTokens: 50n,
+      minBridgeSats: 300_000n,
+      now: Date.now(),
+    })
+    const contract = arrivalContract(arrival.terms)
+    const build = await getRouter().build({
+      sell: 'bch',
+      buy: '2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544',
+      amount: 296_000n,
+      side: 'sell',
+      funding: [
+        { txid: 'cc'.repeat(32), vout: 0, value: 300_000n, scriptHex: binToHex(contract.lockingBytecode) },
+      ],
+      receiveAddress: owner,
+      changeAddress: 'bitcoincash:qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqfnhks603',
+    })
+    const trade = completeArrivalTrade({
+      build,
+      contract,
+      terms: arrival.terms,
+      tradePrivateKey: arrival.tradeKey,
+    })
+    expect(verifyInVm(trade.transaction, trade.sourceOutputs)).toBe(true)
+    expect(trade.fee).toBeGreaterThanOrEqual(BigInt(trade.size))
   })
 })

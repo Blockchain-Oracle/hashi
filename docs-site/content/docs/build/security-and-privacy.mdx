@@ -25,6 +25,7 @@ icon: Lock
 | Reown | wallet sessions; Solana balance reads |
 | Chain RPCs (AppKit's default transports) | your EVM address, for balances on 7 chains every 30 s; gas prices |
 | Hashi's relayer | a gasless USDC authorisation, only when you use it |
+| Hashi's server | a swap contract's public terms (never the swap's key), when a swap into PUSD or MUSD starts |
 
 AppKit's analytics are off. The landing page asks the providers from the server with placeholder addresses: no visitor data.
 
@@ -32,8 +33,8 @@ AppKit's analytics are off. The landing page asks the providers from the server 
 
 | Where | What |
 |---|---|
-| your browser's IndexedDB | your swaps (`hashi-swap:…`), with their addresses and the bridge's signed quote |
+| your browser's IndexedDB | your swaps (`hashi-swap:…`), with their addresses, the bridge's signed quote and, for a swap into PUSD or MUSD, its contract's terms and the swap's own key (it can only pay you) |
 | your browser's localStorage | your slippage, your theme, the WizardConnect session, and Reown AppKit's and wagmi's own connection keys |
-| the server | a rate-limit counter for the relayer, in memory |
+| the server | rate-limit counters, in memory; and each swap contract's public terms (your Bitcoin Cash address, the token, the floor, the refund time, the swap key's public half), so its keeper can send unfinished BCH back to you |
 
 No accounts, no database, no analytics of Hashi's own.

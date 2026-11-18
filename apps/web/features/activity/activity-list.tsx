@@ -11,6 +11,8 @@ import { StatusPill } from '@/components/kit/status-pill'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CHAINS } from '@/lib/constants/chains'
+import { finishArrival } from '@/lib/engine/arrival'
+import { tradesOnArrival } from '@/lib/engine/arrival-terms'
 import { checkBridge, nextStep } from '@/lib/engine/runner'
 import { isTerminal, type SwapRecord } from '@/lib/engine/swap'
 import { PROVIDERS } from '@/lib/engine/types'
@@ -18,7 +20,7 @@ import { displayDecimals, formatAmount } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { paySide, receiveSide } from './steps'
 import { persistSwap, useSwapRecords } from './store'
-import { STATUS_PILL } from './tracker'
+import { statusPill } from './tracker'
 
 type Filter = 'all' | 'active' | 'completed' | 'problem'
 
@@ -55,7 +57,14 @@ export function ActivityList() {
   const [now, setNow] = useState(() => Date.now())
   const checking = useRef(false)
 
-  const waiting = useMemo(() => records.data?.filter((r) => nextStep(r) === 'wait') ?? [], [records.data])
+  // Swaps the bridge is still working on, and swap contracts holding BCH to trade (no approval needed for those).
+  const waiting = useMemo(
+    () =>
+      records.data?.filter(
+        (r) => nextStep(r) === 'wait' || (nextStep(r) === 'finish' && tradesOnArrival(r)),
+      ) ?? [],
+    [records.data],
+  )
   useEffect(() => {
     if (!waiting.length) return
     const tick = async () => {
@@ -63,7 +72,8 @@ export function ActivityList() {
       checking.current = true
       try {
         for (const record of waiting) {
-          const next = await checkBridge(record, () => {}).catch(() => record)
+          const step = nextStep(record) === 'wait' ? checkBridge : finishArrival
+          const next = await step(record, () => {}).catch(() => record)
           if (next !== record) await persistSwap(queryClient, next)
         }
       } finally {
@@ -151,7 +161,7 @@ export function ActivityList() {
 function Row({ record, now }: { record: SwapRecord; now: number }) {
   const pay = paySide(record)
   const receive = receiveSide(record)
-  const pill = STATUS_PILL[record.status]
+  const pill = statusPill(record)
   const out = record.receivedAmount ?? record.quoted?.amountOut
   return (
     <Link

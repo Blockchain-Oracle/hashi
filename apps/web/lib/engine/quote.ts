@@ -1,6 +1,7 @@
 import { NEAR_BCH_ASSET_ID, THORCHAIN_BCH_ASSET } from '@/lib/constants/assets'
 import { CHAINS, type ChainInfo } from '@/lib/constants/chains'
-import { BCH_SEND_FEE_SATS } from '@/lib/constants/fees'
+import { SWAP_ON_ARRIVAL } from '@/lib/constants/features'
+import { ARRIVAL_RESERVE_SATS, BCH_SEND_FEE_SATS } from '@/lib/constants/fees'
 import {
   BCH_BLOCK_SECONDS,
   CAULDRON_LEG_SECONDS,
@@ -125,12 +126,14 @@ async function quoteIn(
     rawBridge = quote
   }
 
-  const tokenSigs = bchAsset === 'BCH' ? 0 : 1
+  // Into PUSD or MUSD: the swap contract trades the BCH with no wallet approval (SWAP_ON_ARRIVAL).
+  const tokenSigs = bchAsset === 'BCH' || SWAP_ON_ARRIVAL ? 0 : 1
   const base = {
     provider,
     pair: req.pair,
     amountIn: req.amount,
     bridgeSats,
+    minBridgeSats,
     ...(usdIn === undefined ? {} : { usdIn }),
     ...(usdOut === undefined ? {} : { usdOut }),
     quotedAt: now,
@@ -155,11 +158,13 @@ async function quoteIn(
   // Buy tokens with the bridged BCH. Pool count changes the miner fee, so price once, then again with the real count.
   const category = routerAsset(bchAsset)
   const router = getRouter()
-  let spend = spendableForBuy(bridgeSats, 1)
+  // The swap contract's longer unlock keeps a few hundred sats out of the pools; the review counts it too.
+  const available = SWAP_ON_ARRIVAL ? bridgeSats - ARRIVAL_RESERVE_SATS : bridgeSats
+  let spend = spendableForBuy(available, 1)
   if (spend <= 0n) return tooSmallForCauldron(provider)
   let cauldron = await router.quote({ sell: 'bch', buy: category, amount: spend, side: 'sell' })
   if (cauldron.pools > 1) {
-    spend = spendableForBuy(bridgeSats, cauldron.pools)
+    spend = spendableForBuy(available, cauldron.pools)
     cauldron = await router.quote({ sell: 'bch', buy: category, amount: spend, side: 'sell' })
   }
   const tokens = BigInt(cauldron.output_amount ?? '0')

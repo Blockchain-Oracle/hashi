@@ -35,6 +35,9 @@ WORKDIR /app
 COPY --from=build --chown=node:node /repo/apps/web/.next/standalone ./
 COPY --from=build --chown=node:node /repo/apps/web/.next/static ./apps/web/.next/static
 COPY --from=build --chown=node:node /repo/apps/web/public ./apps/web/public
+# The swap contracts keeper's store (a persistent volume is mounted here). Created owned by node, so a fresh volume
+# takes this ownership and the unprivileged server can write to it.
+RUN mkdir -p /data/arrivals && chown -R node:node /data
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

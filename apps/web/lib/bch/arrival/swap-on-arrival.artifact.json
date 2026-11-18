@@ -1,0 +1,58 @@
+{
+  "contractName": "SwapOnArrival",
+  "constructorInputs": [
+    {
+      "name": "tokenCategory",
+      "type": "bytes32"
+    },
+    {
+      "name": "owner",
+      "type": "bytes"
+    },
+    {
+      "name": "tradeKey",
+      "type": "pubkey"
+    },
+    {
+      "name": "rateNum",
+      "type": "int"
+    },
+    {
+      "name": "rateDen",
+      "type": "int"
+    },
+    {
+      "name": "refundAfter",
+      "type": "int"
+    }
+  ],
+  "abi": [
+    {
+      "name": "swap",
+      "inputs": [
+        {
+          "name": "tradeSig",
+          "type": "sig"
+        }
+      ]
+    },
+    {
+      "name": "release",
+      "inputs": [
+        {
+          "name": "tradeSig",
+          "type": "sig"
+        }
+      ]
+    },
+    {
+      "name": "reclaim",
+      "inputs": []
+    }
+  ],
+  "bytecodeHex": "5679009c63577a537aadc0c6537995547a96537aa3c0cd537a88c0d17b88c0d3a17777675679519c63577a537aadc3519dc4519d00cd7b8800d1008800ccc0c602b80b94a2696d6d755167567a529d557ab175c3519dc4519d00cd7b8800d1008800ccc0c602b80b94a2696d6d516868",
+  "compiler": {
+    "name": "cashc",
+    "version": "0.14.0"
+  }
+}

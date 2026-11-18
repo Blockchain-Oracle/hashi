@@ -1,4 +1,5 @@
 import { del, entries, get, set } from 'idb-keyval'
+import type { ArrivalTerms } from '@/lib/bch/arrival/contract'
 import type { BchAssetId, StableSymbol } from '@/lib/constants/assets'
 import type { ExternalChainId } from '@/lib/constants/chains'
 import type { Direction, RouteVia, SwapAddresses } from './types'
@@ -71,6 +72,11 @@ export interface SwapRecord {
   receivedAmount?: string
   /** What the review showed when the person started: base units of the receiving asset, and the timing. */
   quoted?: { amountOut: string; minAmountOut: string; etaSeconds: number; feesUsd?: number }
+  /**
+   * Forward into PUSD or MUSD in one approval: the bridge pays this swap's own contract, and Hashi trades the BCH
+   * with the one-swap trade key (no wallet prompt). `returnTxid` once the BCH went back to the person instead.
+   */
+  arrival?: { terms: ArrivalTerms; address: string; tradeKey: string; returnTxid?: string }
   /** The person's slippage when they started (100 = 1%): every Cauldron trade and bridge quote is held to it. */
   slippageBps?: number
   status: SwapStatus

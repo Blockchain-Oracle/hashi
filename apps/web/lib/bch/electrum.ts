@@ -104,6 +104,20 @@ export async function historyLength(address: string): Promise<number> {
   return history.length
 }
 
+/** Every transaction that touched an address, oldest first (height 0 or below: still in the mempool). */
+export async function addressHistory(address: string): Promise<{ txid: string; height: number }[]> {
+  const history = await request<{ tx_hash: string; height: number }[]>(
+    'blockchain.address.get_history',
+    address,
+  )
+  return history.map((h) => ({ txid: h.tx_hash, height: h.height }))
+}
+
+/** A transaction's raw hex. */
+export function rawTransaction(txid: string): Promise<string> {
+  return request<string>('blockchain.transaction.get', txid)
+}
+
 /** Sends a signed transaction to the network. Returns its id. */
 export function broadcast(rawTxHex: string): Promise<string> {
   return request<string>('blockchain.transaction.broadcast', rawTxHex)

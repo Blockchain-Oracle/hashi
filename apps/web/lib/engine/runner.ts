@@ -8,7 +8,7 @@ import {
   prepareTokenSwap,
   satsPaidTo,
 } from '@/lib/bch/cauldron-trade'
-import { broadcast } from '@/lib/bch/electrum'
+import { broadcast, listUnspent } from '@/lib/bch/electrum'
 import { signRouterBuild } from '@/lib/bch/sign'
 import { planPayment, signPlanned } from '@/lib/bch/tx'
 import type { WalletAddress, WalletUtxo } from '@/lib/bch/wallet'
@@ -20,13 +20,14 @@ import {
   THORCHAIN_BCH_ASSET,
 } from '@/lib/constants/assets'
 import { CHAINS } from '@/lib/constants/chains'
-import { BCH_SEND_FEE_SATS } from '@/lib/constants/fees'
+import { ARRIVAL_MIN_COIN_SATS, BCH_SEND_FEE_SATS } from '@/lib/constants/fees'
 import { DEFAULT_SLIPPAGE_BPS, NEAR_DEADLINE_MS, NEAR_UTXO_DEADLINE_MS } from '@/lib/constants/limits'
 import { approveIfNeeded, signUsdcTransferAuthorization, thorDeposit, transferErc20 } from '@/lib/evm/actions'
 import { displayDecimals, formatAmount } from '@/lib/format'
 import { getRouter, offeredBelowFloor, routerAsset } from '@/lib/providers/cauldron'
 import { getNearQuote, getNearStatus, type NearQuoteResponse, submitNearDeposit } from '@/lib/providers/near'
 import { getThorQuote, getThorStatus, THORCHAIN_DECIMALS, type ThorQuote } from '@/lib/providers/thorchain'
+import { prepareArrival, registerArrival, tradesOnArrival } from './arrival-terms'
 import { proceedsFromSell } from './cauldron-fees'
 import { quoteDeadline } from './expiry'
 import { advance, type SwapRecord } from './swap'
@@ -167,6 +168,11 @@ export interface StartParams {
   gasless?: boolean
   /** The numbers the review showed, kept on the record for the tracker and Activity. */
   quoted?: SwapRecord['quoted']
+  /**
+   * Into PUSD or MUSD in one approval: the review's "at least" and the least BCH the bridge promised, which become
+   * the swap contract's floor. Without it the bridge pays the wallet and the trade is a second approval.
+   */
+  arrival?: { minTokens: bigint; minBridgeSats: bigint }
 }
 
 /** How long a gasless authorisation stays valid (the relayer accepts up to an hour). */
@@ -251,6 +257,36 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
     })
   }
 
+  // Into PUSD or MUSD: the bridge pays this swap's own contract, which trades the BCH without the wallet. Its public
+  // terms go to Hashi's server first; if the server cannot keep them, the bridge pays the wallet as before.
+  let arrival =
+    params.arrival && pair.bchAsset !== 'BCH'
+      ? prepareArrival({
+          bchAsset: pair.bchAsset,
+          ownerAddress: addresses.bchToken,
+          minTokens: params.arrival.minTokens,
+          minBridgeSats: params.arrival.minBridgeSats,
+          now,
+        })
+      : undefined
+  if (arrival) {
+    try {
+      await registerArrival(arrival)
+    } catch (error) {
+      log(
+        'quote',
+        `swap contract not kept by the server (${error instanceof Error ? error.message : String(error)}); paying the wallet`,
+      )
+      arrival = undefined
+    }
+  }
+  const bchRecipient = arrival?.address ?? addresses.bchPlain
+  if (arrival)
+    log(
+      'quote',
+      `swap contract ${arrival.address}, floor ${arrival.terms.rateNum}/${arrival.terms.rateDen} per sat`,
+    )
+
   if (provider === 'near') {
     const response = await getNearQuote({
       dry: false,
@@ -258,7 +294,7 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
       originAsset: pair.stable.nearAssetId,
       destinationAsset: NEAR_BCH_ASSET_ID,
       amount,
-      recipient: addresses.bchPlain,
+      recipient: bchRecipient,
       refundTo: stableSide,
       slippageBps,
       deadline: new Date(now + NEAR_DEADLINE_MS),
@@ -272,6 +308,7 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
     return advance(base, 'quoted', 'NEAR Intents quote with deposit address', {
       depositAddress,
       bridgeQuote: response,
+      ...(arrival ? { arrival } : {}),
     })
   }
 
@@ -281,7 +318,7 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
     fromAsset: thorAsset,
     toAsset: THORCHAIN_BCH_ASSET,
     amount: toThorUnits(amount, pair.stable.decimals),
-    destination: addresses.bchPlain,
+    destination: bchRecipient,
     // From an EVM chain the refund address fits the memo, so a refund goes where the review says.
     refundAddress: stableSide,
     toleranceBps: slippageBps,
@@ -296,6 +333,7 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
     memo: quote.memo,
     ...(quote.router ? { router: quote.router } : {}),
     bridgeQuote: quote,
+    ...(arrival ? { arrival } : {}),
   })
 }
 
@@ -657,6 +695,22 @@ async function waitForCoin(bch: BchSide, txid: string): Promise<WalletUtxo[]> {
 export async function checkBridge(record: SwapRecord, log: Log): Promise<SwapRecord> {
   if (record.provider === 'cauldron') return record
   const forward = record.direction === 'in'
+  // A swap contract's own coins are the surest sign the BCH arrived: the chain, not the bridge's status page. Only
+  // an amount near what the bridge promised counts (half of it), so dust someone sends there is not taken for it.
+  if (record.arrival && tradesOnArrival(record)) {
+    const landed = (await listUnspent(record.arrival.address)).filter(
+      (c) => !c.token && c.value >= ARRIVAL_MIN_COIN_SATS,
+    )
+    const [first] = landed
+    const sats = landed.reduce((sum, c) => sum + c.value, 0n)
+    if (first && sats * 2n >= BigInt(record.arrival.terms.rateDen)) {
+      log('bridge', `${sats} sats at the swap contract (${first.txid})`)
+      return advance(record, 'bch-arrived', 'BCH arrived at the swap contract', {
+        bchTxid: first.txid,
+        bchSats: sats.toString(),
+      })
+    }
+  }
   if (record.provider === 'near') {
     if (!record.depositAddress) return record
     const status = await getNearStatus(record.depositAddress)

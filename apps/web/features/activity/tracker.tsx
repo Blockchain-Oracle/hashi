@@ -24,6 +24,7 @@ import { useBchWallet } from '@/features/wallets/bch-wallet'
 import { useEvmWallet } from '@/features/wallets/evm-wallet'
 import { CHAINS } from '@/lib/constants/chains'
 import { STATUS_TROUBLE_MS } from '@/lib/constants/limits'
+import { tradesOnArrival } from '@/lib/engine/arrival-terms'
 import type { SwapRecord, SwapStatus } from '@/lib/engine/swap'
 import { PROVIDERS } from '@/lib/engine/types'
 import { displayDecimals, formatAmount, shortAddress } from '@/lib/format'
@@ -41,6 +42,12 @@ export const STATUS_PILL: Record<SwapStatus, { tone: PillTone; label: string }> 
   refunded: { tone: 'warning', label: 'Refunded' },
   failed: { tone: 'error', label: 'Failed' },
   expired: { tone: 'ink', label: 'Expired' },
+}
+
+/** The status pill for a swap: a swap contract trading by itself is "Swapping", not "One approval left". */
+export function statusPill(record: SwapRecord): { tone: PillTone; label: string } {
+  if (record.status === 'bch-arrived' && tradesOnArrival(record)) return STATUS_PILL.swapping
+  return STATUS_PILL[record.status]
 }
 
 /** The route's carriers in the order the money meets them: "NEAR Intents → Cauldron", "Cauldron", "THORChain". */
@@ -110,7 +117,7 @@ export function Tracker({ id }: { id: string }) {
 
   const pay = paySide(record)
   const receive = receiveSide(record)
-  const pill = STATUS_PILL[record.status]
+  const pill = statusPill(record)
   const title = headline(record)
   const steps = trackerSteps(record, now)
   const received = record.receivedAmount ?? record.quoted?.amountOut
@@ -177,6 +184,25 @@ export function Tracker({ id }: { id: string }) {
 
           <Action runner={runner} record={record} />
 
+          {record.arrival &&
+          runner.contractSats > 0n &&
+          !((record.status === 'bch-arrived' || record.status === 'swapping') && tradesOnArrival(record)) ? (
+            // BCH at the contract outside the usual moment (a split payout, a late payout after a trade or a return,
+            // or a bridge status that never came): it is the person's, and one click sends it to their wallet.
+            <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-muted p-3 text-sm">
+              <span className="flex-1">
+                {formatAmount(runner.contractSats, 8, 8)} BCH is waiting in this swap's contract.
+              </span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={runner.releaseToWallet}
+                disabled={runner.busy !== null}
+              >
+                Send it to my wallet
+              </Button>
+            </div>
+          ) : null}
           {unreadable ? (
             <p className="flex items-start gap-2 rounded-2xl bg-(--warning)/10 p-3 text-sm">
               <Icon icon={Alert02Icon} className="mt-0.5 shrink-0 text-(--warning)" />
@@ -377,6 +403,27 @@ function Action({ runner, record }: { runner: ReturnType<typeof useSwapRunner>; 
           ? 'Waiting for your wallet…'
           : `Approve ${what} in your ${needsBch ? 'Bitcoin Cash' : chain.name} wallet`}
       </Button>
+    )
+  }
+  if ((record.status === 'bch-arrived' || record.status === 'swapping') && tradesOnArrival(record)) {
+    return (
+      <div className="flex flex-col gap-3">
+        <p className="flex items-center gap-2 text-muted-foreground text-sm">
+          <Spinner className="size-4" />
+          {runner.arrivalWait?.message ?? `Turning the BCH into ${record.bchAsset}, with no approval needed…`}
+        </p>
+        {runner.contractSats > 0n ? (
+          <Button
+            variant="secondary"
+            onClick={runner.releaseToWallet}
+            disabled={runner.busy !== null}
+            className="w-fit"
+          >
+            {runner.busy ? <Spinner className="size-4" /> : null}
+            Send the BCH to my wallet instead
+          </Button>
+        ) : null}
+      </div>
     )
   }
   if (record.status === 'bch-arrived' || record.status === 'swapping') {

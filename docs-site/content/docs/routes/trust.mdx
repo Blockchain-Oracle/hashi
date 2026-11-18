@@ -9,10 +9,11 @@ icon: ShieldCheck
 | Deposit, NEAR Intents | your EVM or Solana wallet | the deposit address NEAR Intents issued for this swap |
 | Deposit, gasless | your USDC, by your signed authorisation | the same NEAR deposit address; Hashi's relayer pays only the gas |
 | Deposit, THORChain | your wallet | THORChain's router, into the quote's vault |
-| Bridge payout, going in | NEAR Intents or THORChain | your plain Bitcoin Cash address (or a custom one, for plain BCH) |
-| Cauldron buy | your own coins | the tokens to your token-aware address, change to your plain address |
+| Bridge payout, going in | NEAR Intents or THORChain | into PUSD or MUSD: a [contract made for your swap](/docs/bitcoin-cash/swap-contract) that can only pay you; into plain BCH: your plain address (or a custom one) |
+| Cauldron buy, from the swap contract | the contract's BCH, by this swap's own key (made in your browser) | the tokens to your token-aware address, change to your plain address; if it can't, the BCH back to your wallet |
+| Cauldron buy, from your wallet | your own coins (after the BCH went back to your wallet) | the tokens to your token-aware address, change to your plain address |
 | Cauldron sale, coming out | your tokens | the BCH to your own address |
 | Bitcoin Cash deposit, coming out | your Bitcoin Cash wallet | NEAR's deposit address or THORChain's vault |
 | Bridge payout, coming out | NEAR Intents or THORChain | your stablecoin address (or a custom one) |
 
-Your wallets approve every step that spends your money: the deposits and the Cauldron trades. Payouts come from the bridge, to your own addresses. Hashi has one server route, the [gas relayer](/docs/build/relayer), which pays Base gas and never touches the USDC. There is no account, no Hashi fee, and no database: your swaps are saved in your own browser.
+Your wallets approve every step that spends your money: the deposits and the Cauldron trades. Payouts come from the bridge, to your own addresses. Hashi's server does two small jobs, neither of which can take your money: the [gas relayer](/docs/build/relayer) pays Base gas and never touches the USDC, and the swap contracts' keeper keeps each contract's public terms so it can send unfinished BCH back to its owner. There is no account and no Hashi fee: your swaps are saved in your own browser, and the swap's key never leaves it.

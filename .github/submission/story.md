@@ -31,12 +31,12 @@ Hashi joins the two ends. You pick an amount, see every route priced end to end 
 
 **A real quote.** Asking for 50 USDC on Ethereum → MUSD on 17 November 2026 at 00:21 UTC gave two routes:
 
-- **NEAR Intents → Cauldron, Best return:** 48.89 MUSD, about 3 minutes, $0.50 in fees, 2 approvals (one in your Ethereum wallet, one in your Bitcoin Cash wallet).
-- **THORChain → Cauldron, Fastest:** 48.69 MUSD, about 45 seconds, $0.70 in fees, 3 approvals (allow, deposit, then the Cauldron swap).
+- **NEAR Intents → Cauldron, Best return:** 48.89 MUSD, about 3 minutes, $0.50 in fees, 1 approval (the USDC transfer; the Cauldron trade runs by itself).
+- **THORChain → Cauldron, Fastest:** 48.69 MUSD, about 45 seconds, $0.70 in fees, 2 approvals (allow, then deposit).
 
 [image 2: the swap card]
 
-With the NEAR Intents route, you approve one USDC transfer. NEAR Intents delivers BCH to your Bitcoin Cash wallet, and one more approval swaps it for MUSD on Cauldron. The review shows the least you can receive with both legs' slippage counted, and every Cauldron trade is built with that floor. If prices move past it, nothing is signed. Hashi tells you what the trade would give now and lets you choose.
+With the NEAR Intents route, you approve one USDC transfer, and that is all. NEAR Intents pays the BCH to a Bitcoin Cash contract made for your swap, and Hashi trades it for MUSD on Cauldron with that swap's own key. The contract pays only your wallet, never less than the review's "you get at least"; if prices move past that floor, the BCH goes back to your wallet instead, and Hashi's server keeps the contract's public terms so unfinished BCH always goes back to you.
 
 [image 3: the review sheet]
 
@@ -46,7 +46,7 @@ With the NEAR Intents route, you approve one USDC transfer. NEAR Intents deliver
 2. **Start.** The bridge issues a real deposit address (NEAR Intents) or names its vault and memo (THORChain). The swap is saved in your browser before anything moves.
 3. **Deposit.** One transfer from your EVM or Solana wallet. THORChain also needs an "allow" first. USDC on Base can go gasless: you sign, and Hashi's relayer pays the gas.
 4. **Bridge.** Hashi checks the bridge every 5 seconds. You can close the tab: the BCH arrives on its own.
-5. **Finish on Bitcoin Cash.** For PUSD or MUSD, one WizardConnect approval signs the Cauldron trade that Hashi built from the BCH that arrived.
+5. **Finish on Bitcoin Cash, with no approval.** For PUSD or MUSD the bridge paid this swap's contract; Hashi signs the Cauldron trade with the swap's own key, after checking it in the Bitcoin Cash VM. The contract can pay only you, at least the floor.
 6. **The way back** sells PUSD or MUSD on Cauldron first. The sale is saved the moment it is out, then the bridge is quoted for exactly the BCH it produced.
 
 [image 4: the system map] [image 5: a swap into Bitcoin Cash, step by step]

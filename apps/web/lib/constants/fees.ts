@@ -20,3 +20,16 @@ export const SPL_TOKEN_ACCOUNT_BYTES = 165
 
 /** A plain Bitcoin Cash send (one or two inputs, two outputs) at 1 sat/byte, with headroom. */
 export const BCH_SEND_FEE_SATS = 300n
+
+/**
+ * Sats a swap-on-arrival trade keeps out of the pools for its longer unlock: the contract's unlock is ~290 bytes, the
+ * Router's fee estimate counts a ~100-byte wallet signature, and the network wants 1 sat per byte. What is not needed
+ * comes back to the person as BCH change (or, when that would be dust, goes to the miner).
+ */
+export const ARRIVAL_RESERVE_SATS = 300n
+
+/**
+ * Smallest coin at a swap contract that Hashi trades or sends back: a one-input refund costs ~310 sats and must leave
+ * at least 546 (the dust limit). Smaller coins (dust from strangers) are left alone.
+ */
+export const ARRIVAL_MIN_COIN_SATS = 1_000n

@@ -3,5 +3,12 @@
   "description": "Bitcoin Cash's own dollars, and how Hashi reaches them",
   "icon": "Bitcoin",
   "root": true,
-  "pages": ["index", "pusd-and-musd", "wizardconnect", "addresses-and-tokens", "electrum"]
+  "pages": [
+    "index",
+    "pusd-and-musd",
+    "swap-contract",
+    "wizardconnect",
+    "addresses-and-tokens",
+    "electrum"
+  ]
 }

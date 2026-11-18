@@ -41,6 +41,26 @@ export const DEFAULT_SLIPPAGE_BPS = 100
  * can take 20 minutes or more).
  */
 export const NEAR_DEADLINE_MS = HOUR
+
+/**
+ * Swap-on-arrival contract: when the BCH may go back to the person if the trade cannot happen (an hour after the
+ * quote). The chain's median time runs about an hour behind the clock, so in practice the refund opens ~2 h in.
+ */
+export const ARRIVAL_REFUND_DELAY_MS = HOUR
+/** While the BCH is on its way to the contract: how often Hashi looks for it and tries the trade. */
+export const ARRIVAL_RETRY_MS = 8 * SECOND
+/** While prices sit under the contract's floor: how often Hashi asks Cauldron again (gentler on the Router). */
+export const ARRIVAL_PRICE_RETRY_MS = 30 * SECOND
+/** How often the tracker re-reads what the swap contract holds (for "Send the BCH to my wallet"). */
+export const ARRIVAL_COINS_REFRESH_MS = 15 * SECOND
+/** The keeper must have run within this long for the server to accept a new swap contract (it runs every 10 min). */
+export const KEEPER_STALE_MS = 30 * MINUTE
+/** One keeper run stops starting new work after this long; what is left waits for the next run. */
+export const SWEEP_BUDGET_MS = 45 * SECOND
+/** Contracts the server keeps at most; past it, new swaps pay the wallet instead (a guard against junk). */
+export const ARRIVAL_STORE_MAX = 5_000
+/** Pool conflicts (another trade took a pool first) are rebuilt this many times before giving up for a while. */
+export const ARRIVAL_CONFLICT_RETRIES = 3
 export const NEAR_UTXO_DEADLINE_MS = 4 * HOUR
 
 /**

@@ -13,6 +13,8 @@ import { useEvmWallet } from '@/features/wallets/evm-wallet'
 import { BCH_ASSETS, type BchAssetId, STABLES } from '@/lib/constants/assets'
 import { BCH_EXPLORER_TX_URL, CHAINS } from '@/lib/constants/chains'
 import { DEFAULT_SLIPPAGE_BPS, STATUS_POLL_MS } from '@/lib/constants/limits'
+import { finishArrival } from '@/lib/engine/arrival'
+import { tradesOnArrival } from '@/lib/engine/arrival-terms'
 import {
   type BchSide,
   checkBridge,
@@ -151,7 +153,8 @@ export function SwapRunnerPanel({ onLog }: { onLog: (entry: LogEntry) => void })
         <p className="label-mono">T1 · T2 · T5 · T7 · T8 — a real swap, step by step</p>
         <p className="mt-2 text-muted-foreground text-sm">
           A real quote issues a deposit address and moves nothing. Money moves only when you approve the
-          deposit in your wallet.
+          deposit in your wallet. Swaps started here pay your wallet, not a swap contract, so a swap into PUSD
+          or MUSD takes the two-approval path (the swap screen uses the contract).
         </p>
       </div>
 
@@ -248,7 +251,14 @@ export function SwapRunnerPanel({ onLog }: { onLog: (entry: LogEntry) => void })
               Send the deposit — approve in your wallet
             </Button>
           ) : null}
-          {step === 'finish' && bch ? (
+          {step === 'finish' && tradesOnArrival(record) ? (
+            <Button
+              disabled={Boolean(busy)}
+              onClick={() => void run('Trading from the swap contract', () => finishArrival(record, log))}
+            >
+              Trade the BCH from the swap contract (no approval)
+            </Button>
+          ) : step === 'finish' && bch ? (
             <Button
               disabled={Boolean(busy)}
               onClick={() => void run('Waiting for your wallet', () => finishOnCauldron(record, bch, log))}

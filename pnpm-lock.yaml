@@ -127,6 +127,9 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
+      '@cashscript/utils':
+        specifier: 0.14.0
+        version: 0.14.0
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -139,6 +142,12 @@ importers:
       '@types/react-dom':
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
+      cashc:
+        specifier: 0.14.0
+        version: 0.14.0
+      cashscript:
+        specifier: 0.14.0
+        version: 0.14.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       shadcn:
         specifier: 4.23.0
         version: 4.23.0
@@ -404,6 +413,9 @@ packages:
   '@bitauth/libauth@3.1.0-next.8':
     resolution: {integrity: sha512-Pm+Ju+YP3JeBLLTiVrBnia2wwE4G17r4XqpvPRMcklElJTe8J6x3JgKRg1by0Xm3ZY6UFxACkEAoSA+x419/zA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  '@cashscript/utils@0.14.0':
+    resolution: {integrity: sha512-gPCImBQAOyPu8ndHxvciiqBz5cjTneSWqzQdQoPOZH5zNQnAdzZ4bYykzgI7DOfCGum32DHFmusqm5GrAyiT4A==}
 
   '@coinbase/cdp-sdk@1.52.0':
     resolution: {integrity: sha512-3R42LCxGQy/xy7EdeiAvabAESFMRTNNN8Nm1U4AxSPs8fMwazTulLy0NprsW+vuvIMhO2Ih8XInHiXD3DKx6Fw==}
@@ -2035,6 +2047,10 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
+  antlr4@4.13.2:
+    resolution: {integrity: sha512-QiVbZhyy4xAZ17UPEuG3YTOt8ZaoeOR1CvEAqrEsDBsOqINslaB147i9xqljZqoyf5S+EUlGStaj+t22LT9MOg==}
+    engines: {node: '>=16'}
+
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
@@ -2168,6 +2184,13 @@ packages:
 
   caniuse-lite@1.0.30001820:
     resolution: {integrity: sha512-gfWD6MxqVCqAOwmODfZf7DchWvlrA+SRdNX7ceLfg3xRqe5ssjjpF7EgslC/0tiLiNTajdaNN/q8c/5u/7Gz8w==}
+
+  cashc@0.14.0:
+    resolution: {integrity: sha512-+9uP2auBiLs3Vp0OxioiylRFX5gOrmVb7fQQNz3hLjV7hKuWjpKTBgARusdzQI1yZwVDDe8HqzovsAmxC8MYDw==}
+    hasBin: true
+
+  cashscript@0.14.0:
+    resolution: {integrity: sha512-9EWS4p7cXagg0PDBh9e+D/TKEayb4/jeDTjy6xvcB3VUru6SQc4k66fyg55uihxVkY1ME8WgbguTsEDeb7SVTw==}
 
   chai@6.3.0:
     resolution: {integrity: sha512-XWAtwJ6OHO+tj0EKCs0Y2UamnyOxseZWltU4x2U2wh8g4AigdjwvtUjvLP2tqkA/avxHEtzxNaqGq/YGNwckKg==}
@@ -2579,6 +2602,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
@@ -4716,6 +4742,10 @@ snapshots:
     optional: true
 
   '@bitauth/libauth@3.1.0-next.8': {}
+
+  '@cashscript/utils@0.14.0':
+    dependencies:
+      '@bitauth/libauth': 3.1.0-next.8
 
   '@coinbase/cdp-sdk@1.52.0(bufferutil@4.1.0)(debug@4.4.3)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@6.0.3)(utf-8-validate@6.0.6)':
     dependencies:
@@ -7897,6 +7927,8 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
+  antlr4@4.13.2: {}
+
   anymatch@3.1.3:
     dependencies:
       normalize-path: 3.0.0
@@ -8032,6 +8064,26 @@ snapshots:
   camelcase@5.3.1: {}
 
   caniuse-lite@1.0.30001820: {}
+
+  cashc@0.14.0:
+    dependencies:
+      '@bitauth/libauth': 3.1.0-next.8
+      '@cashscript/utils': 0.14.0
+      antlr4: 4.13.2
+      commander: 14.0.3
+      semver: 7.8.6
+
+  cashscript@0.14.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+    dependencies:
+      '@bitauth/libauth': 3.1.0-next.8
+      '@cashscript/utils': 0.14.0
+      '@electrum-cash/network': 4.4.8(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      fflate: 0.8.3
+      semver: 7.8.6
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
 
   chai@6.3.0: {}
 
@@ -8409,6 +8461,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
+
+  fflate@0.8.3: {}
 
   figures@6.1.0:
     dependencies:

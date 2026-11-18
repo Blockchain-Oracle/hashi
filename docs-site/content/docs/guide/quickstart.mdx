@@ -43,7 +43,7 @@ The big button asks for what is missing, one thing at a time: **Connect an EVM w
 
 ### Start, approve, done
 
-**Start swap** opens the tracker, which asks your wallet for the deposit at once. While the bridge works you can close the tab. Swapping into PUSD or MUSD, you come back for one more approval that turns the arrived BCH into PUSD or MUSD on Cauldron. [Tracking →](/docs/guide/tracking)
+**Start swap** opens the tracker, which asks your wallet for the deposit at once. While the bridge works you can close the tab. Swapping into PUSD or MUSD, that deposit is the only approval: the bridge pays a [contract made for your swap](/docs/bitcoin-cash/swap-contract), and Hashi trades the BCH on Cauldron without asking your wallet again. [Tracking →](/docs/guide/tracking)
 
 </Step>
 </Steps>
@@ -53,8 +53,8 @@ The big button asks for what is missing, one thing at a time: **Connect an EVM w
 | Swap | Your stablecoin wallet | Your Bitcoin Cash wallet |
 |---|---|---|
 | USDC/USDT → BCH, through NEAR Intents | 1 transfer | – |
-| USDC/USDT → PUSD or MUSD, through NEAR Intents | 1 transfer | 1 (the Cauldron swap) |
-| Through THORChain, into Bitcoin Cash | 2 (allow, then deposit) | +1 for PUSD or MUSD |
+| USDC/USDT → PUSD or MUSD, through NEAR Intents | 1 transfer | – (the [swap contract](/docs/bitcoin-cash/swap-contract) trades it) |
+| Through THORChain, into Bitcoin Cash | 2 (allow, then deposit) | – |
 | BCH → USDC/USDT | – | 1 |
 | PUSD or MUSD → USDC/USDT | – | 2 (sell on Cauldron, then send the BCH; the sale is saved in between) |
 | PUSD ⇄ MUSD ⇄ BCH | – | 1 |

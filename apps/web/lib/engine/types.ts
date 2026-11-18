@@ -78,6 +78,8 @@ export interface Route {
   minAmountOut: bigint
   /** BCH that crosses the bridge, in sats (zero on a Cauldron-only route: nothing crosses). */
   bridgeSats: bigint
+  /** Into Bitcoin Cash: the least BCH the bridge promises (the swap contract's floor is spread over it). */
+  minBridgeSats?: bigint
   cauldron?: CauldronLeg
   /** What NEAR says the amounts are worth, when it says (forward and reverse). */
   usdIn?: number

@@ -11,6 +11,7 @@ import { Dialog, DialogDescription, DialogPopup, DialogTitle } from '@/component
 import { Spinner } from '@/components/ui/spinner'
 import { BCH_ASSETS } from '@/lib/constants/assets'
 import { CHAINS } from '@/lib/constants/chains'
+import { SWAP_ON_ARRIVAL } from '@/lib/constants/features'
 import type { FeeLineId } from '@/lib/engine/costs'
 import type { SideAsset } from '@/lib/engine/pair'
 import { PROVIDERS, type Route } from '@/lib/engine/types'
@@ -27,7 +28,8 @@ function approvals(route: Route): { wallet: string; count: number }[] {
   if (pair.direction === 'in') {
     return [
       { wallet: `${CHAINS[pair.stable.chain].name} wallet`, count: route.provider === 'near' ? 1 : 2 },
-      ...(pair.bchAsset === 'BCH' ? [] : [{ wallet: 'Bitcoin Cash wallet', count: 1 }]),
+      // With the swap contract, the trade into PUSD or MUSD needs no approval from the Bitcoin Cash wallet.
+      ...(pair.bchAsset === 'BCH' || SWAP_ON_ARRIVAL ? [] : [{ wallet: 'Bitcoin Cash wallet', count: 1 }]),
     ]
   }
   return [{ wallet: 'Bitcoin Cash wallet', count: route.signatures }]
@@ -230,6 +232,9 @@ export function ReviewDialog({
                     `${a.count} ${gasless && a.wallet !== 'Bitcoin Cash wallet' ? 'signature' : 'approval'}${a.count === 1 ? '' : 's'} in your ${a.wallet}`,
                 )
                 .join(', ')}
+              {SWAP_ON_ARRIVAL && route.pair.direction === 'in' && route.pair.bchAsset !== 'BCH'
+                ? `. The ${route.pair.bchAsset} trade on Bitcoin Cash runs by itself.`
+                : null}
             </Row>
             {from ? <Address term="From" value={from} /> : null}
             {to ? <Address term="To" value={to} /> : null}

@@ -149,7 +149,11 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
     })
     steps.push({
       id: 'arrive',
-      title: 'BCH arrives in your wallet',
+      title: record.arrival
+        ? record.arrival.returnTxid
+          ? 'BCH back in your wallet'
+          : 'BCH arrives at your swap contract'
+        : 'BCH arrives in your wallet',
       ...(record.bchSats ? { detail: `${formatAmount(BigInt(record.bchSats), 8, 8)} BCH` } : {}),
       chain: 'bch',
       state: state(reached(record, 'bch-arrived') || (!token && record.status === 'completed'), false),
@@ -164,7 +168,9 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
         title: `Swap into ${record.bchAsset} on Cauldron`,
         detail: record.cauldronTxid
           ? BCH_ASSETS[record.bchAsset].name
-          : 'One approval in your Bitcoin Cash wallet',
+          : record.arrival && !record.arrival.returnTxid
+            ? 'Automatic: the swap contract pays only your wallet'
+            : 'One approval in your Bitcoin Cash wallet',
         chain: 'bch',
         state: state(
           record.status === 'completed',
@@ -273,15 +279,22 @@ export function headline(record: SwapRecord): Headline {
         title: `Bridging ${into}`,
         close:
           record.direction === 'in' && record.bchAsset !== 'BCH'
-            ? `Safe to close: the BCH arrives on its own. Come back for one approval that turns it into ${record.bchAsset}.`
+            ? record.arrival
+              ? `Safe to close: Hashi turns the BCH into ${record.bchAsset} the next time this page is open, with no approval. If not, the BCH goes back to your wallet on its own within about two hours.`
+              : `Safe to close: the BCH arrives on its own. Come back for one approval that turns it into ${record.bchAsset}.`
             : 'Safe to close this tab: the bridge delivers on its own.',
       }
     case 'bch-arrived':
     case 'swapping':
-      return {
-        title: `One approval left`,
-        close: `The BCH is in your wallet. Approve the swap into ${record.bchAsset} whenever you are ready.`,
-      }
+      return record.arrival && !record.arrival.returnTxid
+        ? {
+            title: `Turning the BCH into ${record.bchAsset}`,
+            close: 'No approval needed: the swap contract can only pay your wallet.',
+          }
+        : {
+            title: `One approval left`,
+            close: `The BCH is in your wallet. Approve the swap into ${record.bchAsset} whenever you are ready.`,
+          }
     case 'completed':
       return { title: 'Swap complete', close: 'All done.' }
     case 'refunded':

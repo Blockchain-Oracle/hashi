@@ -1,12 +1,19 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toastManager } from '@/components/ui/toast'
 import { useBchWallet } from '@/features/wallets/bch-wallet'
 import { useEvmWallet } from '@/features/wallets/evm-wallet'
 import { BCH_ASSETS } from '@/lib/constants/assets'
-import { STATUS_POLL_MS } from '@/lib/constants/limits'
+import {
+  ARRIVAL_COINS_REFRESH_MS,
+  ARRIVAL_PRICE_RETRY_MS,
+  ARRIVAL_RETRY_MS,
+  STATUS_POLL_MS,
+} from '@/lib/constants/limits'
+import { ArrivalWaiting, contractCoins, finishArrival, returnArrival } from '@/lib/engine/arrival'
+import { tradesOnArrival } from '@/lib/engine/arrival-terms'
 import {
   type BchSide,
   checkBridge,
@@ -57,11 +64,18 @@ const ANNOUNCE: Partial<
     title: 'Deposit sent',
     description: 'The bridge will pick it up shortly.',
   }),
-  'bch-arrived': (r) => ({
-    type: 'info',
-    title: 'BCH arrived',
-    description: `One approval in your Bitcoin Cash wallet turns it into ${r.bchAsset}.`,
-  }),
+  'bch-arrived': (r) =>
+    tradesOnArrival(r)
+      ? {
+          type: 'info',
+          title: 'BCH arrived',
+          description: `Turning it into ${r.bchAsset} now, with no approval needed.`,
+        }
+      : {
+          type: 'info',
+          title: 'BCH arrived',
+          description: `One approval in your Bitcoin Cash wallet turns it into ${r.bchAsset}.`,
+        },
   completed: (r) => ({
     type: 'success',
     title: 'Swap complete',
@@ -98,6 +112,22 @@ export function useSwapRunner(id: string) {
   const [offer, setOffer] = useState<{ kind: 'deposit' | 'finish'; accept: Accept } | null>(null)
   const [log, setLog] = useState<RunLog[]>([])
   const [statusTrouble, setStatusTrouble] = useState<StatusTrouble | null>(null)
+  /** A swap contract's trade that cannot go yet: the BCH is not visible there, or prices sit under the floor. */
+  const [arrivalWait, setArrivalWait] = useState<{ reason: 'coin' | 'price'; message: string } | null>(null)
+  const arriving = useRef(false)
+  /** When prices last sat under the floor: the next try waits ARRIVAL_PRICE_RETRY_MS. */
+  const priceWaitAt = useRef(0)
+
+  // What the swap contract holds right now, read from the chain: the way out ("Send the BCH to my wallet") is
+  // offered whenever there is BCH there, whatever the bridge's status says, after a trade or a return too.
+  const arrival = record?.arrival
+  const contractQuery = useQuery({
+    queryKey: ['arrival-coins', arrival?.address],
+    queryFn: async () =>
+      arrival ? (await contractCoins(arrival)).reduce((sum, c) => sum + c.value, 0n) : 0n,
+    enabled: Boolean(arrival) && record?.status !== 'quoted',
+    refetchInterval: ARRIVAL_COINS_REFRESH_MS,
+  })
   const checking = useRef(false)
   const lastStatus = useRef<SwapStatus | undefined>(undefined)
 
@@ -164,6 +194,21 @@ export function useSwapRunner(id: string) {
     [record, run, bch, push],
   )
 
+  /** Swap contract: send the BCH to the wallet now instead (the trade key's `release`), to finish by hand. */
+  const releaseToWallet = useCallback(() => {
+    if (!record) return
+    // Never at the same moment as an automatic trade attempt: both would spend the same coin.
+    if (arriving.current) {
+      setError('Hashi is trying the trade right now. Try again in a few seconds.')
+      return
+    }
+    arriving.current = true
+    void run('finish', () => returnArrival(record, push)).finally(() => {
+      arriving.current = false
+      void queryClient.invalidateQueries({ queryKey: ['arrival-coins', record.arrival?.address] })
+    })
+  }, [record, run, push, queryClient])
+
   /** Go ahead at the new price the last attempt reported. */
   const acceptNewPrice = useCallback(() => {
     if (!offer) return
@@ -222,6 +267,45 @@ export function useSwapRunner(id: string) {
     }
   }, [record, queryClient, push])
 
+  // Swap contract: once the BCH has landed, trade it with no approval; retry while it is not visible or prices sit
+  // under the floor (after the refund time, finishArrival sends it back to the wallet instead).
+  useEffect(() => {
+    if (!record || nextStep(record) !== 'finish' || !tradesOnArrival(record)) return
+    let stopped = false
+    const tick = async () => {
+      if (arriving.current) return
+      if (Date.now() - priceWaitAt.current < ARRIVAL_PRICE_RETRY_MS) return
+      arriving.current = true
+      try {
+        const next = await finishArrival(record, push)
+        // Saved even if this page moved on meanwhile: a trade or a return that went out must never be forgotten.
+        await persistSwap(queryClient, next)
+        if (!stopped) {
+          setArrivalWait(null)
+          setError(null)
+        }
+      } catch (e) {
+        if (stopped) return
+        if (e instanceof ArrivalWaiting) {
+          if (e.reason === 'price') priceWaitAt.current = Date.now()
+          setArrivalWait({ reason: e.reason, message: e.message })
+        } else {
+          const message = friendly(e)
+          push('error', message)
+          setError(message)
+        }
+      } finally {
+        arriving.current = false
+      }
+    }
+    void tick()
+    const timer = setInterval(() => void tick(), ARRIVAL_RETRY_MS)
+    return () => {
+      stopped = true
+      clearInterval(timer)
+    }
+  }, [record, queryClient, push])
+
   // Say each new state out loud once: a toast, and the chime and buzz for the moments that matter.
   useEffect(() => {
     if (!record) return
@@ -231,7 +315,8 @@ export function useSwapRunner(id: string) {
     const announce = ANNOUNCE[record.status]?.(record)
     if (announce) toastManager.add(announce)
     if (record.status === 'completed') celebrate('success')
-    if (['bch-arrived', 'refunded', 'failed'].includes(record.status)) {
+    // A chime asks for attention only when something is asked of the person (not while a swap contract trades).
+    if (['bch-arrived', 'refunded', 'failed'].includes(record.status) && !tradesOnArrival(record)) {
       celebrate('attention')
     }
   }, [record])
@@ -245,6 +330,10 @@ export function useSwapRunner(id: string) {
     offer: Boolean(offer),
     log,
     statusTrouble,
+    arrivalWait,
+    releaseToWallet,
+    /** Sats waiting in the swap contract right now (read from the chain), or 0. */
+    contractSats: contractQuery.data ?? 0n,
     deposit: () => deposit(),
     finish: () => finish(),
     acceptNewPrice,

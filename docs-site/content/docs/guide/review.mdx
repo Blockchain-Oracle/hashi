@@ -15,10 +15,10 @@ icon: ListChecks
 |---|---|
 | **You pay / You receive** | both amounts, in dollars too, and the route's legs between them |
 | **Rate** | e.g. "1 USDC = 0.9966 PUSD" |
-| **You get at least** | the least the whole swap gives at your slippage, e.g. "48.8 PUSD · 1.00% slippage"; with a Cauldron leg, that leg's slippage counts too. Every Cauldron trade is built with a floor: on Bitcoin Cash, this number; into PUSD or MUSD, the buy after the BCH lands is built with this number; selling PUSD or MUSD, the sale is held to your slippage and the bridge, quoted after it, must still pay at least this. If prices move past a floor, nothing is signed and the tracker offers **Continue at the new price** |
+| **You get at least** | the least the whole swap gives at your slippage, e.g. "48.8 PUSD · 1.00% slippage"; with a Cauldron leg, that leg's slippage counts too. Every Cauldron trade is built with a floor: on Bitcoin Cash, this number; into PUSD or MUSD, the [swap contract](/docs/bitcoin-cash/swap-contract) will not pay you less than this number; selling PUSD or MUSD, the sale is held to your slippage and the bridge, quoted after it, must still pay at least this. If prices move past a floor, nothing is signed and the tracker offers **Continue at the new price** |
 | **Arrives in** | the route's estimate |
 | **Fees** | the bridge, the Cauldron swap and the network fee, each in dollars (the gas amount too), then **Total** |
-| **Approvals** | per wallet, e.g. "1 approval in your Ethereum wallet, 1 approval in your Bitcoin Cash wallet" |
+| **Approvals** | per wallet, e.g. "1 approval in your Ethereum wallet. The PUSD trade on Bitcoin Cash runs by itself." |
 | **From / To / Refunds go to** | the addresses, each with a copy button. For NEAR Intents the refund address is sent with the quote; for THORChain going in, it rides in the memo. Coming out, a Bitcoin Cash memo has no room for one, so THORChain refunds to the address of the deposit's first coin: Hashi puts a coin from the receive address shown here first (when that address holds plain BCH, as it does after a PUSD or MUSD sale) |
 
 The note at the bottom says what happens if the price moves:

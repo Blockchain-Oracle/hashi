@@ -1,0 +1,60 @@
+---
+title: The swap contract
+description: "One approval into PUSD or MUSD: the bridge pays a contract made for your swap, and it can only ever pay you."
+icon: ShieldCheck
+---
+
+Swapping USDC or USDT into PUSD or MUSD takes **one approval**: the deposit. The bridge pays its BCH to a small Bitcoin Cash contract made for that one swap, instead of your wallet, and Hashi turns it into PUSD or MUSD on Cauldron without asking your wallet again.
+
+<Diagram name="into-bch" alt="Sequence for 50 USDC on Ethereum to PUSD in one approval: Hashi makes a contract for the swap that pays only your wallet, NEAR Intents pays the BCH to it, and Hashi trades it on Cauldron with the swap's own key, with no wallet prompt" caption="50 USDC on Ethereum → PUSD: the deposit is the only approval." />
+
+## What the contract allows
+
+Every way out pays **you**, and no one else.
+
+| Way out | Who can use it | When | What you get |
+|---|---|---|---|
+| **Swap** | Hashi, with this swap's own key (made in your browser) | as soon as the BCH lands | at least the review's **You get at least** in PUSD or MUSD |
+| **Release** | the same key | any time: **Send the BCH to my wallet instead** | the BCH, in your wallet |
+| **Reclaim** | anyone | after the refund time: about two hours after you start | the BCH, in your wallet |
+
+The swap's key is the only key, and even it can only pay your wallet, never less than the floor. Each coin's payout sits at the coin's own place in the transaction, so two coins can never share one payout.
+
+## What you see
+
+| Moment | The tracker says |
+|---|---|
+| Bridging | **Bridging into Bitcoin Cash**: safe to close |
+| BCH at the contract | **Turning the BCH into PUSD**: no approval needed |
+| Prices moved past your slippage | Hashi keeps trying, and offers **Send the BCH to my wallet instead** |
+| Done | **Swap complete**, with the Cauldron trade linked |
+
+If the trade can't happen in time, the BCH goes back to your wallet and the swap finishes the usual way: one approval in your Bitcoin Cash wallet. Hashi reads the contract on the chain, so any BCH there shows up with a button to send it to you, whatever the bridge's status page says.
+
+## Closing the tab
+
+Hashi trades the BCH the next time the page is open. If the page isn't open again in time, Hashi's server sends the BCH back to your wallet on its own, about two hours after you started (the chain's clock, which a refund time is checked against, runs about an hour behind). It can do that because, before your deposit, your browser gives the server the contract's **public** terms (your address, the floor, the refund time and the public half of the swap's key). The private half of the key never leaves your browser, and the server's only power is the reclaim, which pays you.
+
+Hashi makes a contract only when that safety net is up: the server keeps the terms on a persistent volume and its keeper has run in the last half hour. If not, the bridge pays your wallet as before, and the PUSD trade takes a second approval.
+
+## How it is checked
+
+- Every transaction the contract signs is run through Bitcoin Cash's own rules (the 2026 VM, mainnet since May 2026) before it is sent.
+- On a real 11-pool Cauldron trade, the honest trade passes, and these all fail: the PUSD paid to anyone else, one unit under the floor, a signature from any other key, a second coin riding on the first coin's payout, an early refund, and a refund leaving the miner more than 3,000 sats.
+- Hashi's encoding of the contract matches the CashScript SDK byte for byte.
+- A live check builds a fresh Cauldron trade from a real contract address and verifies it, without broadcasting.
+
+## Cost
+
+Nothing to create: the contract is an address. The trade is about 180 bytes longer than one your wallet signs, so about 200 sats (a small fraction of a cent) more in miner fee, paid from the BCH that arrives. The review's numbers already count it.
+
+## For builders
+
+| | |
+|---|---|
+| Source | [`contracts/swap-on-arrival.cash`](https://github.com/Blockchain-Oracle/hashi/blob/main/apps/web/contracts/swap-on-arrival.cash) (CashScript 0.14) |
+| Address type | P2SH20, because THORChain pays only 20-byte script hashes; your browser picks every parameter, including a random key, so the P2SH20 address-collision attack has nothing to grind |
+| Floor | `min(coin × promised ÷ bridgeMin, promised)`: the review's **You get at least**, pro rata only if less BCH than the bridge promised arrives |
+| Signature | Schnorr, covering every output and every coin spent (`SIGHASH_ALL` with `SIGHASH_UTXOS`) |
+| Refund time | an absolute time (`OP_CHECKLOCKTIMEVERIFY`), one hour after the quote; the app's own return uses the swap's key at that time, the server's reclaim waits for the chain's median time to pass it |
+| Keeper | `POST /api/arrivals` keeps public terms (and answers 503 when the keeper is not running, so the swap pays the wallet instead); a `POST /api/arrivals/sweep` every 10 minutes reclaims any coin past its refund time, one coin at a time, each checked in the VM first |

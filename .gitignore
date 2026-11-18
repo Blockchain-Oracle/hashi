@@ -19,3 +19,6 @@ coverage/
 .21st/
 AGENTS.md
 CLAUDE.md
+
+# The swap contracts keeper's local store (production keeps it on a persistent volume).
+.data/

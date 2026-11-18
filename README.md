@@ -46,14 +46,14 @@ The cross-chain services (NEAR Intents, THORChain and the apps built on them) st
 
 ## The idea
 
-Hashi joins the two ends. You pick an amount, see every route priced end to end with its fees, and approve each step in your own wallets. Hashi builds each transaction, sends it, watches the bridge and asks for the next approval. It never holds the money and adds no fee of its own.
+Hashi joins the two ends. You pick an amount, see every route priced end to end with its fees, and approve in your own wallet. Going into PUSD or MUSD that is **one approval**: the bridge pays a Bitcoin Cash contract made for your swap, and Hashi turns the BCH into PUSD or MUSD on Cauldron without asking again. The contract can only ever pay you. Hashi never holds the money and adds no fee of its own.
 
 **A real quote.** Asking for 50 USDC on Ethereum → MUSD on 17 November 2026 at 00:21 UTC gave two routes:
 
-| Route                                     | You receive    | Time        | Fees  | Approvals                                                       |
-| ----------------------------------------- | -------------- | ----------- | ----- | --------------------------------------------------------------- |
-| NEAR Intents → Cauldron · **Best return** | **48.89 MUSD** | about 3 min | $0.50 | 2: one in your Ethereum wallet, one in your Bitcoin Cash wallet |
-| THORChain → Cauldron · **Fastest**        | 48.69 MUSD     | about 45 s  | $0.70 | 3: allow, deposit, then the Cauldron swap                       |
+| Route                                     | You receive    | Time        | Fees  | Approvals                                                 |
+| ----------------------------------------- | -------------- | ----------- | ----- | --------------------------------------------------------- |
+| NEAR Intents → Cauldron · **Best return** | **48.89 MUSD** | about 3 min | $0.50 | 1: the USDC transfer; the Cauldron trade runs by itself   |
+| THORChain → Cauldron · **Fastest**        | 48.69 MUSD     | about 45 s  | $0.70 | 2: allow, then deposit; the Cauldron trade runs by itself |
 
 <p align="center">
   <picture>
@@ -62,7 +62,7 @@ Hashi joins the two ends. You pick an amount, see every route priced end to end 
   </picture>
 </p>
 
-With the NEAR Intents route, you approve one USDC transfer. NEAR Intents delivers BCH to your Bitcoin Cash wallet, and one more approval swaps it for MUSD on Cauldron. The review shows the least you can receive with both legs' slippage counted, and every Cauldron trade is built with that floor. If prices move past it, nothing is signed. Hashi tells you what the trade would give now and lets you choose.
+With the NEAR Intents route, you approve one USDC transfer, and that is all. NEAR Intents pays the BCH to [a contract made for your swap](https://docs.hashi.cash/docs/bitcoin-cash/swap-contract), and Hashi trades it for MUSD on Cauldron with that swap's own key. The contract pays only your wallet, never less than the review's **You get at least**. If prices move past that floor, the BCH goes back to your wallet instead, and nothing can stay stuck: Hashi's server keeps the contract's public terms and returns any unfinished BCH after the refund time.
 
 ## Demo video
 
@@ -84,7 +84,7 @@ The cover opens the same swap on the live app. The recorded walkthrough will be 
 2. **Start.** The bridge issues a real deposit address (NEAR Intents) or names its vault and memo (THORChain). The swap is saved in your browser before anything moves.
 3. **Deposit.** One transfer from your EVM or Solana wallet. THORChain also needs an "allow" first. USDC on Base can go gasless: you sign, and Hashi's relayer pays the gas.
 4. **Bridge.** Hashi checks the bridge every 5 seconds. You can close the tab: the BCH arrives on its own.
-5. **Finish on Bitcoin Cash.** For PUSD or MUSD, one WizardConnect approval signs the Cauldron trade that Hashi built from the BCH that arrived. Hashi broadcasts it through Electrum servers.
+5. **Finish on Bitcoin Cash, with no approval.** For PUSD or MUSD the bridge paid this swap's contract (P2SH, CashScript). Hashi builds the Cauldron trade from its BCH, signs it with the swap's own key, checks the whole transaction in the Bitcoin Cash VM and broadcasts it through Electrum servers. The contract lets that trade pay only you, at least the floor; otherwise the BCH goes back to your wallet, and you finish with one WizardConnect approval.
 6. **The way back** sells PUSD or MUSD on Cauldron first. The sale is saved the moment it is out, then the bridge is quoted for exactly the BCH it produced.
 
 <p align="center">
@@ -101,7 +101,7 @@ The cover opens the same swap on the live app. The recorded walkthrough will be 
   <a href="https://docs.hashi.cash/docs/routes">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset=".github/assets/into-bch-dark.png" />
-      <img src=".github/assets/into-bch-light.png" width="960" alt="Sequence for 50 USDC on Ethereum to PUSD: Hashi prices the routes; NEAR Intents issues a deposit address; approval 1 sends the USDC; Hashi checks status every 5 seconds; NEAR sends BCH; approval 2 signs the Cauldron trade; PUSD arrives" />
+      <img src=".github/assets/into-bch-light.png" width="960" alt="Sequence for 50 USDC on Ethereum to PUSD in one approval: Hashi prices the routes; Hashi makes a contract for the swap that pays only your wallet; NEAR Intents issues a deposit address; the only approval sends the USDC; NEAR pays the BCH to the contract; Hashi trades it on Cauldron with the swap's own key; PUSD arrives" />
     </picture>
   </a>
 </p>
@@ -199,7 +199,7 @@ Third-party components, fonts and logos are listed with their licences in [THIRD
 - **Selling PUSD or MUSD takes two approvals** (sell, then send). Paying the bridge straight from the sale, in one approval, is built but not yet proven.
 - **Gasless deposits are off** until the relayer holds a little Base ETH; the normal deposit is offered instead.
 - **Each bridge holds the money while it carries it**: NEAR Intents' bridge or THORChain's vaults, for seconds to minutes ([trust](https://docs.hashi.cash/docs/routes/trust)).
-- **Swaps are saved only in the browser that started them**; there is no account and no server copy.
+- **Swaps are saved only in the browser that started them**; there is no account. The server keeps only each swap contract's public terms, so it can send unfinished BCH back to its owner.
 
 ## Licence
 

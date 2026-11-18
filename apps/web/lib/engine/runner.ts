@@ -703,8 +703,26 @@ async function waitForCoin(bch: BchSide, txid: string): Promise<WalletUtxo[]> {
   throw new Error('The sale has not appeared yet; resume this swap in a moment to send the BCH on')
 }
 
+/** What the bridge said at a status check, for the tracker's live progress (features/activity/progress.ts). */
+export interface BridgeReading {
+  at: number
+  near?: { status: string; updatedAt: number }
+  thor?: {
+    observed: boolean
+    confirmed: boolean
+    confirmSecondsLeft?: number
+    swapped: boolean
+    outboundSecondsLeft?: number
+    sent: boolean
+  }
+}
+
 /** One status check with the bridge. Returns the same record when nothing changed. */
-export async function checkBridge(record: SwapRecord, log: Log): Promise<SwapRecord> {
+export async function checkBridge(
+  record: SwapRecord,
+  log: Log,
+  onReading?: (reading: BridgeReading) => void,
+): Promise<SwapRecord> {
   if (record.provider === 'cauldron') return record
   const forward = record.direction === 'in'
   // A swap contract's own coins are the surest sign the BCH arrived: the chain, not the bridge's status page. Only
@@ -727,6 +745,11 @@ export async function checkBridge(record: SwapRecord, log: Log): Promise<SwapRec
     if (!record.depositAddress) return record
     const status = await getNearStatus(record.depositAddress)
     const details = status.swapDetails
+    const updatedAt = Date.parse(status.updatedAt)
+    onReading?.({
+      at: Date.now(),
+      near: { status: status.statusText, updatedAt: Number.isFinite(updatedAt) ? updatedAt : Date.now() },
+    })
     switch (status.status) {
       case 'SUCCESS': {
         const out = details.destinationChainTxHashes[0]?.hash
@@ -766,6 +789,25 @@ export async function checkBridge(record: SwapRecord, log: Log): Promise<SwapRec
   const inbound = forward ? record.depositTx : record.bchTxid
   if (!inbound) return record
   const status = await getThorStatus(inbound as Hash)
+  const stages = status.stages
+  const counting = stages.inbound_confirmation_counted
+  const delay = stages.outbound_delay
+  onReading?.({
+    at: Date.now(),
+    thor: {
+      observed: Boolean(stages.inbound_observed?.completed),
+      // Small deposits skip the confirmation stage: then being observed is enough.
+      confirmed: counting ? Boolean(counting.completed) : Boolean(stages.inbound_observed?.completed),
+      ...(counting && !counting.completed && counting.remaining_confirmation_seconds !== undefined
+        ? { confirmSecondsLeft: counting.remaining_confirmation_seconds }
+        : {}),
+      swapped: Boolean(stages.swap_finalised?.completed),
+      ...(delay && !delay.completed && delay.remaining_delay_seconds !== undefined
+        ? { outboundSecondsLeft: delay.remaining_delay_seconds }
+        : {}),
+      sent: Boolean(stages.outbound_signed?.completed),
+    },
+  })
   const out = status.out_txs?.[0]
   if (out?.id) {
     const refund = status.planned_out_txs?.some((p) => p.refund)

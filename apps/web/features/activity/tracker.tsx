@@ -29,6 +29,8 @@ import type { SwapRecord, SwapStatus } from '@/lib/engine/swap'
 import { PROVIDERS } from '@/lib/engine/types'
 import { displayDecimals, formatAmount, shortAddress } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { LiveProgressPanel } from './live-progress'
+import { liveProgress, shortProgress } from './progress'
 import { bridgeExplorerUrl, headline, paySide, receiveSide, secondsLeft, trackerSteps } from './steps'
 import { useSwapRunner } from './use-swap-runner'
 
@@ -119,12 +121,16 @@ export function Tracker({ id }: { id: string }) {
   const receive = receiveSide(record)
   const pill = statusPill(record)
   const title = headline(record)
-  const steps = trackerSteps(record, now)
+  // While a bridge carries the swap: what it waits for now, read live from the chain and the bridge.
+  const progress = liveProgress(record, runner.bridgeReading, runner.chainReading)
+  const steps = trackerSteps(record, now, progress ? shortProgress(progress, now) : undefined)
   const received = record.receivedAmount ?? record.quoted?.amountOut
   const left = secondsLeft(record, now)
   // Hashi cannot read the bridge's status: say that, rather than blame the bridge for being slow.
   const unreadable = runner.statusTrouble !== null && now - runner.statusTrouble.since >= STATUS_TROUBLE_MS
-  const slow = !unreadable && left !== undefined && record.quoted && left < -record.quoted.etaSeconds * 0.5
+  // The live panel says what is slow and why; this is the fallback when nothing can be read.
+  const slow =
+    !progress && !unreadable && left !== undefined && record.quoted && left < -record.quoted.etaSeconds * 0.5
   const explorer = bridgeExplorerUrl(record)
 
   return (
@@ -182,7 +188,11 @@ export function Tracker({ id }: { id: string }) {
             />
           </div>
 
-          <Action runner={runner} record={record} />
+          {progress && !unreadable ? (
+            <LiveProgressPanel progress={progress} record={record} now={now} />
+          ) : (
+            <Action runner={runner} record={record} />
+          )}
 
           {record.arrival &&
           runner.contractSats > 0n &&

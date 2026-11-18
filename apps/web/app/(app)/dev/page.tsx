@@ -31,6 +31,7 @@ import {
   TrackerDemo,
 } from '@/features/dev/components-demo'
 import { LandingDemo } from '@/features/dev/landing-demo'
+import { LiveProgressDemo } from '@/features/dev/live-progress-demo'
 import { MotionDemo } from '@/features/dev/motion-demo'
 import { DevSection } from '@/features/dev/section'
 import { SwapPreview } from '@/features/dev/swap-preview'
@@ -397,6 +398,9 @@ export default function DevPage() {
           <div className="grid gap-4 lg:grid-cols-2">
             <TrackerDemo />
             <EventsDemo />
+          </div>
+          <div className="mt-4">
+            <LiveProgressDemo />
           </div>
         </DevSection>
 

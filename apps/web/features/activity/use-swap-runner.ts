@@ -5,17 +5,21 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { toastManager } from '@/components/ui/toast'
 import { useBchWallet } from '@/features/wallets/bch-wallet'
 import { useEvmWallet } from '@/features/wallets/evm-wallet'
+import { blockTime, getTip, transactionHeight } from '@/lib/bch/electrum'
 import { BCH_ASSETS } from '@/lib/constants/assets'
 import {
   ARRIVAL_COINS_REFRESH_MS,
   ARRIVAL_PRICE_RETRY_MS,
   ARRIVAL_RETRY_MS,
+  CHAIN_READ_MS,
+  NEAR_BCH_CONFIRMATIONS,
   STATUS_POLL_MS,
 } from '@/lib/constants/limits'
 import { ArrivalWaiting, contractCoins, finishArrival, returnArrival } from '@/lib/engine/arrival'
 import { tradesOnArrival } from '@/lib/engine/arrival-terms'
 import {
   type BchSide,
+  type BridgeReading,
   checkBridge,
   expireIfStale,
   finishOnCauldron,
@@ -129,6 +133,32 @@ export function useSwapRunner(id: string) {
     refetchInterval: ARRIVAL_COINS_REFRESH_MS,
   })
   const checking = useRef(false)
+  /** The bridge's answer at its last status check (the tracker's live progress reads it). */
+  const [bridgeReading, setBridgeReading] = useState<BridgeReading | null>(null)
+
+  // Coming out through NEAR: NEAR takes the BCH deposit after a number of blocks, so the tracker counts them live.
+  const countsBlocks =
+    record?.direction === 'out' &&
+    record.provider === 'near' &&
+    Boolean(record.bchTxid) &&
+    (record.status === 'deposit-sent' || record.status === 'bridging')
+  const chainQuery = useQuery({
+    queryKey: ['bch-deposit-blocks', record?.bchTxid],
+    queryFn: async () => {
+      const [tip, depositHeight] = await Promise.all([getTip(), transactionHeight(record?.bchTxid as string)])
+      // The block NEAR waits for, once mined: the tracker counts NEAR's own wait from it.
+      const confirmed = depositHeight ? depositHeight + NEAR_BCH_CONFIRMATIONS - 1 : undefined
+      const confirmedAt = confirmed && tip.height >= confirmed ? await blockTime(confirmed) : undefined
+      return {
+        tip: tip.height,
+        tipAt: tip.at,
+        ...(depositHeight === undefined ? {} : { depositHeight }),
+        ...(confirmedAt === undefined ? {} : { confirmedAt }),
+      }
+    },
+    enabled: countsBlocks,
+    refetchInterval: CHAIN_READ_MS,
+  })
   const lastStatus = useRef<SwapStatus | undefined>(undefined)
 
   const push = useCallback((step: string, detail: string) => {
@@ -247,7 +277,9 @@ export function useSwapRunner(id: string) {
       if (checking.current) return
       checking.current = true
       try {
-        const next = await checkBridge(record, push)
+        const next = await checkBridge(record, push, (reading) => {
+          if (!stopped) setBridgeReading(reading)
+        })
         if (!stopped) setStatusTrouble(null)
         if (!stopped && next !== record) await persistSwap(queryClient, next)
       } catch (e) {
@@ -330,6 +362,9 @@ export function useSwapRunner(id: string) {
     offer: Boolean(offer),
     log,
     statusTrouble,
+    /** The bridge's last answer and the Bitcoin Cash chain, read live for the tracker's progress panel. */
+    bridgeReading,
+    chainReading: chainQuery.data ?? null,
     arrivalWait,
     releaseToWallet,
     /** Sats waiting in the swap contract right now (read from the chain), or 0. */

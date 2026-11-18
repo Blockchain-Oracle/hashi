@@ -2,6 +2,7 @@ import type { TimelineStep } from '@/components/kit/step-timeline'
 import { BCH_ASSETS, type BchAssetId, STABLES, type StableSymbol } from '@/lib/constants/assets'
 import { CHAINS, type ChainId } from '@/lib/constants/chains'
 import { nearIntentsUrl, thorchainUrl, txUrl } from '@/lib/constants/explorers'
+import { NEAR_BCH_CONFIRMATIONS } from '@/lib/constants/limits'
 import type { SwapRecord, SwapStatus } from '@/lib/engine/swap'
 import { PROVIDERS } from '@/lib/engine/types'
 import { displayDecimals, formatAmount, formatDuration } from '@/lib/format'
@@ -82,14 +83,15 @@ export function bridgeExplorerUrl(record: SwapRecord): string | undefined {
   return inbound ? thorchainUrl(inbound) : undefined
 }
 
-export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
+/** `live`: what the tracker's progress panel says right now ("block 1 of 2", "1:42 left"), for the bridge's row. */
+export function trackerSteps(record: SwapRecord, now: number, live?: string): TimelineStep[] {
   const pay = paySide(record)
   const provider = PROVIDERS[record.provider].name
   const amountIn = `${formatAmount(BigInt(record.amountIn), pay.decimals, displayDecimals(pay.symbol))} ${pay.symbol}`
   const bridgeHref = bridgeExplorerUrl(record)
   const left = secondsLeft(record, now)
   const bridgeAt =
-    left === undefined ? timeOf(record, 'bridging') : left > 0 ? formatDuration(left) : 'any moment'
+    live ?? (left === undefined ? timeOf(record, 'bridging') : left > 0 ? formatDuration(left) : 'any moment')
   const token = record.bchAsset !== 'BCH'
   const steps: TimelineStep[] = []
 
@@ -209,7 +211,7 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
           ? `Send the BCH to ${provider}`
           : `Send ${amountIn} to ${provider}`,
       detail: record.bchTxid
-        ? 'Waits for one Bitcoin Cash block (~10 min)'
+        ? 'Sent on Bitcoin Cash'
         : saleIsDeposit
           ? 'One approval in your Bitcoin Cash wallet: the sale and the deposit are one transaction'
           : 'One approval in your Bitcoin Cash wallet',
@@ -221,19 +223,14 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
       ...(timeOf(record, 'deposit-sent') ? { at: timeOf(record, 'deposit-sent') as string } : {}),
       ...(record.bchTxid ? { href: txUrl('bch', record.bchTxid) } : {}),
     })
-    // NEAR's quote names when it starts refunding a swap it has not finished (its own deadline, a few hours on).
-    const refundBy = (record.bridgeQuote as { quoteRequest?: { deadline?: string } } | undefined)
-      ?.quoteRequest?.deadline
-    const refundAt =
-      record.provider === 'near' && refundBy
-        ? new Date(refundBy).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-        : undefined
+    // The refund time and the live wait sit in the tracker's progress panel (live-progress.tsx), not repeated here.
     steps.push({
       id: 'bridge',
       title: `${provider} turns it into ${stable.symbol}`,
-      detail: refundAt
-        ? `Starts after two Bitcoin Cash blocks (about 20 minutes, sometimes more). Not done by ${refundAt}? NEAR sends the BCH back to your wallet.`
-        : `Starts once ${provider} counts the deposit as confirmed (one to three Bitcoin Cash blocks)`,
+      detail:
+        record.provider === 'near'
+          ? `Starts after ${NEAR_BCH_CONFIRMATIONS} Bitcoin Cash blocks (about 20 minutes, sometimes more)`
+          : `Starts once ${provider} counts the deposit as confirmed (one to three Bitcoin Cash blocks)`,
       state: state(record.status === 'completed', ['deposit-sent', 'bridging'].includes(record.status)),
       ...(bridgeAt ? { at: bridgeAt } : {}),
       ...(bridgeHref ? { href: bridgeHref } : {}),

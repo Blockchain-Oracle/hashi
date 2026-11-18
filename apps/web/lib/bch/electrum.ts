@@ -253,3 +253,33 @@ export async function subscribeAddress(address: string, onChange: () => void): P
     }
   }
 }
+
+/** A block header's time (seconds): bytes 68–71, little-endian. */
+function headerTime(hex: string): number {
+  const bytes = hex.slice(136, 144).match(/../g) ?? []
+  return Number.parseInt(bytes.reverse().join(''), 16)
+}
+
+/** The chain tip: its height, and when its block was mined (ms). */
+export async function getTip(): Promise<{ height: number; at: number }> {
+  const tip = await request<{ height: number; hex: string }>('blockchain.headers.get_tip')
+  return { height: tip.height, at: headerTime(tip.hex) * 1000 }
+}
+
+/** A transaction's block height: 0 while it waits in the mempool, undefined when the server does not know it. */
+export async function transactionHeight(txid: string): Promise<number | undefined> {
+  try {
+    const height = await request<number>('blockchain.transaction.get_height', txid)
+    return typeof height === 'number' ? Math.max(0, height) : undefined
+  } catch (error) {
+    // Only the server's own answer ("not found") means unknown; a lost connection is passed on.
+    if (error instanceof Error && /could not reach/i.test(error.message)) throw error
+    return undefined
+  }
+}
+
+/** When the block at a height was mined (ms). */
+export async function blockTime(height: number): Promise<number> {
+  const hex = await request<string>('blockchain.block.header', height)
+  return headerTime(hex) * 1000
+}

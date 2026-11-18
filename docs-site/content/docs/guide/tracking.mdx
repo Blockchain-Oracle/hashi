@@ -15,8 +15,8 @@ The tracker opens when you press **Start swap** and runs the swap itself: it ask
 | Headline | **Approve the deposit** · **Send the BCH to NEAR Intents** (after a PUSD or MUSD sale) · **Bridging into Bitcoin Cash** · **Turning the BCH into PUSD** (the swap contract, no approval) · **One approval left** (after the BCH went back to your wallet) · **Swap complete** · **Refunded** · **The swap failed** · **Quote expired** |
 | Under it | whether you can close the tab, e.g. "Safe to close this tab: the bridge delivers on its own." |
 | Amounts | "You paid" and "You receive ≈ …" (the quote), then "You received …" (what arrived) |
-| The one action | **Approve the deposit in your Base wallet**, **Swap the BCH into PUSD**, or "Checking with NEAR Intents every few seconds…" |
-| **/ Across both chains** | each step with its chain, its time or the time left ("~2 min", "any moment"), and **View transaction** |
+| The one action | **Approve the deposit in your Base wallet** or **Swap the BCH into PUSD**; while a bridge carries the swap, the **/ Now** panel ([below](#while-the-bridge-works)) |
+| **/ Across both chains** | each step with its chain, its time or what it waits for now ("block 1 of 2", "1:19 left"), and **View transaction** |
 | **/ What happened** | every event, with its time |
 | **Details for support** | the deposit address, THORChain memo, addresses, swap id and NEAR quote id |
 
@@ -31,9 +31,21 @@ The tracker opens when you press **Start swap** and runs the swap itself: it ask
 
 Explorer links go to the chain's own explorer, the NEAR Intents explorer for the deposit address, and thorchain.net for THORChain's inbound transaction.
 
-## Taking longer than usual
+## While the bridge works
 
-Past one and a half times the estimate, the tracker says why: going in, the bridge waits for confirmations on the paying chain and refunds on its own if it cannot fill; coming out, Bitcoin Cash blocks come every 10 minutes on average, sometimes 20 or more, and the bridge starts once it counts the deposit as confirmed, which can take a few blocks. The tracker shows when NEAR Intents would start refunding a swap it has not finished.
+The **/ Now** panel says who has the swap and what they wait for, read live from the chain and the bridge every few seconds. A countdown appears only where the bridge gives an estimate; past it, the number counts up in amber.
+
+| Moment | The panel says | The number |
+|---|---|---|
+| Coming out, waiting for blocks | **Waiting for block 2 of 2**, with Block 1 · Block 2 · NEAR swap filling in | time since the last block (blocks come at random, about every 10 minutes) |
+| Both blocks in | **NEAR Intents is taking the deposit** | time since the second block |
+| NEAR swapping | **NEAR Intents is swapping into USDC** | NEAR's own estimate counting down ("1:19 left"), then "+0:11 over" |
+| Going in | **NEAR Intents is seeing your deposit on Base** | time waited |
+| THORChain | its stages: looking for the deposit, waiting for blocks, swapping, sending | THORChain's own confirmation and payout timers |
+
+Through NEAR Intents the panel also names the refund time: "Not done by 23:04? NEAR Intents sends the BCH back to your wallet." NEAR takes a Bitcoin Cash deposit after two blocks: on a real 0.48 PUSD sale (18 Nov 2026) it started 10 minutes after the second block and paid 0.476685 USDC on Base 6 minutes later.
+
+If Hashi cannot read the bridge's status, the tracker says so plainly and links the bridge's own explorer; when nothing can be read at all, it falls back to the quoted estimate and explains what is slow.
 
 ## The finish
 

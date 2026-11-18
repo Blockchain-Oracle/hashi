@@ -10,7 +10,7 @@ Swapping USDC or USDT into PUSD or MUSD takes **one approval**: the deposit. The
 
 ## What the contract allows
 
-Every way out pays **you**, and no one else.
+Every way out pays **you**: the swap pays you at least the floor in PUSD or MUSD, and the two returns send the BCH back to you.
 
 | Way out | Who can use it | When | What you get |
 |---|---|---|---|
@@ -18,7 +18,7 @@ Every way out pays **you**, and no one else.
 | **Release** | the same key | any time: **Send the BCH to my wallet instead** | the BCH, in your wallet |
 | **Reclaim** | anyone | after the refund time: about two hours after you start | the BCH, in your wallet |
 
-The swap's key is the only key, and even it can only pay your wallet, never less than the floor. Each coin's payout sits at the coin's own place in the transaction, so two coins can never share one payout.
+The swap's key is the only key, and even it must pay your wallet at least the floor. Each coin's payout sits at the coin's own place in the transaction, so two coins can never share one payout.
 
 ## What you see
 
@@ -39,7 +39,7 @@ Hashi makes a contract only when that safety net is up: the server keeps the ter
 
 ## How it is checked
 
-- Every transaction the contract signs is run through Bitcoin Cash's own rules (the 2026 VM, mainnet since May 2026) before it is sent.
+- Every transaction that spends the contract is run through Bitcoin Cash's own rules (the 2026 VM, mainnet since May 2026) before it is sent.
 - On a real 11-pool Cauldron trade, the honest trade passes, and these all fail: the PUSD paid to anyone else, one unit under the floor, a signature from any other key, a second coin riding on the first coin's payout, an early refund, and a refund leaving the miner more than 3,000 sats.
 - Hashi's encoding of the contract matches the CashScript SDK byte for byte.
 - A live check builds a fresh Cauldron trade from a real contract address and verifies it, without broadcasting.

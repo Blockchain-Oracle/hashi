@@ -18,8 +18,8 @@ Bitcoin Cash has dollars of its own: **PUSD** (ParyonUSD) and **MUSD** (MoriaUSD
 ## What Hashi does on Bitcoin Cash
 
 - Reads your wallet's coins, tokens included, through Electrum servers.
-- Asks Cauldron's Router to build each trade from your own coins.
-- Asks your wallet to sign over WizardConnect, then broadcasts the signed trade.
+- Asks Cauldron's Router to build each trade from your own coins, or from a swap contract's coin.
+- Asks your wallet to sign over WizardConnect (or signs a swap contract's trade with that swap's own key), then broadcasts it.
 - Builds the plain payments a bridge needs, to its rules (THORChain's memo included).
 
-Every Bitcoin Cash transaction is approved in your own wallet; Hashi holds no Bitcoin Cash keys.
+Every transaction from your wallet is approved in your wallet. The only other key is each swap contract's own trade key, made in your browser and kept there; Hashi's server holds none.

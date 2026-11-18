@@ -13,7 +13,7 @@ import {
 } from '@/lib/relay/policy'
 
 /**
- * Hashi's gas relayer (feature 12: gasless USDC). A USDC-only newcomer signs an EIP-3009 authorisation; this route
+ * Hashi's gas relayer (gasless USDC). A USDC-only newcomer signs an EIP-3009 authorisation; this route
  * checks it against `lib/relay/policy.ts`, simulates it, and submits `transferWithAuthorization`, paying the gas
  * (≈ $0.001 on Base). Without RELAYER_PRIVATE_KEY it answers 503 and the app falls back to a normal transfer.
  */

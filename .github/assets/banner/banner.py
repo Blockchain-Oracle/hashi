@@ -1,5 +1,5 @@
 """The README banner, drawn as SVG in light and dark from Hashi's own type, mark, colours and a real capture of the
-swap card (.github/assets/captures/swap-card-{light,dark}.png, a live quote of 17 Nov 2026, 00:21 UTC).
+swap card (.github/assets/captures/swap-card-{light,dark}.png, a live quote of 18 Nov 2026, 19:13 UTC).
 
     python3 .github/assets/banner/banner.py           # writes banner-{light,dark}.svg beside this file
     uv run --with playwright python .github/render_svg.py .github/assets/banner/banner-light.svg .github/assets/banner-light.png

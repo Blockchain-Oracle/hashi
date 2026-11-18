@@ -162,9 +162,9 @@ export interface StartParams {
   amount: bigint
   slippageBps: number
   addresses: SwapAddresses
-  /** Reverse via NEAR with a token: sale and deposit as one transaction (T5), or as two. */
+  /** Reverse via NEAR with a token: sale and deposit as one transaction, or as two. */
   oneApproval: boolean
-  /** Forward via NEAR with Base USDC: sign instead of paying gas (T6). */
+  /** Forward via NEAR with Base USDC: sign instead of paying gas. */
   gasless?: boolean
   /** The numbers the review showed, kept on the record for the tracker and Activity. */
   quoted?: SwapRecord['quoted']
@@ -236,7 +236,7 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
         bchSats: (net - BCH_SEND_FEE_SATS).toString(),
       })
     }
-    // T5: one approval. NEAR takes a band of deposit amounts (FLEX_INPUT), and the sale pays its address directly.
+    // One approval: NEAR takes a band of deposit amounts (FLEX_INPUT), and the sale pays its address directly.
     const response = await getNearQuote({
       dry: false,
       swapType: 'FLEX_INPUT',
@@ -526,7 +526,7 @@ export async function sendDeposit(
   const near = record.provider === 'near' ? (record.bridgeQuote as NearQuoteResponse | undefined) : undefined
 
   if (asset !== 'BCH' && near?.quoteRequest.swapType === 'FLEX_INPUT') {
-    // T5: one approval. The Cauldron sale pays its proceeds straight to NEAR's deposit address.
+    // One approval: the Cauldron sale pays its proceeds straight to NEAR's deposit address.
     const depositAddress = record.depositAddress as string
     const trade = await prepareTokenSell({
       asset,
@@ -651,7 +651,7 @@ async function sendToBridge(record: SwapRecord, bch: BchSide, coins: WalletUtxo[
   })
 }
 
-/** T6: the person signs an EIP-3009 authorisation; Hashi's relayer submits it and pays the gas. */
+/** Gasless: the person signs an EIP-3009 authorisation; Hashi's relayer submits it and pays the gas. */
 async function relayDeposit(record: SwapRecord, chainId: number, usdc: Address, log: Log): Promise<Hash> {
   const from = stableSideOf(record)
   const to = record.depositAddress as Address

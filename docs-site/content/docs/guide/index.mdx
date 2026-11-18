@@ -4,7 +4,7 @@ description: "Dollars in, dollars out: USDC and USDT from eight chains to Bitcoi
 icon: Compass
 ---
 
-<Shot src="/shots/wide/swap-usdc-base-pusd.webp" alt="Hashi's swap screen at full width: 100 USDC on Base paying, 99.40 PUSD receiving, with the NEAR Intents → Cauldron route marked Best return" caption="The swap screen, priced live: 100 USDC on Base → PUSD on Bitcoin Cash." />
+<Shot src="/shots/wide/swap-usdc-base-pusd.webp" alt="Hashi's swap screen at full width: 100 USDC on Base paying, 99.21 PUSD receiving, with the NEAR Intents → Cauldron route marked Best return" caption="The swap screen, priced live: 100 USDC on Base → PUSD on Bitcoin Cash." />
 
 Hashi (橋, *bridge*) moves dollars between the big chains and Bitcoin Cash. Bring **USDC or USDT** from Base, Ethereum, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain or Solana, and receive **PUSD**, **MUSD** or plain **BCH** in your own Bitcoin Cash wallet. Or go the other way. Or swap PUSD, MUSD and BCH with each other on Bitcoin Cash alone.
 
@@ -22,11 +22,11 @@ Neither NEAR Intents nor THORChain lists PUSD or MUSD. Hashi joins those two, wh
 
 ## How it works
 
-<Diagram name="system" alt="Hashi's system: the swap screen, route engine and swap runner in your browser above; your dollars' path below: your EVM or Solana wallet, deposit to NEAR Intents or THORChain, BCH to your Bitcoin Cash wallet (where a BCH swap ends), swap on Cauldron for PUSD or MUSD in your own wallet; Reown AppKit, the Hashi relayer (Base gas for USDC to NEAR), WizardConnect and Electrum servers beneath" caption="Your dollars move between your wallets and the service doing the work; Hashi prices, builds and asks you to approve." />
+<Diagram name="system" alt="Hashi's system: the swap screen, route engine and swap runner in your browser above; your dollars' path below: your EVM or Solana wallet, deposit to NEAR Intents or THORChain, BCH to your swap contract (a BCH swap ends in your wallet), which Hashi trades on Cauldron with the swap's key for PUSD or MUSD in your own wallet; Reown AppKit, the Hashi relayer and keeper, Electrum servers and WizardConnect beneath" caption="You approve what leaves your wallets; the swap contract pays you at least the floor or sends the BCH back." />
 
 1. **Every route, priced end to end.** NEAR Intents and THORChain are asked side by side, with Cauldron for the PUSD or MUSD leg, and ranked on what you keep after every fee and the gas to start.
 2. **Your own two wallets.** An EVM or Solana wallet through Reown AppKit (WalletConnect), and a Bitcoin Cash wallet through WizardConnect. Each approves its own steps.
-3. **One tracker across both chains.** Every step is saved in your browser, so a closed tab picks up where it stopped. The one exception is selling PUSD or MUSD through THORChain: approve both prompts (the sale, then the send) without closing the tab.
+3. **One tracker across both chains.** Every step is saved in your browser, so a closed tab picks up where it stopped. Into PUSD or MUSD, the automatic trade runs while the tracker is open: come back to it, or the BCH goes back to your wallet about two hours after the start.
 
 ## The landing page
 

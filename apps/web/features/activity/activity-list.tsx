@@ -47,7 +47,7 @@ function ago(at: number, now: number) {
 }
 
 /**
- * Every swap started in this browser (feature 9). Swaps still with a bridge are re-checked live in the
+ * Every swap started in this browser. Swaps still with a bridge are re-checked live in the
  * background, so the list is current without opening each one; any row reopens its tracker.
  */
 export function ActivityList() {

@@ -1,6 +1,6 @@
 ---
 title: Addresses and tokens
-description: "Each Bitcoin Cash address has two forms: q… for plain BCH and z… for tokens. Bridges pay the first; PUSD and MUSD land on the second."
+description: "Each Bitcoin Cash address has two forms: q… for plain BCH and z… for tokens. Bridges pay the first (or a swap's contract); PUSD and MUSD land on the second."
 icon: AtSign
 ---
 
@@ -8,7 +8,7 @@ A Bitcoin Cash address has two spellings from the same key:
 
 | Form | Starts with | Used for |
 |---|---|---|
-| plain | `bitcoincash:q…` | BCH. Bridges pay here (NEAR Intents does not accept the token form) |
+| plain | `bitcoincash:q…` | BCH. Bridges pay here, or a swap's contract on the way to PUSD and MUSD (NEAR Intents does not accept the token form) |
 | token-aware | `bitcoincash:z…` | CashTokens such as PUSD and MUSD. Cauldron sends bought tokens here |
 
 Your wallet holds both; Hashi shows the right one in the review: **To** is the plain form for BCH and the token form for PUSD or MUSD.
@@ -19,4 +19,4 @@ Every token output on Bitcoin Cash carries some BCH with it. A Cauldron buy give
 
 ## Sending to another address
 
-Plain BCH into Bitcoin Cash can go to any Bitcoin Cash address you paste in settings. Hashi checks it: mainnet only (`bitcoincash:`), no mixed case, a valid checksum, not an EVM address. PUSD and MUSD always land in your connected wallet, because that wallet signs the Cauldron trade.
+Plain BCH into Bitcoin Cash can go to any Bitcoin Cash address you paste in settings. Hashi checks it: mainnet only (`bitcoincash:`), no mixed case, a valid checksum, not an EVM address. PUSD and MUSD always land in your connected wallet, because the swap contract pays only your connected wallet's token address.

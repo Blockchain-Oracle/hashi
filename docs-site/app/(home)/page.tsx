@@ -87,7 +87,7 @@ export default function HomePage() {
             Everything happens on one card. Every part of it has a page.
           </h2>
         </div>
-        <Anatomy caption="50 USDC on Ethereum → MUSD, a live quote read 17 Nov 2026, 00:21 UTC" />
+        <Anatomy caption="50 USDC on Ethereum → MUSD, a live quote read 18 Nov 2026, 19:13 UTC" />
       </section>
 
       {/* How it's built */}
@@ -105,8 +105,8 @@ export default function HomePage() {
         </div>
         <Diagram
           name="system"
-          alt="Hashi's system map: Hashi in your browser above, your dollars' path from your EVM or Solana wallet through a bridge to your Bitcoin Cash wallet, then Cauldron for PUSD or MUSD, and the services beneath"
-          caption="Each step moves between your wallets and the service doing the work; you approve every step that spends your money."
+          alt="Hashi's system map: Hashi in your browser above, your dollars' path from your EVM or Solana wallet through a bridge to your swap contract, which Hashi trades on Cauldron for PUSD or MUSD in your own wallet, and the services beneath"
+          caption="You approve what leaves your wallets; the swap contract pays you at least the floor or sends the BCH back."
         />
       </section>
 

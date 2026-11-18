@@ -5,7 +5,7 @@ import { STABLES } from '@/lib/constants/assets'
 import type { ChainKind } from '@/lib/constants/chains'
 
 /**
- * Guards for a custom recipient (feature 10). The costly mistakes are sending to a token's own contract, to an
+ * Guards for a custom recipient. The costly mistakes are sending to a token's own contract, to an
  * address on the wrong chain, or to a typo; each is caught here before any quote asks for a deposit address.
  */
 

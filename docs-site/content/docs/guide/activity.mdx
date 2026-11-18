@@ -21,7 +21,7 @@ Each step is saved in your browser (IndexedDB) before the next one starts. When 
 | bridging | it picks up on its own and keeps checking every 5 seconds |
 | waiting for your deposit | it waits for your click: **Approve the deposit in your … wallet** |
 | PUSD or MUSD sold through THORChain, the BCH not sent yet | **Send the BCH to THORChain**: the bridge is quoted then, for exactly the BCH the sale produced |
-| BCH arrived, PUSD or MUSD to come | **Swap the BCH into PUSD**: one approval in your Bitcoin Cash wallet |
+| BCH at the swap contract, PUSD or MUSD to come | Hashi makes the trade with no approval while the tracker is open; if the BCH went back to your wallet, **Swap the BCH into PUSD** (one approval) |
 | its quote ran out before your first approval | it ends as **Expired**, with nothing sent |
 
 On the swap page, a banner points at the swap that needs you: "Your BCH arrived. Finish: swap it into PUSD", "PUSD sold: send the BCH on", "A swap is waiting for its deposit", or "A swap is on its way".
@@ -34,4 +34,4 @@ Through NEAR Intents it is one approval: the Cauldron sale pays NEAR's deposit a
 
 A swap that has moved nothing ends as **Expired** once its quote runs out: NEAR Intents' deposit deadline, THORChain's quote expiry, or an hour for a swap that starts with a Cauldron trade. Hashi never pays into an expired quote. Before ending a NEAR Intents swap it asks NEAR whether a deposit arrived after all (say, the tab closed just after you approved), and follows that deposit instead.
 
-Swaps live only in the browser that started them; there is no account and nothing is stored on a server.
+Swaps live only in the browser that started them; there is no account. The server keeps only each swap contract's public terms, so it can send unfinished BCH back to you.

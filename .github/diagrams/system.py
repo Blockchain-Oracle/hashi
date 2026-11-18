@@ -4,7 +4,8 @@
     then render to PNG at 2x (see README.md).
 
 Three bands: Hashi in the browser on top; your dollars' path across the middle, numbered; the helpers below, each
-under the step it serves. The way back runs the same path in reverse.
+under the step it serves. Into PUSD or MUSD the bridge pays a contract made for the swap, which Hashi trades with the
+swap's own key; the way back is one Cauldron sale that pays the bridge.
 """
 from pathlib import Path
 
@@ -84,7 +85,7 @@ def svg(t):
     nodes = [
         ("Your EVM or Solana wallet", "USDC · USDT · eight chains"),
         ("NEAR Intents or THORChain", "carries them as BCH"),
-        ("Your Bitcoin Cash wallet", "BCH arrives (a BCH swap ends)"),
+        ("Your swap contract", "pays you at least the floor"),
         ("Cauldron", "for PUSD or MUSD"),
     ]
     for i, (title, sub) in enumerate(nodes):
@@ -100,7 +101,7 @@ def svg(t):
         out.append(f'<text x="{cx}" y="{y + 30}" text-anchor="middle" class="e">{word}</text>')
 
     # Band A → B: what Hashi does at each step (dashed, down from the panel).
-    drops = [(0, "asks you to approve"), (1, "quote · status"), (2, "asks you to approve"), (3, "quote · build")]
+    drops = [(0, "your one approval"), (1, "quote · status"), (2, "signs with the swap's key"), (3, "quote · build")]
     for i, word in drops:
         x = mx[i] + mw / 2
         out.append(f'<line x1="{x}" y1="{ay + ah}" x2="{x}" y2="{my - 6}" stroke="{t["dash"]}" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>')
@@ -112,26 +113,25 @@ def svg(t):
     helpers = [
         (0, "Reown AppKit", "connects EVM and Solana wallets"),
         (1, "Hashi relayer", "Base gas for USDC to NEAR"),
-        (2, "WizardConnect", "connects Bitcoin Cash wallets"),
+        (2, "Hashi keeper", "sends unfinished BCH back"),
         (3, "Electrum servers", "read coins · broadcast trades"),
+        (4, "WizardConnect", "your wallet · signs the way back"),
     ]
     for i, title, sub in helpers:
         x = mx[i]
         out.append(box(x, cy0, mw, 92, title, sub, t))
-        target = mx[i] + mw / 2 if i != 3 else mx[2] + mw * 0.78
-        if i == 1:
-            target = mx[1] + mw / 2
+        target = mx[i] + mw / 2
         if i == 3:
             # Electrum serves the Bitcoin Cash wallet's coins and the Cauldron trade's broadcast.
             out.append(f'<path d="M{x + mw / 2} {cy0} L{x + mw / 2} {my + mh + 8}" stroke="{t["dash"]}" stroke-width="1.6" stroke-dasharray="5 6" fill="none" marker-end="url(#dot)"/>')
             continue
         out.append(f'<line x1="{x + mw / 2}" y1="{cy0}" x2="{target}" y2="{my + mh + 8}" stroke="{t["dash"]}" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>')
 
-    out.append(label(40, my - 30, "/ YOUR DOLLARS, INTO BITCOIN CASH (AND BACK THE SAME WAY)", bg=t["bg"]))
+    out.append(label(40, my - 30, "/ YOUR DOLLARS, INTO BITCOIN CASH (BACK: ONE SALE THAT PAYS THE BRIDGE)", bg=t["bg"]))
     out.append(label(40, cy0 - 26, "/ ALSO USED", bg=t["bg"]))
 
     # Footer line.
-    out.append(f'<text x="40" y="{H - 40}" class="s">Hashi never holds the money: you approve every step that spends it, and each bridge pays out to your own address.</text>')
+    out.append(f'<text x="40" y="{H - 40}" class="s">Hashi never holds the money: you approve what leaves your wallets, and the swap contract pays you at least the floor or sends the BCH back.</text>')
     out.append("</svg>")
     return "\n".join(out)
 

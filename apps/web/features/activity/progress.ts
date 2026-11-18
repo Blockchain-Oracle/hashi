@@ -215,7 +215,7 @@ export function shortProgress(progress: LiveProgress, now: number): string {
     return left >= 0 ? `${clock(left)} left` : `${clock(-left)} over`
   }
   if (progress.blocks && progress.blocks.have < progress.blocks.need) {
-    return `block ${progress.blocks.have} of ${progress.blocks.need}`
+    return `waiting for block ${progress.blocks.have + 1} of ${progress.blocks.need}`
   }
   return progress.since !== undefined ? `${clock(now - progress.since)} waiting` : 'now'
 }

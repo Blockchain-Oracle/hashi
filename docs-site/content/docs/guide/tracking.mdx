@@ -4,19 +4,19 @@ description: "One tracker across both chains: each step with its explorer link a
 icon: Activity
 ---
 
-The tracker opens when you press **Start swap** and runs the swap itself: it asks your wallet for the deposit, checks the bridge every 5 seconds, and asks for the Cauldron step when the BCH arrives.
+The tracker opens when you press **Start swap** and runs the swap itself: it asks your wallet for the deposit, checks the bridge every 5 seconds, and, into PUSD or MUSD, makes the Cauldron trade from the swap contract when the BCH lands.
 
-<Diagram name="into-bch" alt="Sequence for 50 USDC on Ethereum to PUSD: Hashi prices NEAR Intents, THORChain and Cauldron; you start; NEAR issues a deposit address; approval 1 sends 50 USDC; Hashi checks status every 5 seconds; NEAR sends BCH to your plain address; you press Swap the BCH into PUSD; Hashi builds the Cauldron trade; approval 2 signs it; PUSD arrives at your token address" caption="Into Bitcoin Cash, step by step (numbers from a live quote, 16 Nov 2026)." />
+<Diagram name="into-bch" alt="Sequence for 50 USDC on Ethereum to PUSD through NEAR Intents and Cauldron in one approval: NEAR Intents pays the BCH to a contract made for the swap, and Hashi trades it with the swap's own key" caption="Into Bitcoin Cash, step by step: the deposit is the only approval." />
 
 ## What it shows
 
 | Part | Words |
 |---|---|
-| Headline | **Approve the deposit** · **Send the BCH to NEAR Intents** (after a PUSD or MUSD sale) · **Bridging into Bitcoin Cash** · **Turning the BCH into PUSD** (the swap contract, no approval) · **One approval left** (after the BCH went back to your wallet) · **Swap complete** · **Refunded** · **The swap failed** · **Quote expired** |
+| Headline | **Approve the deposit** · **Send the BCH to THORChain** (after a PUSD or MUSD sale through THORChain) · **Bridging into Bitcoin Cash** · **Turning the BCH into PUSD** (the swap contract, no approval) · **One approval left** (after the BCH went back to your wallet) · **Swap complete** · **Refunded** · **The swap failed** · **Quote expired** |
 | Under it | whether you can close the tab, e.g. "Safe to close this tab: the bridge delivers on its own." |
 | Amounts | "You paid" and "You receive ≈ …" (the quote), then "You received …" (what arrived) |
 | The one action | **Approve the deposit in your Base wallet** or **Swap the BCH into PUSD**; while a bridge carries the swap, the **/ Now** panel ([below](#while-the-bridge-works)) |
-| **/ Across both chains** | each step with its chain, its time or what it waits for now ("block 1 of 2", "1:19 left"), and **View transaction** |
+| **/ Across both chains** | each step with its chain, its time or what it waits for now ("waiting for block 2 of 2", "1:19 left"), and **View transaction** |
 | **/ What happened** | every event, with its time |
 | **Details for support** | the deposit address, THORChain memo, addresses, swap id and NEAR quote id |
 
@@ -26,7 +26,7 @@ The tracker opens when you press **Start swap** and runs the swap itself: it ask
 |---|---|
 | Deposit 50 USDC | Sell 20 PUSD on Cauldron (PUSD and MUSD only) |
 | NEAR Intents turns it into BCH | Send the BCH to THORChain |
-| BCH arrives in your wallet | THORChain turns it into USDC |
+| BCH arrives at your swap contract (plain BCH: your wallet) | THORChain turns it into USDC |
 | Swap into PUSD on Cauldron (PUSD and MUSD only) | USDC on Ethereum arrives |
 
 Explorer links go to the chain's own explorer, the NEAR Intents explorer for the deposit address, and thorchain.net for THORChain's inbound transaction.
@@ -49,4 +49,4 @@ If Hashi cannot read the bridge's status, the tracker says so plainly and links 
 
 ## The finish
 
-A finished swap plays a short chime and a buzz on phones that support it (when the swap was started in that same visit), and shows **Done in N min** with **Swap again**. A refund, failure or expired quote turns the stopped step red, gives the reason when there is one, and offers **Try again with a new quote**. If prices move past a floor mid-swap, the tracker offers **Continue at the new price** instead of asking your wallet ([When something goes wrong](/docs/routes/refunds)).
+A finished swap plays a short chime and a buzz on phones that support it (when the swap was started in that same visit), and shows **Done in N min** with **Swap again**. A refund, failure or expired quote turns the stopped step red, gives the reason when there is one, and offers **Try again with a new quote**. If prices move past a floor mid-swap, nothing trades below it ([When something goes wrong](/docs/routes/refunds)).

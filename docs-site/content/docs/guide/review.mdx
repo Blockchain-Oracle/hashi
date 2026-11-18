@@ -5,7 +5,7 @@ icon: ListChecks
 ---
 
 <div className="grid gap-4 sm:grid-cols-2">
-<Sheet src="/shots/wide/review-bridge.webp" alt="Review swap for 50 USDC on Ethereum → 49.80 PUSD through NEAR Intents → Cauldron: rate, at least 48.8 PUSD at 1.00% slippage, about 3 minutes, fees $0.15 NEAR Intents, $0.21 Cauldron swap, $0.01 Ethereum network fee, total $0.38, approvals and addresses" caption="A bridged swap, live quote of 17 Nov 2026, 00:54 UTC. Shown with example addresses (and, on this test page, a Start button that never starts); yours shows your own wallets." />
+<Sheet src="/shots/wide/review-bridge.webp" alt="Review swap for 50 USDC on Ethereum → 49.64 PUSD through NEAR Intents → Cauldron: rate, at least 48.64 PUSD at 1.00% slippage, about 3 minutes, fees $0.19 NEAR Intents, $0.22 Cauldron swap, $0.02 Ethereum network fee, total $0.44, 1 approval in the Ethereum wallet with the PUSD trade running by itself, and addresses" caption="A bridged swap, live quote of 18 Nov 2026, 19:13 UTC. Shown with example addresses (and, on this test page, a Start button that never starts); yours shows your own wallets." />
 <Sheet src="/shots/wide/review-local.webp" alt="Review swap for 10 PUSD → 9.74 MUSD on Cauldron alone: at least 9.64 MUSD, about 15 seconds, Cauldron swap $0.16, one approval in the Bitcoin Cash wallet" caption="A swap on Bitcoin Cash: one approval, no refund address (the trade happens or it doesn't)." />
 </div>
 
@@ -15,7 +15,7 @@ icon: ListChecks
 |---|---|
 | **You pay / You receive** | both amounts, in dollars too, and the route's legs between them |
 | **Rate** | e.g. "1 USDC = 0.9966 PUSD" |
-| **You get at least** | the least the whole swap gives at your slippage, e.g. "48.8 PUSD · 1.00% slippage"; with a Cauldron leg, that leg's slippage counts too. Every Cauldron trade is built with a floor: on Bitcoin Cash, this number; into PUSD or MUSD, the [swap contract](/docs/bitcoin-cash/swap-contract) will not pay you less than this number; selling PUSD or MUSD, NEAR's quote must pay at least this before the one transaction is signed (through THORChain, the sale is held to your slippage and the bridge, quoted after it, must still pay at least this). If prices move past a floor, nothing is signed and the tracker offers **Continue at the new price** |
+| **You get at least** | the least the whole swap gives at your slippage, e.g. "48.8 PUSD · 1.00% slippage"; with a Cauldron leg, that leg's slippage counts too. Every Cauldron trade is built with a floor: on Bitcoin Cash, this number; into PUSD or MUSD, the [swap contract](/docs/bitcoin-cash/swap-contract) will not pay you less than this number; selling PUSD or MUSD, NEAR's quote must pay at least this before the one transaction is signed (through THORChain, the sale is held to your slippage and the bridge, quoted after it, must still pay at least this). If prices move past a floor, nothing trades below it: the swap contract keeps trying, then sends the BCH back; a NEAR sale asks for a new quote; the other steps offer **Continue at the new price** |
 | **Arrives in** | the route's estimate |
 | **Fees** | the bridge, the Cauldron swap and the network fee, each in dollars (the gas amount too), then **Total** |
 | **Approvals** | per wallet, e.g. "1 approval in your Ethereum wallet. The PUSD trade on Bitcoin Cash runs by itself." |

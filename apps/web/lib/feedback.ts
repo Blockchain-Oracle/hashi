@@ -1,5 +1,5 @@
 /**
- * The completion moment (feature 8): a short two-note chime made in the browser (no audio file), and a buzz on
+ * The completion moment: a short two-note chime made in the browser (no audio file), and a buzz on
  * phones that support it. Browsers only allow sound after a person has interacted with the page, so the audio is
  * unlocked on the click that starts a swap and played when it finishes.
  */

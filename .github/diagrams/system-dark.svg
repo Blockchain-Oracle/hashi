@@ -38,8 +38,8 @@
 <text x="483.5" y="402.0" text-anchor="middle" class="t">NEAR Intents or THORChain</text>
 <text x="483.5" y="427.0" text-anchor="middle" class="s">carries them as BCH</text>
 <rect x="673.0" y="352" width="254" height="112" rx="16" fill="#1B1A19" stroke="#FF4419" stroke-width="2"/>
-<text x="800.0" y="402.0" text-anchor="middle" class="t">Your Bitcoin Cash wallet</text>
-<text x="800.0" y="427.0" text-anchor="middle" class="s">BCH arrives (a BCH swap ends)</text>
+<text x="800.0" y="402.0" text-anchor="middle" class="t">Your swap contract</text>
+<text x="800.0" y="427.0" text-anchor="middle" class="s">pays you at least the floor</text>
 <rect x="989.5" y="352" width="254" height="112" rx="16" fill="#1B1A19" stroke="#FF4419" stroke-width="2"/>
 <text x="1116.5" y="402.0" text-anchor="middle" class="t">Cauldron</text>
 <text x="1116.5" y="427.0" text-anchor="middle" class="s">for PUSD or MUSD</text>
@@ -64,13 +64,13 @@
 <text x="1273.75" y="438.0" text-anchor="middle" class="e">tokens</text>
 <line x1="167.0" y1="216" x2="167.0" y2="346" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
 <rect x="75.0" y="242" width="184" height="28" rx="14" fill="#0F0E0E"/>
-<text x="167.0" y="261" text-anchor="middle" class="s">asks you to approve</text>
+<text x="167.0" y="261" text-anchor="middle" class="s">your one approval</text>
 <line x1="483.5" y1="216" x2="483.5" y2="346" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
 <rect x="391.5" y="242" width="184" height="28" rx="14" fill="#0F0E0E"/>
 <text x="483.5" y="261" text-anchor="middle" class="s">quote · status</text>
 <line x1="800.0" y1="216" x2="800.0" y2="346" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
 <rect x="708.0" y="242" width="184" height="28" rx="14" fill="#0F0E0E"/>
-<text x="800.0" y="261" text-anchor="middle" class="s">asks you to approve</text>
+<text x="800.0" y="261" text-anchor="middle" class="s">signs with the swap's key</text>
 <line x1="1116.5" y1="216" x2="1116.5" y2="346" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
 <rect x="1024.5" y="242" width="184" height="28" rx="14" fill="#0F0E0E"/>
 <text x="1116.5" y="261" text-anchor="middle" class="s">quote · build</text>
@@ -83,14 +83,18 @@
 <text x="483.5" y="675.0" text-anchor="middle" class="s">Base gas for USDC to NEAR</text>
 <line x1="483.5" y1="610" x2="483.5" y2="472" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
 <rect x="673.0" y="610" width="254" height="92" rx="16" fill="#1B1A19" stroke="#2E2B2A" stroke-width="1.5"/>
-<text x="800.0" y="650.0" text-anchor="middle" class="t">WizardConnect</text>
-<text x="800.0" y="675.0" text-anchor="middle" class="s">connects Bitcoin Cash wallets</text>
+<text x="800.0" y="650.0" text-anchor="middle" class="t">Hashi keeper</text>
+<text x="800.0" y="675.0" text-anchor="middle" class="s">sends unfinished BCH back</text>
 <line x1="800.0" y1="610" x2="800.0" y2="472" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
 <rect x="989.5" y="610" width="254" height="92" rx="16" fill="#1B1A19" stroke="#2E2B2A" stroke-width="1.5"/>
 <text x="1116.5" y="650.0" text-anchor="middle" class="t">Electrum servers</text>
 <text x="1116.5" y="675.0" text-anchor="middle" class="s">read coins · broadcast trades</text>
 <path d="M1116.5 610 L1116.5 472" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" fill="none" marker-end="url(#dot)"/>
-<rect x="32" y="306" width="551.8000000000001" height="22" fill="#0F0E0E"/><text x="40" y="322" text-anchor="start" class="l">/ YOUR DOLLARS, INTO BITCOIN CASH (AND BACK THE SAME WAY)</text>
+<rect x="1306.0" y="610" width="254" height="92" rx="16" fill="#1B1A19" stroke="#2E2B2A" stroke-width="1.5"/>
+<text x="1433.0" y="650.0" text-anchor="middle" class="t">WizardConnect</text>
+<text x="1433.0" y="675.0" text-anchor="middle" class="s">your wallet · signs the way back</text>
+<line x1="1433.0" y1="610" x2="1433.0" y2="472" stroke="#6E6864" stroke-width="1.6" stroke-dasharray="5 6" marker-end="url(#dot)"/>
+<rect x="32" y="306" width="683.4" height="22" fill="#0F0E0E"/><text x="40" y="322" text-anchor="start" class="l">/ YOUR DOLLARS, INTO BITCOIN CASH (BACK: ONE SALE THAT PAYS THE BRIDGE)</text>
 <rect x="32" y="568" width="119.4" height="22" fill="#0F0E0E"/><text x="40" y="584" text-anchor="start" class="l">/ ALSO USED</text>
-<text x="40" y="800" class="s">Hashi never holds the money: you approve every step that spends it, and each bridge pays out to your own address.</text>
+<text x="40" y="800" class="s">Hashi never holds the money: you approve what leaves your wallets, and the swap contract pays you at least the floor or sends the BCH back.</text>
 </svg>

@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { toastManager } from '@/components/ui/toast'
 import { ResumeBanner } from '@/features/activity/resume-banner'
 import { markAutostart, persistSwap } from '@/features/activity/store'
-import { ONE_APPROVAL_SALE, SWAP_ON_ARRIVAL } from '@/lib/constants/features'
+import { ONE_APPROVAL_SALE } from '@/lib/constants/features'
 import { startSwap } from '@/lib/engine/runner'
 import { unlockSound } from '@/lib/feedback'
 import { SwapCard } from './swap-card'
@@ -46,7 +46,7 @@ export function SwapScreen({ initialQuery }: { initialQuery: string }) {
             ...(cost ? { feesUsd: cost.totalUsd } : {}),
           },
           // Into PUSD or MUSD: the swap contract holds the trade to the review's "at least" (one approval).
-          ...(SWAP_ON_ARRIVAL &&
+          ...(route.swapContract &&
           route.pair.direction === 'in' &&
           route.pair.bchAsset !== 'BCH' &&
           route.minBridgeSats

@@ -20,11 +20,11 @@ NEAR Intents moves value across chains through a network of solvers. Hashi uses 
 
 1. **Start swap** asks for a real quote (selling PUSD or MUSD, a quote that takes any deposit from its minimum up, so the Cauldron sale can pay it directly); NEAR Intents returns a **deposit address** that belongs to this swap alone. Hashi keeps the signed quote on the swap, as NEAR asks integrators to.
 2. Your wallet sends the exact amount to that address: one transfer on an EVM chain or Solana, or one Bitcoin Cash payment coming out.
-3. Solvers fill it. Going in, the BCH arrives at your plain Bitcoin Cash address (NEAR doesn't accept token-aware `z…` addresses, so PUSD and MUSD come from the Cauldron step).
+3. Solvers fill it. Going in, the BCH arrives at your plain Bitcoin Cash address, or, for PUSD and MUSD, at the swap's contract (NEAR doesn't accept token-aware `z…` addresses, so PUSD and MUSD come from the Cauldron trade).
 
 | Setting | Value |
 |---|---|
-| Swap type | exact input |
+| Swap type | exact input; selling PUSD or MUSD, flexible input (any deposit from its minimum up) |
 | Deadline | 1 hour going in; 4 hours coming out (NEAR counts a Bitcoin Cash deposit after it confirms, which can take a few blocks). A swap NEAR has not finished by then is refunded to your wallet |
 | Refunds go to | your paying address: the stablecoin wallet going in, your plain BCH address coming out |
 | Minimum | read from NEAR's answer and offered as **Use …** in one tap |

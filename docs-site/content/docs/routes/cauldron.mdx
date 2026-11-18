@@ -1,6 +1,6 @@
 ---
 title: Cauldron
-description: "The Bitcoin Cash exchange where PUSD and MUSD trade. Hashi asks its Router for the best path through the pools and for the unsigned trade; your wallet signs it."
+description: "The Bitcoin Cash exchange where PUSD and MUSD trade. Hashi asks its Router for the best path through the pools and for the unsigned trade; your wallet signs it, or, into PUSD or MUSD, the swap contract's own key."
 icon: FlaskConical
 ---
 
@@ -11,7 +11,7 @@ Cauldron is an exchange on Bitcoin Cash: many small pools, each a contract holdi
 | Method | What Hashi uses it for |
 |---|---|
 | `route.quote` | the best path through the pools for a price |
-| `tx.build` | the unsigned trade, funded by your own coins, paying your own addresses |
+| `tx.build` | the unsigned trade, funded by your own coins or the swap contract's coin, paying your own addresses |
 
 ## Fees Hashi adds back
 
@@ -23,8 +23,8 @@ The Router's quotes leave out two costs; Hashi adds both before showing an amoun
 | Miner fee | about 1 sat per byte: Hashi counts 260 sats plus 192 per pool (measured: 1 pool 452–500, 22 pools 4,394, 48 pools 9,495 sats) |
 | Token output | a bought token output carries 1,000 sats, which stay with you |
 
-## One transaction, signed by you
+## One transaction, signed by you or your swap's key
 
-Each build lists your coins as inputs and the pools as the rest. Your Bitcoin Cash wallet signs only your own inputs over WizardConnect; Hashi broadcasts the signed trade through Electrum servers. A trade settles at the built price or not at all: it spends the pools' current coins, so if someone else trades those pools first it is no longer valid and the network refuses it.
+Each build lists your coins (or the swap contract's coin) as inputs and the pools as the rest. Your Bitcoin Cash wallet signs only your own inputs over WizardConnect; a swap contract's coin is signed with that swap's own key in your browser. Hashi broadcasts the signed trade through Electrum servers. A trade settles at the built price or not at all: it spends the pools' current coins, so if someone else trades those pools first it is no longer valid and the network refuses it.
 
 **PUSD ⇄ MUSD** is one "combined" trade through both tokens' pools. A live, unsigned build on 16 November 2026 sold 10 PUSD for 9.74 MUSD across 54 pools; the seller gave 10.01 PUSD (the fee on top) and the miner fee was 10,901 sats, paid from plain BCH in the wallet.

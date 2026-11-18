@@ -14,7 +14,7 @@ Bitcoin Cash's Electrum servers (Fulcrum) answer three questions for Hashi: whic
 | `fulcrum.greyh.at` | wss 50004 |
 | `bch.loping.net` | wss 50004 |
 
-Protocol 1.5, tried in turn with an 8-second timeout, all answering on 16 November 2026.
+Protocol 1.5, tried in turn with an 8-second timeout, all answering on 18 November 2026. A server that drops the connection is left at once for the next one, and a request it interrupted is sent again there (up to three servers, 20 seconds each).
 
 | Hashi asks | For |
 |---|---|
@@ -22,4 +22,6 @@ Protocol 1.5, tried in turn with an 8-second timeout, all answering on 16 Novemb
 | `blockchain.address.get_history` | which derived addresses you have used |
 | `blockchain.address.subscribe` | a balance that updates within seconds of a payment |
 | `blockchain.headers.subscribe` | the latest block, for the status dot |
-| `blockchain.transaction.broadcast` | every Bitcoin Cash transaction you sign in Hashi |
+| `blockchain.transaction.broadcast` | every Bitcoin Cash transaction Hashi sends: your wallet's, and a swap contract's trade or return |
+| `blockchain.headers.get_tip`, `blockchain.transaction.get_height`, `blockchain.block.header` | the tracker's live block count |
+| `blockchain.transaction.get` | what already left a swap contract |

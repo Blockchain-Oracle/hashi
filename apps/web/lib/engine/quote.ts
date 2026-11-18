@@ -127,8 +127,9 @@ async function quoteIn(
     rawBridge = quote
   }
 
-  // Into PUSD or MUSD: the swap contract trades the BCH with no wallet approval (SWAP_ON_ARRIVAL).
-  const tokenSigs = bchAsset === 'BCH' || SWAP_ON_ARRIVAL ? 0 : 1
+  // Into PUSD or MUSD: the swap contract trades the BCH with no wallet approval, while Hashi's keeper is up.
+  const contract = bchAsset !== 'BCH' && SWAP_ON_ARRIVAL && req.swapContract !== false
+  const tokenSigs = bchAsset === 'BCH' || contract ? 0 : 1
   const base = {
     provider,
     pair: req.pair,
@@ -141,6 +142,7 @@ async function quoteIn(
     ...(expiresAt === undefined ? {} : { expiresAt }),
     // NEAR: one transfer. THORChain: approve, then depositWithExpiry.
     signatures: (provider === 'near' ? 1 : 2) + tokenSigs,
+    ...(contract ? { swapContract: true } : {}),
   }
 
   if (bchAsset === 'BCH') {
@@ -160,7 +162,7 @@ async function quoteIn(
   const category = routerAsset(bchAsset)
   const router = getRouter()
   // The swap contract's longer unlock keeps a few hundred sats out of the pools; the review counts it too.
-  const available = SWAP_ON_ARRIVAL ? bridgeSats - ARRIVAL_RESERVE_SATS : bridgeSats
+  const available = contract ? bridgeSats - ARRIVAL_RESERVE_SATS : bridgeSats
   let spend = spendableForBuy(available, 1)
   if (spend <= 0n) return tooSmallForCauldron(provider)
   let cauldron = await router.quote({ sell: 'bch', buy: category, amount: spend, side: 'sell' })

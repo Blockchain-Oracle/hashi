@@ -49,7 +49,7 @@ export function Anatomy({ caption }: { caption: string }) {
           {/* biome-ignore lint/performance/noImgElement: static export; the capture is pre-sized */}
           <img
             src="/shots/card/swap-light.webp"
-            alt="Hashi's swap card: 50 USDC on Ethereum to 48.89 MUSD, NEAR Intents → Cauldron marked Best return, THORChain → Cauldron marked Fastest"
+            alt="Hashi's swap card: 50 USDC on Ethereum to 48.94 MUSD, NEAR Intents → Cauldron marked Best return with 1 approval, THORChain → Cauldron marked Fastest"
             width={1072}
             height={1394}
             loading="lazy"

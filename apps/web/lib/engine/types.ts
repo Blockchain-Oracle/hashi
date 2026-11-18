@@ -43,6 +43,11 @@ export interface QuoteRequest<P extends Pair = Pair> {
   slippageBps: number
   /** Real addresses once wallets are connected; without them the quote is a price only (dry). */
   addresses?: SwapAddresses
+  /**
+   * Into PUSD or MUSD: whether a swap contract can be made now (Hashi's keeper is running). False prices the route the
+   * way it will run without one: the bridge pays the wallet and the trade takes a second approval.
+   */
+  swapContract?: boolean
 }
 
 /** The person's addresses. A swap that stays on Bitcoin Cash has no stablecoin side. */
@@ -80,6 +85,8 @@ export interface Route {
   bridgeSats: bigint
   /** Into Bitcoin Cash: the least BCH the bridge promises (the swap contract's floor is spread over it). */
   minBridgeSats?: bigint
+  /** Into PUSD or MUSD through a swap contract: the trade needs no approval from the Bitcoin Cash wallet. */
+  swapContract?: boolean
   cauldron?: CauldronLeg
   /** What NEAR says the amounts are worth, when it says (forward and reverse). */
   usdIn?: number

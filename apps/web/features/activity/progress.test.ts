@@ -50,7 +50,7 @@ describe('live progress coming out through NEAR', () => {
       blocks: { have: 1, need: 2, lastAt: BLOCK_1 },
     })
     if (!progress) throw new Error('no progress')
-    expect(shortProgress(progress, BLOCK_1 + 17 * 60_000)).toBe('block 1 of 2')
+    expect(shortProgress(progress, BLOCK_1 + 17 * 60_000)).toBe('waiting for block 2 of 2')
   })
 
   it('with both blocks in, waits on NEAR and counts the time since the second', () => {

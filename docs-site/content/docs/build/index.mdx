@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: "A Next.js app that runs in your browser and talks to the bridges, Cauldron and Electrum directly. One server route pays Base gas; there is no database."
+description: "A Next.js app that runs in your browser and talks to the bridges, Cauldron and Electrum directly. The server pays Base gas and keeps swap contracts' public terms; there is no database."
 icon: Network
 ---
 
@@ -15,6 +15,7 @@ icon: Network
 | Swap runner | browser | runs a swap one step at a time; each step saved in IndexedDB before the next (selling PUSD or MUSD through THORChain, the sale is saved before the send) |
 | Wallet layer | browser | Reown AppKit (EVM, Solana) and WizardConnect (Bitcoin Cash) |
 | `/api/relay` | server | pays Base gas for a gasless USDC deposit; nothing else |
+| `/api/arrivals` | server | the keeper: keeps each swap contract's public terms, and a sweep every 10 minutes sends BCH left past the refund time back to its owner |
 | Landing numbers | server | Cauldron's indexer, NEAR's prices and THORChain's halts, rebuilt at most once a minute |
 
 ## The stack
@@ -32,7 +33,7 @@ icon: Network
 
 ## Why the browser
 
-Every provider Hashi uses answers browsers directly, so the money path has no Hashi server in it: quotes, deposits, trades and broadcasts go from your browser to NEAR Intents, THORChain, Cauldron, Electrum and your wallets. The only server code is the gas relayer and the landing page's numbers.
+Every provider Hashi uses answers browsers directly, so Hashi's server is never in the money path: quotes, deposits, trades and broadcasts go from your browser to NEAR Intents, THORChain, Cauldron, Electrum and your wallets. The server code is the gas relayer, the swap contracts' keeper (which can only send unfinished BCH back to its owner) and the landing page's numbers.
 
 <Cards>
   <Card icon={<Icon name="Plug" />} title="Integrations" href="/docs/build/integrations" description="Every outside service, what it does, and what is verified." />

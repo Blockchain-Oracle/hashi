@@ -22,7 +22,7 @@ const WORD: Record<Health, string> = {
   checking: 'Checking',
 }
 
-/** Live health of NEAR Intents, THORChain, the Cauldron Router and Electrum, behind one dot (feature 11). */
+/** Live health of NEAR Intents, THORChain, the Cauldron Router and Electrum, behind one dot. */
 export const StatusPopover = memo(function StatusPopover() {
   const { state, overall, halted, near, router, electrum } = useProviderHealth()
   const bchUsd = near.data?.find((t) => t.symbol === 'BCH')?.price

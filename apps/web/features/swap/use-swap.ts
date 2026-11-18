@@ -1,5 +1,6 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import { formatUnits, parseUnits } from 'viem'
 import { useDepositFees, usePrices } from '@/features/market/use-market'
@@ -9,7 +10,9 @@ import { useEvmWallet } from '@/features/wallets/evm-wallet'
 import { stableKey, useBalances } from '@/features/wallets/use-balances'
 import { toTokenAddress } from '@/lib/bch/address'
 import { CHAINS } from '@/lib/constants/chains'
+import { SWAP_ON_ARRIVAL } from '@/lib/constants/features'
 import { BCH_SEND_FEE_SATS } from '@/lib/constants/fees'
+import { arrivalsReady } from '@/lib/engine/arrival-terms'
 import { bchForTokenSwap, sellableForTokenSwap } from '@/lib/engine/cauldron-fees'
 import {
   costInReceiveUnits,
@@ -128,12 +131,27 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
   useEffect(() => {
     if (syncUrl) window.history.replaceState(window.history.state, '', `${window.location.pathname}?${query}`)
   }, [query, syncUrl])
+  // Into PUSD or MUSD in one approval needs Hashi's keeper; when it is down, routes are priced and counted the way
+  // they will run (the bridge pays the wallet, and the trade takes a second approval).
+  const keeper = useQuery({
+    queryKey: ['arrivals-ready'],
+    queryFn: ({ signal }) => arrivalsReady(signal),
+    enabled: SWAP_ON_ARRIVAL && pair.direction === 'in' && pair.bchAsset !== 'BCH',
+    staleTime: 60_000,
+  })
+  const swapContract = keeper.data !== false
   const req = useMemo<QuoteRequest | null>(
     () =>
       amount > 0n
-        ? { pair, amount, slippageBps: state.slippageBps, ...(addresses ? { addresses } : {}) }
+        ? {
+            pair,
+            amount,
+            slippageBps: state.slippageBps,
+            ...(addresses ? { addresses } : {}),
+            ...(swapContract ? {} : { swapContract: false }),
+          }
         : null,
-    [pair, amount, state.slippageBps, addresses],
+    [pair, amount, state.slippageBps, addresses, swapContract],
   )
   // Each provider answers only for pairs it carries; the others stay idle.
   const near = useRouteQuote('near', req)
@@ -142,7 +160,7 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
   const queries = { near, thorchain: thor, cauldron } as const
 
   const depositFees = useDepositFees(direction === 'in' ? stable : undefined, prices)
-  // Gasless (feature 12): USDC on Base through NEAR Intents, when Hashi's relayer holds Base ETH to pay for it.
+  // Gasless: USDC on Base through NEAR Intents, when Hashi's relayer holds Base ETH to pay for it.
   const relay = useRelay()
   const gaslessAvailable =
     direction === 'in' && stable.chain === 'base' && stable.symbol === 'USDC' && relay.data?.funded === true

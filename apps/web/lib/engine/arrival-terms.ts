@@ -50,6 +50,17 @@ export function tradesOnArrival(record: SwapRecord): boolean {
  * BCH back to the person after the refund time even if this browser's record is lost. Throws if the server did not
  * keep them; the swap then pays the wallet instead (two approvals, nothing at risk).
  */
+/** Whether Hashi's server can take a swap contract right now (its keeper is running). Unknown counts as no. */
+export async function arrivalsReady(signal?: AbortSignal): Promise<boolean> {
+  try {
+    const response = await fetch('/api/arrivals', { cache: 'no-store', ...(signal ? { signal } : {}) })
+    if (!response.ok) return false
+    return ((await response.json()) as { ready?: unknown }).ready === true
+  } catch {
+    return false
+  }
+}
+
 export async function registerArrival(arrival: Arrival): Promise<void> {
   const response = await fetch('/api/arrivals', {
     method: 'POST',

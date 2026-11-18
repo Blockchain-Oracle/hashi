@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { type ArrivalTerms, arrivalContract } from '@/lib/bch/arrival/contract'
 import { listArrivals, saveArrival, storeOnVolume } from '@/lib/bch/arrival/store.server'
 import { addressHistory, broadcast, listUnspent, type Utxo } from '@/lib/bch/electrum'
-import { POST as register } from './route'
+import { GET as ready, POST as register } from './route'
 import { POST as sweep } from './sweep/route'
 
 /**
@@ -79,10 +79,13 @@ beforeEach(async () => {
 afterAll(() => rm(env.dir, { recursive: true, force: true }))
 
 describe('POST /api/arrivals', () => {
-  it('pauses swap contracts until the keeper has run', async () => {
+  it('pauses swap contracts until the keeper has run, and says so to the swap screen', async () => {
+    expect(await (await ready()).json()).toEqual({ ready: false })
     const response = await register(post({ terms: terms() }))
     expect(response.status).toBe(503)
     expect((await response.json()).error).toMatch(/keeper has not run/)
+    await sweep(keeper())
+    expect(await (await ready()).json()).toEqual({ ready: true })
   })
 
   it('keeps the terms under the address worked out from them, never one sent with them', async () => {

@@ -29,6 +29,14 @@ async function keeperProblem(): Promise<string | undefined> {
   return undefined
 }
 
+/** Whether a swap contract can be made now: the swap screen counts approvals from it (one with a contract, two without). */
+export async function GET() {
+  return Response.json(
+    { ready: (await keeperProblem()) === undefined },
+    { headers: { 'cache-control': 'no-store' } },
+  )
+}
+
 export async function POST(request: Request) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   if (!perIp(ip))

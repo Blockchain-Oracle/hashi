@@ -221,10 +221,19 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
       ...(timeOf(record, 'deposit-sent') ? { at: timeOf(record, 'deposit-sent') as string } : {}),
       ...(record.bchTxid ? { href: txUrl('bch', record.bchTxid) } : {}),
     })
+    // NEAR's quote names when it starts refunding a swap it has not finished (its own deadline, a few hours on).
+    const refundBy = (record.bridgeQuote as { quoteRequest?: { deadline?: string } } | undefined)
+      ?.quoteRequest?.deadline
+    const refundAt =
+      record.provider === 'near' && refundBy
+        ? new Date(refundBy).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+        : undefined
     steps.push({
       id: 'bridge',
       title: `${provider} turns it into ${stable.symbol}`,
-      detail: 'Starts once the deposit has one confirmation',
+      detail: refundAt
+        ? `Starts once NEAR Intents counts the deposit as confirmed, which can take a few Bitcoin Cash blocks. Not done by ${refundAt}? NEAR sends the BCH back to your wallet.`
+        : `Starts once ${provider} counts the deposit as confirmed (one to three Bitcoin Cash blocks)`,
       state: state(record.status === 'completed', ['deposit-sent', 'bridging'].includes(record.status)),
       ...(bridgeAt ? { at: bridgeAt } : {}),
       ...(bridgeHref ? { href: bridgeHref } : {}),

@@ -25,7 +25,7 @@ NEAR Intents moves value across chains through a network of solvers. Hashi uses 
 | Setting | Value |
 |---|---|
 | Swap type | exact input |
-| Deadline | 1 hour going in; 4 hours coming out (a Bitcoin Cash deposit has to confirm) |
+| Deadline | 1 hour going in; 4 hours coming out (NEAR counts a Bitcoin Cash deposit after it confirms, which can take a few blocks). A swap NEAR has not finished by then is refunded to your wallet |
 | Refunds go to | your paying address: the stablecoin wallet going in, your plain BCH address coming out |
 | Minimum | read from NEAR's answer and offered as **Use …** in one tap |
 | Hashi's fee | none (the quote carries a `hashi` referral label, no fee) |

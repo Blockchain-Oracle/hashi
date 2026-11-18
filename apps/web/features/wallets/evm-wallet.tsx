@@ -19,6 +19,7 @@ import {
   solanaAdapter,
   wagmiAdapter,
 } from '@/lib/evm/appkit'
+import { appIconUrl } from '@/lib/links'
 import { splTransferTransaction } from '@/lib/solana/transfer'
 import { currentTheme } from '@/lib/theme'
 
@@ -41,7 +42,8 @@ const appKit =
           name: 'Hashi',
           description: 'Stablecoins from any chain to Bitcoin Cash, as PUSD or MUSD, and back.',
           url: typeof window === 'undefined' ? env.NEXT_PUBLIC_SITE_URL : window.location.origin,
-          icons: [],
+          // Shown by the wallet on its connect and approve screens, so it must be a full URL.
+          icons: [appIconUrl()],
         },
         features: {
           analytics: false,

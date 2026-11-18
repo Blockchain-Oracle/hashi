@@ -10,3 +10,9 @@ export const LINKS = {
   source: env.NEXT_PUBLIC_REPO_URL,
   bounty: 'https://bchblaze.cash/bounties/stablecoin-bridge/',
 } as const
+
+/** Hashi's logo as a full URL (public/icon-512.png), for wallets that show the app on their own screens. */
+export function appIconUrl(): string {
+  const origin = typeof window === 'undefined' ? env.NEXT_PUBLIC_SITE_URL : window.location.origin
+  return new URL('/icon-512.png', origin).href
+}

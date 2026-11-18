@@ -5,6 +5,7 @@ import { type UseWizardConnectResult, useWizardConnect } from '@wizardconnect/re
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { subscribeAddress } from '@/lib/bch/electrum'
 import { scanWallet, type WalletAddress, type WalletScan } from '@/lib/bch/wallet'
+import { appIconUrl } from '@/lib/links'
 import { BchConnectDialog } from './bch-connect-dialog'
 
 /**
@@ -33,7 +34,12 @@ interface BchWallet {
 const BchWalletContext = createContext<BchWallet | null>(null)
 
 export function BchWalletProvider({ children }: { children: ReactNode }) {
-  const wc = useWizardConnect({ dappName: 'Hashi', sessionKey: 'hashi-wizardconnect' })
+  // The wallet shows the icon on its own screen, so it is a full URL, not a path on this site.
+  const wc = useWizardConnect({
+    dappName: 'Hashi',
+    dappIcon: appIconUrl(),
+    sessionKey: 'hashi-wizardconnect',
+  })
   const { manager, state } = wc
   // A restored session: a manager rebuilt from storage, with no pairing code (only a new pairing shows one).
   const resuming = manager !== null && (state === 'reconnecting' || (state === 'connecting' && !wc.uri))

@@ -65,19 +65,26 @@ export function explain(direction: Direction, chain: Chain, stable: Stable, from
 
   const routes = bridges.map<RouteFact>((bridge) => {
     if (direction === "in") {
-      const deposit = bridge === "near" ? 1 : 2
+      // Into PUSD or MUSD the bridge pays the swap's own contract, which trades on Cauldron with no approval.
+      const notes = [
+        ...(bridge === "thorchain" ? ["allow, then deposit"] : []),
+        ...(viaCauldron ? ["the Cauldron trade runs by itself"] : []),
+      ]
       return {
         legs: viaCauldron ? [bridge, "cauldron"] : [bridge],
-        approvals: [
-          { wallet, count: deposit, ...(bridge === "thorchain" ? { note: "allow, then deposit" } : {}) },
-          ...(viaCauldron ? [{ wallet: "Bitcoin Cash wallet", count: 1, note: "the Cauldron swap" }] : []),
-        ],
+        approvals: [{ wallet, count: bridge === "near" ? 1 : 2, ...(notes.length ? { note: notes.join("; ") } : {}) }],
       }
     }
+    // Selling PUSD or MUSD: through NEAR the sale pays the deposit address itself; THORChain needs its memo after.
+    const saleIsDeposit = viaCauldron && bridge === "near"
     return {
       legs: viaCauldron ? ["cauldron", bridge] : [bridge],
       approvals: [
-        { wallet: "Bitcoin Cash wallet", count: viaCauldron ? 2 : 1, ...(viaCauldron ? { note: "sell, then send" } : {}) },
+        {
+          wallet: "Bitcoin Cash wallet",
+          count: viaCauldron && !saleIsDeposit ? 2 : 1,
+          ...(saleIsDeposit ? { note: "the sale pays NEAR directly" } : viaCauldron ? { note: "sell, then send" } : {}),
+        },
       ],
     }
   })

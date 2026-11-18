@@ -20,7 +20,7 @@ Neither NEAR Intents nor THORChain lists PUSD or MUSD: they move plain BCH, and 
 
 <Diagram name="out-of-bch" alt="Sequence for 20 PUSD to USDC on Ethereum through Cauldron and THORChain: approval 1 sells the PUSD on Cauldron, approval 2 sends the BCH to THORChain's vault with the memo, THORChain pays USDC on Ethereum" caption="20 PUSD → 19.5791 USDC on Ethereum, live quote of 16 Nov 2026, 23:38 UTC." />
 
-Selling PUSD or MUSD takes two approvals in your Bitcoin Cash wallet: the sale on Cauldron (held to your slippage, and saved), then the BCH to the bridge, which is quoted at that moment for exactly what the sale produced.
+Selling PUSD or MUSD through NEAR Intents takes **one approval**: the Cauldron sale pays NEAR's deposit address in the same transaction. NEAR's quote takes any deposit from its minimum up, and Hashi checks the built sale pays at least that minimum, and that NEAR still pays what the review promised, before asking you to sign. Through THORChain it takes two (its deposit needs its own memo): the sale (held to your slippage, and saved), then the BCH, with THORChain quoted at that moment for exactly what the sale produced.
 
 <Cards>
   <Card icon={<Icon name="Table" />} title="Chains and assets" href="/docs/routes/chains-and-assets" description="Every token on every chain, and who carries it." />

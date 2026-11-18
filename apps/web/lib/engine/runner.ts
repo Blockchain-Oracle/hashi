@@ -250,6 +250,18 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
     })
     const raw = response.quote.depositAddress
     if (!raw) throw new Error('NEAR Intents returned no deposit address')
+    // NEAR pays at least minAmountOut for any deposit from minAmountIn up; it must still keep the review's promise.
+    const promised = params.quoted ? BigInt(params.quoted.minAmountOut) : undefined
+    const minOut = BigInt(response.quote.minAmountOut)
+    if (promised !== undefined && minOut < promised) {
+      throw new Error(
+        `Prices moved: NEAR Intents would now pay at least ${stableText(minOut, base)}, under the ${stableText(promised, base)} shown. Nothing was sent; review the new quote.`,
+      )
+    }
+    log(
+      'quote',
+      `NEAR deposit ${raw}; takes ${response.quote.minAmountIn}–${response.quote.amountIn}+ sats; pays at least ${minOut}`,
+    )
     return advance(base, 'quoted', 'NEAR Intents quote with deposit address', {
       depositAddress: normalizeBchAddress(raw),
       bridgeQuote: response,

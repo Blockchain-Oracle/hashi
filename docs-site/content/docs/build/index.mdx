@@ -12,7 +12,7 @@ icon: Network
 |---|---|---|
 | Swap screen | browser | the card, picker, routes, review, settings |
 | Route engine | browser | asks NEAR Intents, THORChain and Cauldron for prices, adds the fees they leave out, ranks by what you keep |
-| Swap runner | browser | runs a swap one step at a time; each step saved in IndexedDB before the next (selling PUSD or MUSD, the sale and the send are saved together) |
+| Swap runner | browser | runs a swap one step at a time; each step saved in IndexedDB before the next (selling PUSD or MUSD through THORChain, the sale is saved before the send) |
 | Wallet layer | browser | Reown AppKit (EVM, Solana) and WizardConnect (Bitcoin Cash) |
 | `/api/relay` | server | pays Base gas for a gasless USDC deposit; nothing else |
 | Landing numbers | server | Cauldron's indexer, NEAR's prices and THORChain's halts, rebuilt at most once a minute |

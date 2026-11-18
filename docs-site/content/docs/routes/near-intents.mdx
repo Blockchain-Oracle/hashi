@@ -18,7 +18,7 @@ NEAR Intents moves value across chains through a network of solvers. Hashi uses 
 
 ## How a swap runs
 
-1. **Start swap** asks for a real quote (selling PUSD or MUSD, right after the sale, for the BCH it produced); NEAR Intents returns a **deposit address** that belongs to this swap alone. Hashi keeps the signed quote on the swap, as NEAR asks integrators to.
+1. **Start swap** asks for a real quote (selling PUSD or MUSD, a quote that takes any deposit from its minimum up, so the Cauldron sale can pay it directly); NEAR Intents returns a **deposit address** that belongs to this swap alone. Hashi keeps the signed quote on the swap, as NEAR asks integrators to.
 2. Your wallet sends the exact amount to that address: one transfer on an EVM chain or Solana, or one Bitcoin Cash payment coming out.
 3. Solvers fill it. Going in, the BCH arrives at your plain Bitcoin Cash address (NEAR doesn't accept token-aware `z…` addresses, so PUSD and MUSD come from the Cauldron step).
 

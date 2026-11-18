@@ -196,7 +196,7 @@ Third-party components, fonts and logos are listed with their licences in [THIRD
 ## Honest limits
 
 - **No swap has been completed end to end on mainnet yet.** The quotes, deposit addresses and unsigned Cauldron builds above are live. Every wallet step is built and checked in code, but waits for its first funded run. Its transaction ids will be listed here.
-- **Selling PUSD or MUSD takes two approvals** (sell, then send). Paying the bridge straight from the sale, in one approval, is built but not yet proven.
+- **Selling PUSD or MUSD through THORChain takes two approvals** (sell, then send the BCH with THORChain's memo). Through NEAR Intents the sale pays the bridge itself: one approval.
 - **Gasless deposits are off** until the relayer holds a little Base ETH; the normal deposit is offered instead.
 - **Each bridge holds the money while it carries it**: NEAR Intents' bridge or THORChain's vaults, for seconds to minutes ([trust](https://docs.hashi.cash/docs/routes/trust)).
 - **Swaps are saved only in the browser that started them**; there is no account. The server keeps only each swap contract's public terms, so it can send unfinished BCH back to its owner.

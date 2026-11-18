@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { toastManager } from '@/components/ui/toast'
 import { ResumeBanner } from '@/features/activity/resume-banner'
 import { markAutostart, persistSwap } from '@/features/activity/store'
-import { SWAP_ON_ARRIVAL } from '@/lib/constants/features'
+import { ONE_APPROVAL_SALE, SWAP_ON_ARRIVAL } from '@/lib/constants/features'
 import { startSwap } from '@/lib/engine/runner'
 import { unlockSound } from '@/lib/feedback'
 import { SwapCard } from './swap-card'
@@ -36,8 +36,8 @@ export function SwapScreen({ initialQuery }: { initialQuery: string }) {
           amount: route.amountIn,
           slippageBps: swap.state.slippageBps,
           addresses: swap.addresses,
-          // One-approval selling (sale pays the bridge directly) waits on live test T5; two approvals until then.
-          oneApproval: false,
+          // Selling PUSD or MUSD through NEAR: the sale pays NEAR's deposit address in the same transaction.
+          oneApproval: ONE_APPROVAL_SALE,
           gasless,
           quoted: {
             amountOut: route.amountOut.toString(),

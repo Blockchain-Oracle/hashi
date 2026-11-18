@@ -20,14 +20,14 @@ Each step is saved in your browser (IndexedDB) before the next one starts. When 
 |---|---|
 | bridging | it picks up on its own and keeps checking every 5 seconds |
 | waiting for your deposit | it waits for your click: **Approve the deposit in your … wallet** |
-| PUSD or MUSD sold, the BCH not sent yet | **Send the BCH to NEAR Intents** (or THORChain): the bridge is quoted then, for exactly the BCH the sale produced |
+| PUSD or MUSD sold through THORChain, the BCH not sent yet | **Send the BCH to THORChain**: the bridge is quoted then, for exactly the BCH the sale produced |
 | BCH arrived, PUSD or MUSD to come | **Swap the BCH into PUSD**: one approval in your Bitcoin Cash wallet |
 | its quote ran out before your first approval | it ends as **Expired**, with nothing sent |
 
 On the swap page, a banner points at the swap that needs you: "Your BCH arrived. Finish: swap it into PUSD", "PUSD sold: send the BCH on", "A swap is waiting for its deposit", or "A swap is on its way".
 
 <Callout title="Selling PUSD or MUSD back to USDC or USDT">
-That swap asks your Bitcoin Cash wallet twice: sell on Cauldron, then send the BCH to the bridge. The sale is saved the moment it is out, so stopping between the two is safe: the swap reopens at the send, and the bridge is quoted then for the BCH the sale produced.
+Through NEAR Intents it is one approval: the Cauldron sale pays NEAR's deposit address in the same transaction, so there is nothing in between. Through THORChain it asks your Bitcoin Cash wallet twice: sell on Cauldron, then send the BCH with THORChain's memo. The sale is saved the moment it is out, so stopping between the two is safe: the swap reopens at the send, and THORChain is quoted then for the BCH the sale produced.
 </Callout>
 
 ## Quotes that run out

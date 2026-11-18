@@ -1,12 +1,17 @@
-import { binToHex } from '@bitauth/libauth'
+import { binToHex, CashAddressType, encodeCashAddress } from '@bitauth/libauth'
 import { describe, expect, it } from 'vitest'
+import { normalizeBchAddress } from '@/lib/bch/address'
 import { arrivalContract } from '@/lib/bch/arrival/contract'
 import { completeArrivalTrade } from '@/lib/bch/arrival/trade'
 import { verifyInVm } from '@/lib/bch/arrival/vm'
-import { STABLES } from '@/lib/constants/assets'
+import { prepareTokenSell, satsPaidTo } from '@/lib/bch/cauldron-trade'
+import type { WalletUtxo } from '@/lib/bch/wallet'
+import { BCH_ASSETS, STABLES } from '@/lib/constants/assets'
+import { NEAR_UTXO_DEADLINE_MS } from '@/lib/constants/limits'
 import { prepareArrival } from '@/lib/engine/arrival-terms'
+import { proceedsFromSell } from '@/lib/engine/cauldron-fees'
 import { PLACEHOLDER_ADDRESS } from '@/lib/engine/placeholders'
-import { getRouter } from './cauldron'
+import { getRouter, routerAsset } from './cauldron'
 import { getNearQuote, getNearStatus, getNearTokens } from './near'
 import { getThorInbound, getThorPools, getThorQuote, getThorStatus, isThorHaltError } from './thorchain'
 
@@ -105,5 +110,66 @@ describe.runIf(live)('live provider contracts', { timeout: 60_000 }, () => {
     })
     expect(verifyInVm(trade.transaction, trade.sourceOutputs)).toBe(true)
     expect(trade.fee).toBeGreaterThanOrEqual(BigInt(trade.size))
+  })
+
+  it('Cauldron + NEAR Intents: a PUSD sale pays NEAR’s deposit address in the same transaction (built, never signed)', async () => {
+    if (!BASE_USDC) throw new Error('no Base USDC in STABLES')
+    const pusd = BCH_ASSETS.PUSD.category as string
+    // An imaginary 1 PUSD coin at the all-zero-hash address: the Router prices and builds from the coin it is given.
+    const zero = new Uint8Array(20)
+    const coin: WalletUtxo = {
+      txid: 'aa'.repeat(32),
+      vout: 0,
+      value: 1_000n,
+      height: 1,
+      token: { category: pusd, amount: 100n },
+      address: {
+        path: 'receive',
+        index: 0,
+        plain: PLACEHOLDER_ADDRESS.bch,
+        token: encodeCashAddress({
+          payload: zero,
+          prefix: 'bitcoincash',
+          type: CashAddressType.p2pkhWithTokens,
+        }).address,
+        lockingHex: `76a914${'00'.repeat(20)}88ac`,
+      },
+    }
+    // As the swap screen does: price the sale, then ask NEAR for a band of deposit amounts around its proceeds.
+    const sale = await getRouter().quote({
+      sell: routerAsset('PUSD'),
+      buy: 'bch',
+      amount: 100n,
+      side: 'sell',
+    })
+    const net = proceedsFromSell(BigInt(sale.output_amount ?? '0'), sale.pools)
+    const near = await getNearQuote({
+      dry: false,
+      swapType: 'FLEX_INPUT',
+      originAsset: NEAR_BCH,
+      destinationAsset: BASE_USDC.nearAssetId,
+      amount: net,
+      recipient: PLACEHOLDER_ADDRESS.evm,
+      refundTo: PLACEHOLDER_ADDRESS.bch,
+      slippageBps: 100,
+      deadline: new Date(Date.now() + NEAR_UTXO_DEADLINE_MS),
+    })
+    const deposit = normalizeBchAddress(near.quote.depositAddress ?? '')
+
+    const trade = await prepareTokenSell({
+      asset: 'PUSD',
+      amount: 100n,
+      coins: [coin],
+      receive: coin.address,
+      proceedsTo: deposit,
+    })
+
+    const paid = satsPaidTo(trade.build, deposit)
+    console.info(
+      `sale pays NEAR ${paid} sats; NEAR quoted ${near.quote.amountIn}, accepts from ${near.quote.minAmountIn}`,
+    )
+    expect(paid).toBeGreaterThanOrEqual(BigInt(near.quote.minAmountIn))
+    // Nothing of the sale's BCH goes anywhere else: no plain-BCH output to the seller.
+    expect(satsPaidTo(trade.build, PLACEHOLDER_ADDRESS.bch)).toBe(0n)
   })
 })

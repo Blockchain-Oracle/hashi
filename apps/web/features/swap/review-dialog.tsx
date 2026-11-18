@@ -234,7 +234,9 @@ export function ReviewDialog({
                 .join(', ')}
               {SWAP_ON_ARRIVAL && route.pair.direction === 'in' && route.pair.bchAsset !== 'BCH'
                 ? `. The ${route.pair.bchAsset} trade on Bitcoin Cash runs by itself.`
-                : null}
+                : route.pair.direction === 'out' && route.pair.bchAsset !== 'BCH' && route.signatures === 1
+                  ? `. The ${route.pair.bchAsset} sale pays NEAR Intents in the same transaction.`
+                  : null}
             </Row>
             {from ? <Address term="From" value={from} /> : null}
             {to ? <Address term="To" value={to} /> : null}

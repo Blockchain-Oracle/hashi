@@ -69,6 +69,28 @@ describe('tracker steps', () => {
     expect(headline(sold).title).toBe('Send the BCH to NEAR Intents')
   })
 
+  it('sells PUSD and pays NEAR in one step when the sale is the deposit', () => {
+    const quoted: SwapRecord = {
+      ...base,
+      direction: 'out',
+      bridgeQuote: { quoteRequest: { swapType: 'FLEX_INPUT' } },
+    }
+    expect(states(quoted).slice(0, 2)).toEqual([
+      ['deposit', 'active'],
+      ['bridge', 'pending'],
+    ])
+    expect(trackerSteps(quoted, 0)[0]?.title).toMatch(/^Sell .* on Cauldron, paying NEAR Intents$/)
+    const sent = advance(
+      { ...quoted, bchTxid: 'beef' },
+      'deposit-sent',
+      'Sale and deposit in one transaction',
+    )
+    expect(states(sent).slice(0, 2)).toEqual([
+      ['deposit', 'done'],
+      ['bridge', 'active'],
+    ])
+  })
+
   it('marks where a refunded swap stopped and says why', () => {
     const sent = advance({ ...base, depositTx: '0xabc' }, 'deposit-sent', 'sent')
     const refunded = advance(sent, 'refunded', 'Deadline passed')

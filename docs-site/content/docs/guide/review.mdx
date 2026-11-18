@@ -15,7 +15,7 @@ icon: ListChecks
 |---|---|
 | **You pay / You receive** | both amounts, in dollars too, and the route's legs between them |
 | **Rate** | e.g. "1 USDC = 0.9966 PUSD" |
-| **You get at least** | the least the whole swap gives at your slippage, e.g. "48.8 PUSD · 1.00% slippage"; with a Cauldron leg, that leg's slippage counts too. Every Cauldron trade is built with a floor: on Bitcoin Cash, this number; into PUSD or MUSD, the [swap contract](/docs/bitcoin-cash/swap-contract) will not pay you less than this number; selling PUSD or MUSD, the sale is held to your slippage and the bridge, quoted after it, must still pay at least this. If prices move past a floor, nothing is signed and the tracker offers **Continue at the new price** |
+| **You get at least** | the least the whole swap gives at your slippage, e.g. "48.8 PUSD · 1.00% slippage"; with a Cauldron leg, that leg's slippage counts too. Every Cauldron trade is built with a floor: on Bitcoin Cash, this number; into PUSD or MUSD, the [swap contract](/docs/bitcoin-cash/swap-contract) will not pay you less than this number; selling PUSD or MUSD, NEAR's quote must pay at least this before the one transaction is signed (through THORChain, the sale is held to your slippage and the bridge, quoted after it, must still pay at least this). If prices move past a floor, nothing is signed and the tracker offers **Continue at the new price** |
 | **Arrives in** | the route's estimate |
 | **Fees** | the bridge, the Cauldron swap and the network fee, each in dollars (the gas amount too), then **Total** |
 | **Approvals** | per wallet, e.g. "1 approval in your Ethereum wallet. The PUSD trade on Bitcoin Cash runs by itself." |
@@ -29,4 +29,4 @@ The note at the bottom says what happens if the price moves:
 | THORChain | "If the price moves past your slippage, THORChain refunds the deposit to the refund address, minus its network fee." (coming out, the deposit's first coin; see above) |
 | Cauldron only | "Cauldron settles in one Bitcoin Cash transaction, at the built price or not at all: if the pools move past your slippage first, nothing leaves your wallet." |
 
-**Start swap** asks the bridge for a real quote (NEAR Intents issues a deposit address for this swap; THORChain names its vault and memo; selling PUSD or MUSD, the bridge is asked right after the sale instead, for the BCH it produced), saves the swap in your browser and opens the tracker. Nothing has moved yet: the tracker asks your wallet next.
+**Start swap** asks the bridge for a real quote (NEAR Intents issues a deposit address for this swap; THORChain names its vault and memo; selling PUSD or MUSD through THORChain, the bridge is asked right after the sale instead, for the BCH it produced), saves the swap in your browser and opens the tracker. Nothing has moved yet: the tracker asks your wallet next.

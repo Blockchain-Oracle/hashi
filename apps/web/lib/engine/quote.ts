@@ -1,6 +1,6 @@
 import { NEAR_BCH_ASSET_ID, THORCHAIN_BCH_ASSET } from '@/lib/constants/assets'
 import { CHAINS, type ChainInfo } from '@/lib/constants/chains'
-import { SWAP_ON_ARRIVAL } from '@/lib/constants/features'
+import { ONE_APPROVAL_SALE, SWAP_ON_ARRIVAL } from '@/lib/constants/features'
 import { ARRIVAL_RESERVE_SATS, BCH_SEND_FEE_SATS } from '@/lib/constants/fees'
 import {
   BCH_BLOCK_SECONDS,
@@ -200,6 +200,8 @@ async function quoteOut(
   const { stable, bchAsset } = req.pair
   const kind = CHAINS[stable.chain].kind
   const now = Date.now()
+  /** Selling PUSD or MUSD through NEAR: the sale pays NEAR's deposit address, one approval in all. */
+  const saleIsDeposit = bchAsset !== 'BCH' && provider === 'near' && ONE_APPROVAL_SALE
 
   let bridgeSats = req.amount
   let leg: CauldronLeg | undefined
@@ -212,7 +214,8 @@ async function quoteOut(
       side: 'sell',
     })
     const outputSats = BigInt(cauldron.output_amount ?? '0')
-    // Sell the tokens, then send the proceeds to the bridge (two approvals until the one-transaction path is proven).
+    // Sell the tokens, then the proceeds go to the bridge: in the sale itself through NEAR (ONE_APPROVAL_SALE), or
+    // in a second transaction (whose fee is kept back here) through THORChain.
     bridgeSats = proceedsFromSell(outputSats, cauldron.pools) - BCH_SEND_FEE_SATS
     if (bridgeSats <= 0n) return tooSmallForCauldron(provider)
     leg = {
@@ -313,8 +316,9 @@ async function quoteOut(
       ...(leg ? { cauldron: leg } : {}),
       ...(usdIn === undefined ? {} : { usdIn }),
       ...(usdOut === undefined ? {} : { usdOut }),
-      etaSeconds: etaSeconds + (leg ? CAULDRON_LEG_SECONDS : 0),
-      signatures: bchAsset === 'BCH' ? 1 : 2,
+      // One transaction (the sale pays the bridge) waits for no Cauldron leg of its own.
+      etaSeconds: etaSeconds + (leg && !saleIsDeposit ? CAULDRON_LEG_SECONDS : 0),
+      signatures: bchAsset === 'BCH' || saleIsDeposit ? 1 : 2,
       quotedAt: now,
       ...(expiresAt === undefined ? {} : { expiresAt }),
       raw: { bridge: rawBridge, ...(rawCauldron ? { cauldron: rawCauldron } : {}) },

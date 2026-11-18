@@ -56,7 +56,7 @@ The big button asks for what is missing, one thing at a time: **Connect an EVM w
 | USDC/USDT → PUSD or MUSD, through NEAR Intents | 1 transfer | – (the [swap contract](/docs/bitcoin-cash/swap-contract) trades it) |
 | Through THORChain, into Bitcoin Cash | 2 (allow, then deposit) | – |
 | BCH → USDC/USDT | – | 1 |
-| PUSD or MUSD → USDC/USDT | – | 2 (sell on Cauldron, then send the BCH; the sale is saved in between) |
+| PUSD or MUSD → USDC/USDT | – | 1 through NEAR Intents (the sale pays NEAR in the same transaction); 2 through THORChain (sell, then send the BCH with its memo; the sale is saved in between) |
 | PUSD ⇄ MUSD ⇄ BCH | – | 1 |
 
 Hashi skips THORChain's "allow" step when your wallet has already allowed enough; the route still counts it, so you may see one prompt fewer than it says.

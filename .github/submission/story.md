@@ -76,7 +76,7 @@ The docs walk through the bounty line by line: https://docs.hashi.cash/docs/buil
 ## Honest limits
 
 - No swap has been completed end to end on mainnet yet. The quotes, deposit addresses and unsigned Cauldron builds are live. Every wallet step is built and checked in code, but waits for its first funded run.
-- Selling PUSD or MUSD takes two approvals (sell, then send).
+- Selling PUSD or MUSD through THORChain takes two approvals (sell, then send the BCH with THORChain's memo); through NEAR Intents the sale pays the bridge itself, in one.
 - Gasless deposits are off until the relayer holds a little Base ETH.
 - Each bridge holds the money while it carries it, for seconds to minutes.
 - Swaps are saved only in the browser that started them.

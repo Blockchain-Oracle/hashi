@@ -182,7 +182,13 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
     }
   } else {
     const stableName = `${stable.symbol} on ${CHAINS[stable.chain].name}`
-    if (token) {
+    // Selling through NEAR in one approval: the sale itself pays NEAR's deposit address (a FLEX_INPUT quote).
+    const saleIsDeposit =
+      token &&
+      record.provider === 'near' &&
+      (record.bridgeQuote as { quoteRequest?: { swapType?: string } } | undefined)?.quoteRequest?.swapType ===
+        'FLEX_INPUT'
+    if (token && !saleIsDeposit) {
       steps.push({
         id: 'sell',
         title: `Sell ${amountIn} on Cauldron`,
@@ -197,14 +203,20 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
     }
     steps.push({
       id: 'deposit',
-      title: token ? `Send the BCH to ${provider}` : `Send ${amountIn} to ${provider}`,
+      title: saleIsDeposit
+        ? `Sell ${amountIn} on Cauldron, paying ${provider}`
+        : token
+          ? `Send the BCH to ${provider}`
+          : `Send ${amountIn} to ${provider}`,
       detail: record.bchTxid
         ? 'Waits for one Bitcoin Cash block (~10 min)'
-        : 'One approval in your Bitcoin Cash wallet',
+        : saleIsDeposit
+          ? 'One approval in your Bitcoin Cash wallet: the sale and the deposit are one transaction'
+          : 'One approval in your Bitcoin Cash wallet',
       chain: 'bch',
       state: state(
         Boolean(record.bchTxid),
-        record.status === 'quoted' && (!token || Boolean(record.cauldronTxid)),
+        record.status === 'quoted' && (!token || saleIsDeposit || Boolean(record.cauldronTxid)),
       ),
       ...(timeOf(record, 'deposit-sent') ? { at: timeOf(record, 'deposit-sent') as string } : {}),
       ...(record.bchTxid ? { href: txUrl('bch', record.bchTxid) } : {}),

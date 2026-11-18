@@ -1,6 +1,6 @@
 """Render an SVG (with its fonts and images) to PNG through Chromium, so text uses the real brand fonts.
 
-    uv run --with playwright python .github/render_svg.py <in.svg> <out.png> [--scale 2]
+    uv run --with playwright python .github/render_svg.py <in.svg> <out.png> [--scale 2] [--transparent]
 
 Used for the README banner (.github/assets/banner/) and the system map (.github/diagrams/system.py).
 """
@@ -19,6 +19,8 @@ with sync_playwright() as p:
     page = browser.new_page(viewport={"width": w, "height": h}, device_scale_factor=scale)
     page.goto(src.as_uri())
     page.wait_for_timeout(600)
-    page.screenshot(path=str(out), clip={"x": 0, "y": 0, "width": w, "height": h})
+    page.screenshot(
+        path=str(out), clip={"x": 0, "y": 0, "width": w, "height": h}, omit_background="--transparent" in sys.argv
+    )
     browser.close()
 print(f"{out.name}: {int(w * scale)}x{int(h * scale)}")

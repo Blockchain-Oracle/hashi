@@ -21,6 +21,7 @@ import {
 import { pairSides } from '@/lib/engine/pair'
 import { type OutsideCosts, rankRoutes } from '@/lib/engine/rank'
 import type { Pair, QuoteRequest, Route, RouteOutcome, RouteVia, SwapAddresses } from '@/lib/engine/types'
+import { minimumToShow } from '@/lib/format'
 import { checkRecipient } from '@/lib/recipient'
 import { INITIAL_STATE, paramsFromState, stateFromParams, swapReducer } from './state'
 import { useRelay } from './use-relay'
@@ -55,6 +56,8 @@ export type SwapStep =
   /** PUSD ⇄ MUSD: the trade needs a little plain BCH for its network fee. */
   | { kind: 'needs-bch-fee'; sats: bigint }
   | { kind: 'finding' }
+  /** Every route that could carry the pair wants more: the smallest of their minimums, as an amount to type. */
+  | { kind: 'below-minimum'; amount: string; symbol: string }
   | { kind: 'no-route'; message: string }
   | { kind: 'review'; needsGasless?: boolean }
 
@@ -232,6 +235,14 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
         (cauldron.isFetching && !cauldron.data) ||
         amount !== typed
       if (pending) return { kind: 'finding' }
+      const minimums = ranked.unavailable.flatMap((o) =>
+        o.reason === 'below-minimum' && o.minimum !== undefined ? [o.minimum] : [],
+      )
+      if (minimums.length) {
+        const [least = 0n] = minimums.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
+        const amount = formatUnits(minimumToShow(least, pay.decimals, pay.symbol), pay.decimals)
+        return { kind: 'below-minimum', amount, symbol: pay.symbol }
+      }
       const first = ranked.unavailable[0]
       return { kind: 'no-route', message: first?.message ?? 'No route for this pair right now' }
     }
@@ -263,6 +274,7 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
     payBalance,
     max,
     pay.symbol,
+    pay.decimals,
     selected,
     near.isFetching,
     near.data,

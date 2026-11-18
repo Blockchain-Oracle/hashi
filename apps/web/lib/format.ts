@@ -33,3 +33,14 @@ export function shortAddress(address: string, head = 4, tail = 4): string {
 export function displayDecimals(symbol: string): number {
   return symbol === 'BCH' ? 8 : symbol === 'PUSD' || symbol === 'MUSD' ? 2 : 4
 }
+
+/**
+ * A bridge's minimum, rounded up to the precision the asset is shown in, so the amount on screen is the amount
+ * that gets typed, and it is never a hair under the real minimum (0.812345 USDC shows, and fills in, as 0.8124).
+ */
+export function minimumToShow(minimum: bigint, decimals: number, symbol: string): bigint {
+  const dropped = decimals - displayDecimals(symbol)
+  if (dropped <= 0) return minimum
+  const unit = 10n ** BigInt(dropped)
+  return ((minimum + unit - 1n) / unit) * unit
+}

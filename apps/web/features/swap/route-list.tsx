@@ -3,6 +3,7 @@
 import { Clock01Icon, FlashIcon, GasPipeIcon, SignatureIcon } from '@hugeicons/core-free-icons'
 import { motion, useReducedMotion } from 'motion/react'
 import { Fragment } from 'react'
+import { formatUnits } from 'viem'
 import { Icon } from '@/components/kit/icon'
 import { BrandLogo } from '@/components/kit/logos'
 import { StatusPill } from '@/components/kit/status-pill'
@@ -11,7 +12,7 @@ import { BorderBeam } from '@/components/ui/border-beam'
 import { Skeleton } from '@/components/ui/skeleton'
 import { QUOTE_REFETCH_MS } from '@/lib/constants/limits'
 import { PROVIDERS, type Route, type RouteOutcome, type RouteVia } from '@/lib/engine/types'
-import { displayDecimals, formatAmount, formatDuration, formatUsd } from '@/lib/format'
+import { displayDecimals, formatAmount, formatDuration, formatUsd, minimumToShow } from '@/lib/format'
 import { LINKS } from '@/lib/links'
 import { cn } from '@/lib/utils'
 import type { Swap } from './use-swap'
@@ -64,6 +65,27 @@ export function RouteName({ route, logos = false }: { route: Route; logos?: bool
 }
 
 /** Drains over the refresh interval and restarts whenever a fresh quote lands. */
+/** The bridge's minimum as one tap: the amount it shows is the amount it fills in. */
+function UseMinimum({
+  amount,
+  symbol,
+  onUse,
+}: {
+  amount: string
+  symbol: string
+  onUse: (amount: string) => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onUse(amount)}
+      className="shrink-0 rounded-full bg-muted px-3 py-1 font-mono text-xs transition-colors hover:bg-accent"
+    >
+      Use {amount} {symbol}
+    </button>
+  )
+}
+
 function RefreshRing({ updatedAt, fetching }: { updatedAt: number; fetching: boolean }) {
   const still = useReducedMotion()
   return (
@@ -258,17 +280,11 @@ export function RouteList({ swap, onUseMinimum }: { swap: Swap; onUseMinimum: (a
             <span className="block truncate text-muted-foreground text-xs">{outcome.message}</span>
           </span>
           {outcome.minimum !== undefined && outcome.reason === 'below-minimum' ? (
-            <button
-              type="button"
-              onClick={() =>
-                onUseMinimum(
-                  formatAmount(outcome.minimum as bigint, pay.decimals, pay.decimals).replace(/,/g, ''),
-                )
-              }
-              className="shrink-0 rounded-full bg-muted px-3 py-1 font-mono text-xs transition-colors hover:bg-accent"
-            >
-              Use {formatAmount(outcome.minimum, pay.decimals, displayDecimals(pay.symbol))} {pay.symbol}
-            </button>
+            <UseMinimum
+              amount={formatUnits(minimumToShow(outcome.minimum, pay.decimals, pay.symbol), pay.decimals)}
+              symbol={pay.symbol}
+              onUse={onUseMinimum}
+            />
           ) : null}
         </div>
       ))}

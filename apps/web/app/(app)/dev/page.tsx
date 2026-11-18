@@ -34,7 +34,7 @@ import { LandingDemo } from '@/features/dev/landing-demo'
 import { MotionDemo } from '@/features/dev/motion-demo'
 import { DevSection } from '@/features/dev/section'
 import { SwapPreview } from '@/features/dev/swap-preview'
-import { SwapScreenDemo } from '@/features/dev/swap-screen-demo'
+import { StepButtonDemo, SwapScreenDemo } from '@/features/dev/swap-screen-demo'
 import { CANDIES, SWATCHES } from '@/features/dev/tokens'
 import { BCH_ASSETS, STABLES } from '@/lib/constants/assets'
 import { CHAINS, EXTERNAL_CHAIN_IDS } from '@/lib/constants/chains'
@@ -441,6 +441,10 @@ export default function DevPage() {
           note="The review sheet on a live quote (specimen addresses: the real one needs both wallets), the WizardConnect dialog (QR on a computer, the wallet app on a phone), and the token picker. Bottom sheets on a phone."
         >
           <SwapScreenDemo />
+          <div className="mt-8">
+            <p className="label-mono mb-3">/ The big button</p>
+            <StepButtonDemo />
+          </div>
         </DevSection>
 
         <DevSection

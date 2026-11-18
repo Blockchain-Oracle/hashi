@@ -163,6 +163,7 @@ export function SwapCard({
         <div className="p-1 pt-3">
           <StepButton
             step={step}
+            onUseMinimum={(value) => dispatch({ type: 'amount', value })}
             onConnectStable={(ns) => evm.connect(ns)}
             onConnectBch={bch.openConnect}
             onReview={() => setReviewOpen(true)}
@@ -239,13 +240,16 @@ function Destination({ swap }: { swap: ReturnType<typeof useSwap> }) {
   )
 }
 
-function StepButton({
+/** The card's one big button: the first thing missing, or the review. */
+export function StepButton({
   step,
+  onUseMinimum,
   onConnectStable,
   onConnectBch,
   onReview,
 }: {
   step: SwapStep
+  onUseMinimum: (amount: string) => void
   onConnectStable: (namespace: 'eip155' | 'solana') => void
   onConnectBch: () => void
   onReview: () => void
@@ -300,6 +304,12 @@ function StepButton({
         <Button size="xl" disabled>
           <Spinner className="size-4" />
           Finding routes…
+        </Button>
+      )
+    case 'below-minimum':
+      return (
+        <Button size="xl" variant="secondary" onClick={() => onUseMinimum(step.amount)}>
+          Too small. Use {step.amount} {step.symbol}
         </Button>
       )
     case 'no-route':

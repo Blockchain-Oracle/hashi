@@ -352,7 +352,15 @@ async function pausedThorChain(req: QuoteRequest<BridgePair>): Promise<string | 
 /** Turns a provider's error into a reason the route list can show. */
 export function classify(provider: RouteVia, error: unknown): RouteOutcome {
   if (error instanceof BelowMinimumError) {
-    return { ok: false, provider, reason: 'below-minimum', message: error.message, minimum: error.minimum }
+    // The bridge's own sentence states its minimum in base units ("try at least 150000" is 0.15 USDC): the
+    // screen words it from `minimum` instead.
+    return {
+      ok: false,
+      provider,
+      reason: 'below-minimum',
+      message: 'Below NEAR Intents’ minimum for this route',
+      minimum: error.minimum,
+    }
   }
   if (isThorHaltError(error)) {
     return { ok: false, provider, reason: 'halted', message: 'THORChain has paused trading on this route' }

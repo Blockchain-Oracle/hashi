@@ -6,14 +6,47 @@ import { useState } from 'react'
 import { Icon } from '@/components/kit/icon'
 import { Button } from '@/components/ui/button'
 import { ReviewDialog } from '@/features/swap/review-dialog'
+import { StepButton } from '@/features/swap/swap-card'
 import { TokenPicker } from '@/features/swap/token-picker'
-import { useSwap } from '@/features/swap/use-swap'
+import { type SwapStep, useSwap } from '@/features/swap/use-swap'
 import { useBchWallet } from '@/features/wallets/bch-wallet'
 import { toTokenAddress } from '@/lib/bch/address'
 import { PLACEHOLDER_ADDRESS } from '@/lib/engine/placeholders'
 
 const LIVE_QUERY = new URLSearchParams({ from: 'USDC.ethereum', to: 'PUSD', amount: '50' })
 const LOCAL_QUERY = new URLSearchParams({ from: 'PUSD', to: 'MUSD', amount: '10' })
+
+/** The big button's states that need a funded wallet to reach on the real screen. */
+const STEPS: SwapStep[] = [
+  { kind: 'below-minimum', amount: '0.15', symbol: 'USDC' },
+  { kind: 'no-route', message: 'No route for this pair right now' },
+  { kind: 'insufficient', symbol: 'USDC' },
+  { kind: 'insufficient-gas', symbol: 'ETH', chain: 'Base' },
+  { kind: 'needs-bch-fee', sats: 5_000n },
+  { kind: 'review' },
+]
+
+/** The swap card's big button in each of those states; "Use" reports the amount it would fill in. */
+export function StepButtonDemo() {
+  const [filled, setFilled] = useState<string>()
+  return (
+    <div className="flex max-w-md flex-col gap-3">
+      {STEPS.map((step) => (
+        <StepButton
+          key={step.kind}
+          step={step}
+          onUseMinimum={setFilled}
+          onConnectStable={() => {}}
+          onConnectBch={() => {}}
+          onReview={() => {}}
+        />
+      ))}
+      <p className="text-muted-foreground text-sm">
+        {filled ? `Amount filled in: ${filled}` : 'Nothing filled in yet.'}
+      </p>
+    </div>
+  )
+}
 
 /**
  * The swap screen's overlays, openable without wallets. The reviews run on live quotes (50 USDC on Ethereum → PUSD

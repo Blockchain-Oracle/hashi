@@ -21,6 +21,8 @@
   <a href="#how-hashi-meets-the-hackathon"><b>How it meets the bounty</b></a>
   &nbsp;·&nbsp;
   <a href="https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing"><b>Widget Factory deck</b></a>
+  &nbsp;·&nbsp;
+  <a href="#cashtokens-address"><b>CashTokens address</b></a>
 </p>
 
 Hashi is a bridge between the stablecoins of the big chains and Bitcoin Cash's own dollars. You pick what you pay (USDC or USDT on Base, Ethereum, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain or Solana) and what you receive (**PUSD**, **MUSD** or **BCH**). Hashi prices every route that can carry the swap, with **NEAR Intents** or **THORChain** crossing the chains and **Cauldron** trading on Bitcoin Cash. It shows every fee and ranks the routes by what you keep. Then it walks your two wallets through each approval: **WalletConnect** (Reown AppKit) on the other chain and **WizardConnect** on Bitcoin Cash. The same screen does the way back, and swaps between PUSD, MUSD and BCH that stay on Bitcoin Cash.
@@ -134,9 +136,18 @@ The bounty, in the organiser's words: _"Build a project that allows users to bri
 | "ParyonUSD is sponsoring BLAZE this year, so they are an excellent choice for first priority integration & demo purposes." | PUSD is the default destination                                                                                                                  | [the app](http://hashi.84.46.247.92.sslip.io/swap)                                                                                               |
 | "Must have WizardConnect or XO Template integration"                                                                       | WizardConnect                                                                                                                                    | above                                                                                                                                            |
 | "Must be able to make BCH mainnet transactions"                                                                            | Every swap into PUSD or MUSD, every sale and every swap on Bitcoin Cash is a mainnet transaction you sign                                        | [`lib/bch/sign.ts`](apps/web/lib/bch/sign.ts)                                                                                                    |
-| "Must have a banner with" the Widget Factory deck, the repository and a CashTokens address                                 | The top of the [home page](http://hashi.84.46.247.92.sslip.io)                                                                                   | [`components/shell/blaze-banner.tsx`](apps/web/components/shell/blaze-banner.tsx)                                                                |
+| "Must have a banner with" the Widget Factory deck, the repository and a CashTokens address                                 | The top of the [home page](http://hashi.84.46.247.92.sslip.io); the address and its QR code are also [below](#cashtokens-address)                | [`components/shell/blaze-banner.tsx`](apps/web/components/shell/blaze-banner.tsx)                                                                |
 
 The docs walk through [the bounty line by line](http://docs.hashi.84.46.247.92.sslip.io/docs/build/bounty).
+
+## CashTokens address
+
+<p align="center">
+  <img src=".github/assets/cashtokens-qr.png" width="240" alt="QR code for Hashi's CashTokens address, bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9" />
+</p>
+<p align="center"><code>bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9</code></p>
+
+Hashi's token-aware Bitcoin Cash address, the one the banner shows. BCH BLAZE sends prizes here, and EMBER2026 holders vote for Hashi in Community Choice by sending their tokens here. Scan it with Paytaca, Selene or Cashonize.
 
 ## Proof and evidence
 

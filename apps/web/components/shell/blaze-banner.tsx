@@ -1,7 +1,7 @@
-import { CopyButton } from '@/components/kit/copy-button'
+import { BrandQr } from '@/components/kit/brand-qr'
 import { env } from '@/lib/env'
-import { shortAddress } from '@/lib/format'
 import { LINKS } from '@/lib/links'
+import { CashTokensQr } from './cashtokens-qr'
 
 /**
  * The BCH BLAZE banner every entry carries at the top of its home page: the Widget Factory deck, the source code
@@ -34,13 +34,7 @@ export function BlazeBanner() {
         Source code ↗
       </a>
       {address ? (
-        <span className="flex items-center gap-1">
-          <span className="text-[#fffaf5]/70">CashTokens</span>
-          <span className="font-mono" title={address}>
-            {shortAddress(address.replace('bitcoincash:', ''), 8, 6)}
-          </span>
-          <CopyButton value={address} label="Copy the CashTokens address" className="size-6 text-[#fffaf5]" />
-        </span>
+        <CashTokensQr address={address} qr={<BrandQr value={address} label={`QR code for ${address}`} />} />
       ) : null}
     </aside>
   )

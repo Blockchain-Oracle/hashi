@@ -27,6 +27,7 @@ export function PopoverPopup({
   align = 'center',
   sideOffset = 4,
   alignOffset = 0,
+  collisionPadding,
   tooltipStyle = false,
   anchor,
   portalProps,
@@ -37,6 +38,7 @@ export function PopoverPopup({
   align?: PopoverPrimitive.Positioner.Props['align']
   sideOffset?: PopoverPrimitive.Positioner.Props['sideOffset']
   alignOffset?: PopoverPrimitive.Positioner.Props['alignOffset']
+  collisionPadding?: PopoverPrimitive.Positioner.Props['collisionPadding']
   tooltipStyle?: boolean
   anchor?: PopoverPrimitive.Positioner.Props['anchor']
 }): React.ReactElement {
@@ -46,6 +48,7 @@ export function PopoverPopup({
         align={align}
         alignOffset={alignOffset}
         anchor={anchor}
+        collisionPadding={collisionPadding}
         className="z-50 h-(--positioner-height) w-(--positioner-width) max-w-(--available-width) transition-[top,left,right,bottom,transform] data-instant:transition-none"
         data-slot="popover-positioner"
         side={side}

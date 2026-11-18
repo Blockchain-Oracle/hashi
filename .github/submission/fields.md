@@ -51,7 +51,7 @@ Paste [story.md](story.md). Upload these images where it says so, in this order:
 | WizardConnect integration                   | done                                                                                                            |
 | Banner: Widget Factory deck                 | done                                                                                                            |
 | Banner: repository link                     | done (public once the repository goes public)                                                                   |
-| Banner: CashTokens address                  | the team's address is still needed; the banner shows it once set                                                |
+| Banner: CashTokens address                  | done: `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`, with its QR code, in the banner and the README  |
 | Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                                               |
 | Roll call                                   | closed before the team joined (low-priority queue, not disqualification)                                        |
 | Demo video                                  | optional on DoraHacks (`mandatoryVideoLink: false`), recommended; script in `.github/submission/demo-script.md` |

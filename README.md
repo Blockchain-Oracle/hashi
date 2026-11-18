@@ -19,6 +19,8 @@
   <a href="http://docs.hashi.84.46.247.92.sslip.io"><b>Docs</b></a>
   &nbsp;·&nbsp;
   <a href="#how-hashi-meets-the-hackathon"><b>How it meets the bounty</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing"><b>Widget Factory deck</b></a>
 </p>
 
 Hashi is a bridge between the stablecoins of the big chains and Bitcoin Cash's own dollars. You pick what you pay (USDC or USDT on Base, Ethereum, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain or Solana) and what you receive (**PUSD**, **MUSD** or **BCH**). Hashi prices every route that can carry the swap, with **NEAR Intents** or **THORChain** crossing the chains and **Cauldron** trading on Bitcoin Cash. It shows every fee and ranks the routes by what you keep. Then it walks your two wallets through each approval: **WalletConnect** (Reown AppKit) on the other chain and **WizardConnect** on Bitcoin Cash. The same screen does the way back, and swaps between PUSD, MUSD and BCH that stay on Bitcoin Cash.

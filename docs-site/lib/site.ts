@@ -19,6 +19,22 @@ export const SITE = {
   url: DOCS_URL,
   app: APP_URL,
   swap: `${APP_URL}/swap`,
+  repo: "https://github.com/Blockchain-Oracle/hashi",
+} as const
+
+/**
+ * What every BCH BLAZE entry shows in its banner: the bounty, the Widget Factory deck, the source and the team's
+ * CashTokens address (BLAZE sends prizes there; EMBER2026 holders vote by sending their tokens there). The QR image
+ * is drawn from this address by `.github/assets/qr/qr.mts`, the same drawing as the app's and the README's: run it
+ * again if the address changes.
+ */
+export const BLAZE = {
+  event: "BCH BLAZE 2026",
+  bounty: "Stablecoin Bridge",
+  bountyUrl: "https://bchblaze.cash/bounties/stablecoin-bridge/",
+  deck: "https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing",
+  cashtokens: "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9",
+  qr: "/cashtokens-qr.svg",
 } as const
 
 /** Where the docs start, and the first page of each section (the top tabs). */

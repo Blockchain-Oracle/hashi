@@ -5,7 +5,7 @@ import { CashTokensQr } from './cashtokens-qr'
 
 /**
  * The BCH BLAZE banner every entry carries at the top of its home page: the Widget Factory deck, the source code
- * and the team's CashTokens address (prizes, EMBER2026 community votes and the TokenHunt airdrop go there). The
+ * and the team's CashTokens address (BLAZE sends prizes there; EMBER2026 holders vote by sending tokens there). The
  * deck and the address appear once they are set (NEXT_PUBLIC_BLAZE_DECK_URL, NEXT_PUBLIC_CASHTOKENS_ADDRESS).
  */
 export function BlazeBanner() {

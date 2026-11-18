@@ -9,6 +9,7 @@ import { icons } from "lucide-react"
 import type { MDXComponents } from "mdx/types"
 import type { ComponentProps } from "react"
 import { BRANDS, WALLETS } from "@/lib/brands"
+import { CashTokensCard } from "./blaze"
 import { Diagram } from "./diagram"
 import { HashiMark } from "./hashi-mark"
 import { Logo, LogoCloud } from "./logo-cloud"
@@ -18,6 +19,11 @@ import { Quote, RouteCard } from "./route-card"
 /** Every service, chain and token Hashi works with, as the endless row. */
 function Brands() {
   return <LogoCloud brands={BRANDS} />
+}
+
+/** Hashi's CashTokens address as a card with its QR code, for a docs page. */
+function CashTokens() {
+  return <CashTokensCard framed />
 }
 
 /** The wallets people already have, on both sides. */
@@ -49,6 +55,7 @@ export function getMDXComponents(components?: MDXComponents) {
     Diagram,
     Brands,
     Wallets,
+    CashTokens,
     Logo,
     LogoCloud,
     HashiMark,

@@ -16,9 +16,10 @@ const openApp: LinkItemType = {
   ),
 }
 
-/** The bar on every page: the mark, "Hashi docs", and the app. (GitHub joins once the repository is public.) */
+/** The bar on every page: the mark, "Hashi docs", the source on GitHub, and the app. */
 export function baseOptions(): BaseLayoutProps {
   return {
+    githubUrl: SITE.repo,
     nav: {
       title: (
         <span className="flex items-center gap-2.5">

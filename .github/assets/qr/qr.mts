@@ -1,7 +1,8 @@
 // Hashi's CashTokens QR as an image for the README and the deck, from the same model as the app's code
 // (apps/web/lib/brand-qr.ts). Node runs this TypeScript directly:
 //
-//   node .github/assets/qr/qr.mts bitcoincash:z…            # writes cashtokens-qr.svg beside this file
+//   node .github/assets/qr/qr.mts bitcoincash:z…            # writes cashtokens-qr.svg beside this file,
+//                                                            # and the same drawing into docs-site/public
 //   uv run --with playwright python .github/render_svg.py .github/assets/qr/cashtokens-qr.svg .github/assets/cashtokens-qr.png --scale 24 --transparent
 import { writeFileSync } from 'node:fs'
 import { qrModel } from '../../../apps/web/lib/brand-qr.ts'
@@ -37,4 +38,7 @@ ${finders}
 </svg>
 `
 writeFileSync(new URL('./cashtokens-qr.svg', import.meta.url), svg)
+// The docs are their own project (own lockfile, own Docker context), so they show this drawing rather than run the
+// encoder; their address lives in docs-site/lib/site.ts.
+writeFileSync(new URL('../../../docs-site/public/cashtokens-qr.svg', import.meta.url), svg)
 console.log(`cashtokens-qr.svg: ${m.size} modules, ${m.dots.length} dots`)

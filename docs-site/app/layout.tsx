@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Figtree, Geist_Mono } from "next/font/google"
+import { BlazeBanner } from "@/components/blaze"
 import { Provider } from "@/components/provider"
 import { OG, SITE } from "@/lib/site"
 import "./global.css"
@@ -32,7 +33,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable} font-sans`} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <Provider>{children}</Provider>
+        <Provider>
+          <BlazeBanner />
+          {children}
+        </Provider>
       </body>
     </html>
   )

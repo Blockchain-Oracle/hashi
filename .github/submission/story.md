@@ -69,6 +69,9 @@ The docs walk through the bounty line by line: https://docs.hashi.cash/docs/buil
 
 Real swaps through the live app on 18 November 2026 (transaction links in the repository's README):
 
+- 2 USDC on Base → 1.98 PUSD in one approval, filmed for the demo: NEAR Intents paid 966,878 sats to the swap's contract, and Hashi traded them into 1.98 PUSD for the wallet with no prompt (92ba9341… and dbc55dbc…, block 977,933).
+- 1 PUSD → 0.980986 USDC on Base in one approval, filmed: the Cauldron sale paid NEAR's deposit address directly (6bd4afb7…, block 977,933), and the USDC landed on Base at 20:41 UTC (0xfaff342d…).
+- 0.97 PUSD → 0.79 MUSD on Bitcoin Cash alone, filmed: one Cauldron transaction (d65dc335…), done seconds after the approval.
 - USDC → 0.47 MUSD in one approval: NEAR Intents paid 238,643 sats to the swap's contract, and Hashi traded them into 0.47 MUSD for the wallet with no prompt (Bitcoin Cash transactions 6c9b4d5c… and 7615fc9a…, block 977,918).
 - 0.10 MUSD → 0.09683 USDC on Base in one approval: the Cauldron sale paid NEAR's deposit address directly (bd9b2485…, block 977,925), and the USDC landed on Base (0xa7cdf7d7…).
 - 0.48 PUSD → 0.476685 USDC on Base: sale ad371984…, deposit ca03b618…, USDC on Base in 0xfada41b1… 33 minutes after the deposit.
@@ -81,13 +84,12 @@ Real swaps through the live app on 18 November 2026 (transaction links in the re
 - Settings for slippage and for a different recipient, with guards against token contracts and the wrong chain.
 - Docs: 33 pages with real captures, diagrams, `llms.txt` and every page as Markdown.
 
-## Honest limits
+## How the trip runs
 
-- Selling PUSD or MUSD through THORChain takes two approvals (sell, then send the BCH with THORChain's memo); through NEAR Intents the sale pays the bridge itself, in one.
-- Selling takes about 20 minutes or more: NEAR Intents takes a Bitcoin Cash deposit after two blocks.
-- Gasless deposits are off until the relayer holds a little Base ETH.
-- Each bridge holds the money while it carries it, for minutes (20 to 35 for a Bitcoin Cash deposit through NEAR Intents).
-- The automatic trade runs while the tracker is open; if it isn't opened again, the BCH goes back to the wallet about two hours after the start.
-- Swaps are saved only in the browser that started them.
+- One approval each way through NEAR Intents; THORChain is priced beside it, and its way out takes two (the sale, then the BCH with THORChain's memo).
+- Selling waits for two Bitcoin Cash blocks, about 20 minutes, which is when NEAR Intents takes the deposit; the tracker counts them live, then shows NEAR's own countdown.
+- Hashi never holds the money: a bridge carries it across for minutes, and your wallets sign everything else.
+- Your swap's key stays in your browser: the automatic trade runs while the tracker is open, and if you never come back the contract returns the BCH to your wallet about two hours after the start.
+- No account: swaps are saved in your browser; the server keeps only each swap contract's public terms.
 
 Hashi was started on 16 November 2026, during BCH BLAZE 2026. Its code is MIT-licensed.

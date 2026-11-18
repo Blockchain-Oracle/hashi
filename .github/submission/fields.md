@@ -43,15 +43,15 @@ Paste [story.md](story.md). Upload these images where it says so, in this order:
 
 ## Deliverables and their status
 
-| Required                                    | Status                                                                                                          |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Registered and submitted on DoraHacks       | to do by the team                                                                                               |
-| A live demo anyone can open                 | live at a temporary HTTP address; wallets connect once https://hashi.cash is registered                         |
-| The app can make a BCH mainnet transaction  | built; no swap recorded on mainnet yet                                                                          |
-| WizardConnect integration                   | done                                                                                                            |
-| Banner: Widget Factory deck                 | done                                                                                                            |
-| Banner: repository link                     | done (public once the repository goes public)                                                                   |
-| Banner: CashTokens address                  | done: `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`, with its QR code, in the banner and the README  |
-| Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                                               |
-| Roll call                                   | closed before the team joined (low-priority queue, not disqualification)                                        |
-| Demo video                                  | optional on DoraHacks (`mandatoryVideoLink: false`), recommended; script in `.github/submission/demo-script.md` |
+| Required                                    | Status                                                                                                                   |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Registered and submitted on DoraHacks       | to do by the team                                                                                                        |
+| A live demo anyone can open                 | live at a temporary HTTP address; wallets connect once https://hashi.cash is registered                                  |
+| The app can make a BCH mainnet transaction  | built; no swap recorded on mainnet yet                                                                                   |
+| WizardConnect integration                   | done                                                                                                                     |
+| Banner: Widget Factory deck                 | done                                                                                                                     |
+| Banner: repository link                     | done (public once the repository goes public)                                                                            |
+| Banner: CashTokens address                  | done: `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`, with its QR code, in the banner, the README and the deck |
+| Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                                                        |
+| Roll call                                   | closed before the team joined (low-priority queue, not disqualification)                                                 |
+| Demo video                                  | optional on DoraHacks (`mandatoryVideoLink: false`), recommended; script in `.github/submission/demo-script.md`          |

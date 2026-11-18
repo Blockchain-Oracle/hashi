@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Hashi</title>
   <defs><linearGradient id="g" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a2a"/><stop offset="1" stop-color="#ff2f00"/></linearGradient></defs>
   <rect width="512" height="512" rx="164" fill="url(#g)"/>
   <g transform="translate(82 46) scale(14.5)" fill="none" stroke="#FFFFFF" stroke-linecap="round">

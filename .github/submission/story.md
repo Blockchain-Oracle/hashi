@@ -70,7 +70,7 @@ The docs walk through the bounty line by line: https://docs.hashi.cash/docs/buil
 Real swaps through the live app on 18 November 2026 (transaction links in the repository's README):
 
 - USDC → 0.47 MUSD in one approval: NEAR Intents paid 238,643 sats to the swap's contract, and Hashi traded them into 0.47 MUSD for the wallet with no prompt (Bitcoin Cash transactions 6c9b4d5c… and 7615fc9a…, block 977,918).
-- 0.10 MUSD → 0.09683 USDC on Base in one approval: the Cauldron sale paid NEAR's deposit address directly (bd9b2485…, block 977,925).
+- 0.10 MUSD → 0.09683 USDC on Base in one approval: the Cauldron sale paid NEAR's deposit address directly (bd9b2485…, block 977,925), and the USDC landed on Base (0xa7cdf7d7…).
 - 0.48 PUSD → 0.476685 USDC on Base: sale ad371984…, deposit ca03b618…, USDC on Base in 0xfada41b1… 33 minutes after the deposit.
 
 ## Also in Hashi

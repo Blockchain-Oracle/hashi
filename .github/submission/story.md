@@ -49,7 +49,7 @@ With the NEAR Intents route, you approve one USDC transfer. NEAR Intents pays th
 5. **Finish on Bitcoin Cash, with no approval.** For PUSD or MUSD the bridge paid this swap's contract; while the tracker is open, Hashi signs the Cauldron trade with the swap's own key, after checking it in the Bitcoin Cash VM. The contract makes that trade pay you at least the floor.
 6. **The way back, in one approval.** The Cauldron sale of your PUSD or MUSD pays its BCH straight to NEAR Intents' deposit address, under a quote that takes a range of amounts; Hashi checks the sale still keeps the review's promise before you sign. Through THORChain the sale comes first, then the BCH goes with THORChain's memo (two approvals).
 
-[image 4: the system map] [image 5: a swap into Bitcoin Cash, step by step]
+[image 4: who touches what] [image 5: into PUSD in one approval] [image 6: out to USDC in one approval]
 
 ## How Hashi meets the bounty
 

@@ -90,22 +90,34 @@ The cover opens the same swap on the live app. The recorded walkthrough will be 
 <p align="center">
   <a href="https://docs.hashi.cash/docs/build">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/system-dark.png" />
-      <img src=".github/assets/system-light.png" width="960" alt="Hashi's system map: Hashi in your browser on top; your dollars' path from your EVM or Solana wallet through NEAR Intents or THORChain to your swap contract, which Hashi trades on Cauldron with the swap's key, to PUSD or MUSD in your own wallet; Reown AppKit, the gas relayer, the keeper, Electrum and WizardConnect beneath" />
+      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/figures/system-dark.gif" />
+      <img src=".github/assets/figures/system-light.gif" width="900" alt="Who touches what: your money goes from your wallet through NEAR Intents or THORChain to your swap contract on Bitcoin Cash, then Cauldron, then your wallet; Hashi in your browser asks your wallets and holds the swap's key; Hashi's server only returns unfinished BCH" />
     </picture>
   </a>
 </p>
-<p align="center"><a href="https://docs.hashi.cash/docs/build">Open the detailed map</a> · <a href=".github/diagrams/system.py">Edit the source</a></p>
+<p align="center"><sub><b>Who touches what.</b> ① you approve in your wallet · ② NEAR Intents or THORChain carry it to your swap contract · ③ Hashi trades it on Cauldron with the swap's own key · ④ PUSD or MUSD to your wallet. Hashi's server only returns unfinished BCH.</sub></p>
+
+<p align="center">
+  <a href="https://docs.hashi.cash/docs/bitcoin-cash/swap-contract">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/figures/into-dark.gif" />
+      <img src=".github/assets/figures/into-light.gif" width="900" alt="Into PUSD in one approval: USDC on Base crosses through NEAR Intents to a contract made for the swap, which trades it on Cauldron, and PUSD comes to your Bitcoin Cash wallet, or the BCH goes back to you" />
+    </picture>
+  </a>
+</p>
+<p align="center"><sub><b>Into PUSD, one approval.</b> ① the USDC transfer · ② NEAR Intents pays the BCH to your swap's contract · ③ the swap's own key trades it on Cauldron · ④ at least the review's floor, to your wallet.</sub></p>
 
 <p align="center">
   <a href="https://docs.hashi.cash/docs/routes">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/into-bch-dark.png" />
-      <img src=".github/assets/into-bch-light.png" width="960" alt="Sequence for 50 USDC on Ethereum to PUSD in one approval: Hashi prices the routes; Hashi makes a contract for the swap that pays only your wallet; NEAR Intents issues a deposit address; the only approval sends the USDC; NEAR pays the BCH to the contract; Hashi trades it on Cauldron with the swap's own key; PUSD arrives" />
+      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/figures/out-dark.gif" />
+      <img src=".github/assets/figures/out-light.gif" width="900" alt="Out to USDC in one approval: the Cauldron sale pays NEAR Intents in the same transaction; after two Bitcoin Cash blocks NEAR Intents swaps it, and USDC lands in your wallet on Base" />
     </picture>
   </a>
 </p>
-<p align="center"><a href="https://docs.hashi.cash/docs/routes">Every route, step by step</a> · <a href=".github/diagrams/into-bch.mmd">Edit the Mermaid source</a> (also <a href=".github/diagrams/out-of-bch.mmd">out of</a> and <a href=".github/diagrams/on-bch.mmd">on</a> Bitcoin Cash)</p>
+<p align="center"><sub><b>Out to USDC, one approval.</b> ① the sale, which pays NEAR Intents in the same transaction · ② two Bitcoin Cash blocks · ③ NEAR Intents swaps it · ④ USDC to your wallet on Base.</sub></p>
+
+<p align="center"><a href="https://docs.hashi.cash/docs/routes">Every route, step by step</a> · <a href="docs-site/components/figures">The figures' source</a> (drawn by hand in SVG; the docs play them live in light and dark)</p>
 
 ### Built on
 
@@ -174,7 +186,7 @@ Also checked:
 - **Gasless USDC on Base**: sign an authorisation and Hashi's relayer pays the gas ([guide](https://docs.hashi.cash/docs/guide/gasless)).
 - **Services checked live**: NEAR Intents, THORChain's pauses per chain, the Cauldron Router and the Bitcoin Cash network, in the swap card's status ([guide](https://docs.hashi.cash/docs/guide/swap-screen)).
 - **Settings**: slippage, and a different recipient with guards against token contracts and the wrong chain ([guide](https://docs.hashi.cash/docs/guide/settings)).
-- **The docs**: 33 pages in four parts, with real captures, the diagrams, `llms.txt` and every page as Markdown.
+- **The docs**: 33 pages in four parts, with real captures, animated figures drawn on Hashi's own bridge, `llms.txt` and every page as Markdown.
 
 ## Run it locally
 
@@ -198,7 +210,7 @@ apps/web/            the app: landing page, swap, activity, tracker, gas relayer
   lib/bch/           addresses, coins, Electrum, Cauldron trades, the swap contract, the THORChain deposit, signing
   features/          swap screen, wallets, activity and tracker, landing page
 docs-site/           the docs (Fumadocs, static export)
-.github/             diagrams, captures, banner
+.github/             figures (GIF and still), captures, banner
 ```
 
 ## Credits

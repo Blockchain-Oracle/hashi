@@ -38,8 +38,9 @@ Paste [story.md](story.md). Upload these images where it says so, in this order:
 1. `.github/assets/banner-light.png`: the first image. It shows what the bounty asks for: USDC on Ethereum, routes into MUSD on Bitcoin Cash.
 2. `.github/assets/captures/swap-card-light.png`: the worked example (50 USDC on Ethereum → 48.94 MUSD in one approval, 18 Nov 2026, 19:13 UTC).
 3. `.github/assets/captures/review-bridge-desktop.png`: the review sheet, with every fee, the least you can receive and the one approval.
-4. `.github/assets/system-light.png`: the system map.
-5. `.github/assets/into-bch-light.png`: a swap into Bitcoin Cash, step by step.
+4. `.github/assets/figures/system-light.png` (or the animated `system-light.gif`): who touches what.
+5. `.github/assets/figures/into-light.png` (or `into-light.gif`): into PUSD in one approval.
+6. `.github/assets/figures/out-light.png` (or `out-light.gif`): out to USDC in one approval.
 
 ## Deliverables and their status
 

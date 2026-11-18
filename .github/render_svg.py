@@ -2,7 +2,7 @@
 
     uv run --with playwright python .github/render_svg.py <in.svg> <out.png> [--scale 2] [--transparent]
 
-Used for the README banner (.github/assets/banner/) and the system map (.github/diagrams/system.py).
+Used for the README banner (.github/assets/banner/) and the demo cover.
 """
 import re
 import sys

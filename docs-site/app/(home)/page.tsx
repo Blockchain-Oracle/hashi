@@ -2,7 +2,7 @@ import type { Folder, Item, Node } from "fumadocs-core/page-tree"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { Diagram } from "@/components/diagram"
+import { SystemFigure } from "@/components/figures/system-figure"
 import { Anatomy } from "@/components/home/anatomy"
 import { RouteExplorer } from "@/components/home/route-explorer"
 import { Logo } from "@/components/logo-cloud"
@@ -103,11 +103,7 @@ export default function HomePage() {
             Architecture <ArrowRight className="size-4" aria-hidden />
           </Link>
         </div>
-        <Diagram
-          name="system"
-          alt="Hashi's system map: Hashi in your browser above, your dollars' path from your EVM or Solana wallet through a bridge to your swap contract, which Hashi trades on Cauldron for PUSD or MUSD in your own wallet, and the services beneath"
-          caption="You approve what leaves your wallets; the swap contract pays you at least the floor or sends the BCH back."
-        />
+        <SystemFigure className="mt-10" />
       </section>
 
       {/* Close */}

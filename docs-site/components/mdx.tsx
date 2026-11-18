@@ -10,7 +10,10 @@ import type { MDXComponents } from "mdx/types"
 import type { ComponentProps } from "react"
 import { BRANDS, WALLETS } from "@/lib/brands"
 import { CashTokensCard } from "./blaze"
-import { Diagram } from "./diagram"
+import { IntoFigure } from "./figures/into-figure"
+import { OnFigure } from "./figures/on-figure"
+import { OutFigure } from "./figures/out-figure"
+import { SystemFigure } from "./figures/system-figure"
 import { HashiMark } from "./hashi-mark"
 import { Logo, LogoCloud } from "./logo-cloud"
 import { Phone, Phones, Sheet, Shot } from "./phone"
@@ -52,7 +55,10 @@ export function getMDXComponents(components?: MDXComponents) {
     Tab,
     Tabs,
     TypeTable,
-    Diagram,
+    IntoFigure,
+    OutFigure,
+    OnFigure,
+    SystemFigure,
     Brands,
     Wallets,
     CashTokens,

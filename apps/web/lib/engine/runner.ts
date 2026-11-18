@@ -370,8 +370,9 @@ export async function expireIfStale(record: SwapRecord, now: number, log: Log): 
   if (deadline === undefined || now < deadline) return record
   if (record.provider === 'near' && record.depositAddress) {
     const status = await getNearStatus(record.depositAddress)
+    // Anything but "waiting for a deposit", a status Hashi does not know included, means money may have moved.
     if (status.status !== 'PENDING_DEPOSIT') {
-      log('bridge', `NEAR ${status.status} after the deadline: a deposit was made`)
+      log('bridge', `NEAR ${status.statusText} after the deadline: a deposit was made`)
       return advance(record, 'deposit-sent', 'NEAR Intents found a deposit')
     }
   }
@@ -686,6 +687,10 @@ export async function checkBridge(record: SwapRecord, log: Log): Promise<SwapRec
         return record.status === 'bridging' ? record : advance(record, 'bridging', 'NEAR Intents is swapping')
       case 'INCOMPLETE_DEPOSIT':
         log('bridge', `NEAR INCOMPLETE_DEPOSIT (deposited ${details.depositedAmount ?? '?'})`)
+        return record
+      case 'UNKNOWN':
+        // A status NEAR added after Hashi was written: keep waiting for one Hashi knows, and say which it was.
+        log('bridge', `NEAR reports "${status.statusText}", a status Hashi does not know yet; still waiting`)
         return record
       default:
         return record

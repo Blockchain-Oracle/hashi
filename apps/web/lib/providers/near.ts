@@ -9,6 +9,27 @@ import { fetchJson, ProviderError } from '@/lib/http'
 
 const PROVIDER = 'NEAR Intents'
 
+/**
+ * NEAR's OpenAPI file (v0.1.10, read 2026-11-18) marks no field as nullable, but the live API sends `null` for
+ * every optional field it has no value for yet: a status waiting for its deposit came back with eleven of them null
+ * (`amountIn`, `amountOut`, `depositedAmount`, `refundReason`, `slippage`…). So every optional field here accepts
+ * a missing key and `null` alike, and both read as "not set". Required fields stay strict: Hashi depends on them.
+ */
+const maybeText = z
+  .string()
+  .nullish()
+  .transform((value) => value ?? undefined)
+const maybeNumber = z
+  .number()
+  .nullish()
+  .transform((value) => value ?? undefined)
+/** A list NEAR may leave out or send as `null`: both mean empty. */
+const listOf = <T extends z.ZodType>(item: T) =>
+  z
+    .array(item)
+    .nullish()
+    .transform((value) => value ?? [])
+
 const tokenSchema = z.object({
   assetId: z.string(),
   decimals: z.number(),
@@ -16,7 +37,7 @@ const tokenSchema = z.object({
   symbol: z.string(),
   price: z.number(),
   priceUpdatedAt: z.string(),
-  contractAddress: z.string().optional(),
+  contractAddress: maybeText,
 })
 export type NearToken = z.infer<typeof tokenSchema>
 
@@ -46,8 +67,8 @@ export interface NearQuoteInput {
 }
 
 const quoteSchema = z.object({
-  depositAddress: z.string().optional(),
-  depositMemo: z.string().optional(),
+  depositAddress: maybeText,
+  depositMemo: maybeText,
   amountIn: z.string(),
   amountInFormatted: z.string(),
   amountInUsd: z.string(),
@@ -56,12 +77,12 @@ const quoteSchema = z.object({
   amountOutFormatted: z.string(),
   amountOutUsd: z.string(),
   minAmountOut: z.string(),
-  deadline: z.string().optional(),
-  timeWhenInactive: z.string().optional(),
+  deadline: maybeText,
+  timeWhenInactive: maybeText,
   /** Seconds, counted from when the deposit transaction is confirmed. */
   timeEstimate: z.number(),
-  refundFee: z.string().optional(),
-  withdrawFee: z.string().optional(),
+  refundFee: maybeText,
+  withdrawFee: maybeText,
 })
 
 const quoteResponseSchema = z.object({
@@ -133,33 +154,57 @@ export const NEAR_STATUSES = [
   'REFUNDED',
   'FAILED',
 ] as const
-export type NearStatus = (typeof NEAR_STATUSES)[number]
+/** A status NEAR documents, or `UNKNOWN` for one it adds later (kept in `statusText`, so it can be logged). */
+export type NearStatus = (typeof NEAR_STATUSES)[number] | 'UNKNOWN'
 
 const txDetailsSchema = z.object({ hash: z.string(), explorerUrl: z.string() })
 
-const statusSchema = z.object({
-  correlationId: z.string(),
-  /** The quote this deposit address belongs to (what it waits for, and its minimum). */
-  quoteResponse: z
-    .object({ quoteRequest: z.record(z.string(), z.unknown()), quote: quoteSchema.partial() })
-    .partial()
-    .optional(),
-  status: z.enum(NEAR_STATUSES),
-  updatedAt: z.string(),
-  swapDetails: z.object({
-    intentHashes: z.array(z.string()),
-    nearTxHashes: z.array(z.string()),
-    originChainTxHashes: z.array(txDetailsSchema),
-    destinationChainTxHashes: z.array(txDetailsSchema),
-    amountIn: z.string().optional(),
-    amountOut: z.string().optional(),
-    depositedAmount: z.string().optional(),
-    refundedAmount: z.string().optional(),
-    refundReason: z.string().optional(),
-    withdrawFee: z.string().optional(),
-  }),
-})
+const statusSchema = z
+  .object({
+    correlationId: z.string(),
+    /**
+     * The quote this deposit address belongs to (what it waits for, and its minimum). Only the relayer reads it, so
+     * a shape it cannot read becomes "absent" (the relayer then refuses, the safe side) instead of failing the
+     * status check that the tracker depends on.
+     */
+    quoteResponse: z
+      .object({
+        quoteRequest: z.record(z.string(), z.unknown()),
+        quote: z.object({ minAmountIn: maybeText, depositAddress: maybeText }),
+      })
+      .partial()
+      .nullish()
+      .transform((value) => value ?? undefined)
+      .catch(undefined),
+    // A status NEAR adds later must not stop every check: it reads as UNKNOWN, and the raw text is kept.
+    status: z.string(),
+    updatedAt: z.string(),
+    swapDetails: z.object({
+      intentHashes: listOf(z.string()),
+      nearTxHashes: listOf(z.string()),
+      originChainTxHashes: listOf(txDetailsSchema),
+      destinationChainTxHashes: listOf(txDetailsSchema),
+      amountIn: maybeText,
+      amountOut: maybeText,
+      depositedAmount: maybeText,
+      refundedAmount: maybeText,
+      refundReason: maybeText,
+      refundFee: maybeText,
+      withdrawFee: maybeText,
+      slippage: maybeNumber,
+    }),
+  })
+  .transform(({ status, ...rest }) => ({
+    ...rest,
+    status: (NEAR_STATUSES as readonly string[]).includes(status) ? (status as NearStatus) : 'UNKNOWN',
+    statusText: status,
+  }))
 export type NearStatusResponse = z.infer<typeof statusSchema>
+
+/** Validates a status body: what `getNearStatus` does with NEAR's answer (exported for tests). */
+export function parseNearStatus(body: unknown): NearStatusResponse {
+  return statusSchema.parse(body)
+}
 
 export function getNearStatus(depositAddress: string, signal?: AbortSignal) {
   const url = `${NEAR_ONE_CLICK_URL}/v0/status?depositAddress=${encodeURIComponent(depositAddress)}`
@@ -172,8 +217,4 @@ export function submitNearDeposit(txHash: string, depositAddress: string) {
     method: 'POST',
     body: { txHash, depositAddress },
   })
-}
-
-export function isNearTerminal(status: NearStatus) {
-  return status === 'SUCCESS' || status === 'REFUNDED' || status === 'FAILED'
 }

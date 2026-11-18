@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { STABLES } from '@/lib/constants/assets'
-import type { NearStatusResponse } from '@/lib/providers/near'
+import { parseNearStatus } from '@/lib/providers/near'
+import { NEAR_STATUS_PENDING } from '@/lib/providers/near-status.fixture'
 import { checkNearDeposit, checkStatic, createLimiter, type RelayRequest } from './policy'
 
 const NOW = 1_800_000_000
@@ -19,20 +20,18 @@ const request: RelayRequest = {
   s: `0x${'55'.repeat(32)}`,
 }
 
-function status(overrides: Partial<NearStatusResponse> = {}): NearStatusResponse {
-  return {
-    correlationId: 'x',
-    status: 'PENDING_DEPOSIT',
-    updatedAt: '',
-    quoteResponse: { quoteRequest: { originAsset: BASE_USDC }, quote: { minAmountIn: '1000000' } },
-    swapDetails: {
-      intentHashes: [],
-      nearTxHashes: [],
-      originChainTxHashes: [],
-      destinationChainTxHashes: [],
+/** NEAR's real answer for a waiting deposit, for Base USDC with a 1 USDC minimum, with any changes, parsed. */
+function status(changes: { status?: string; originAsset?: string; minAmountIn?: string } = {}) {
+  const live = NEAR_STATUS_PENDING
+  return parseNearStatus({
+    ...live,
+    status: changes.status ?? 'PENDING_DEPOSIT',
+    quoteResponse: {
+      ...live.quoteResponse,
+      quoteRequest: { ...live.quoteResponse.quoteRequest, originAsset: changes.originAsset ?? BASE_USDC },
+      quote: { ...live.quoteResponse.quote, minAmountIn: changes.minAmountIn ?? '1000000' },
     },
-    ...overrides,
-  }
+  })
 }
 
 describe('gas relayer policy', () => {
@@ -50,20 +49,8 @@ describe('gas relayer policy', () => {
 
   it('refuses a deposit address that is not waiting, is for another asset, or wants more', () => {
     expect(checkNearDeposit(request, status({ status: 'PROCESSING' }))).toMatch(/not waiting/)
-    expect(
-      checkNearDeposit(
-        request,
-        status({ quoteResponse: { quoteRequest: { originAsset: 'nep141:other' }, quote: {} } }),
-      ),
-    ).toMatch(/not for USDC/)
-    expect(
-      checkNearDeposit(
-        request,
-        status({
-          quoteResponse: { quoteRequest: { originAsset: BASE_USDC }, quote: { minAmountIn: '2000000' } },
-        }),
-      ),
-    ).toMatch(/does not cover/)
+    expect(checkNearDeposit(request, status({ originAsset: 'nep141:other' }))).toMatch(/not for USDC/)
+    expect(checkNearDeposit(request, status({ minAmountIn: '2000000' }))).toMatch(/does not cover/)
   })
 
   it('limits requests per key within the window', () => {

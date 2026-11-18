@@ -73,18 +73,20 @@ export function secondsLeft(record: SwapRecord, now: number): number | undefined
   return Math.round((sent + eta * 1000 - now) / 1000)
 }
 
+/** The swap on its bridge's own explorer (NEAR Intents by deposit address, THORChain by inbound hash). */
+export function bridgeExplorerUrl(record: SwapRecord): string | undefined {
+  if (record.provider === 'near')
+    return record.depositAddress ? nearIntentsUrl(record.depositAddress) : undefined
+  if (record.provider !== 'thorchain') return undefined
+  const inbound = record.direction === 'in' ? record.depositTx : record.bchTxid
+  return inbound ? thorchainUrl(inbound) : undefined
+}
+
 export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
   const pay = paySide(record)
   const provider = PROVIDERS[record.provider].name
   const amountIn = `${formatAmount(BigInt(record.amountIn), pay.decimals, displayDecimals(pay.symbol))} ${pay.symbol}`
-  const bridgeHref =
-    record.provider === 'near'
-      ? record.depositAddress
-        ? nearIntentsUrl(record.depositAddress)
-        : undefined
-      : (record.direction === 'in' ? record.depositTx : record.bchTxid)
-        ? thorchainUrl((record.direction === 'in' ? record.depositTx : record.bchTxid) as string)
-        : undefined
+  const bridgeHref = bridgeExplorerUrl(record)
   const left = secondsLeft(record, now)
   const bridgeAt =
     left === undefined ? timeOf(record, 'bridging') : left > 0 ? formatDuration(left) : 'any moment'

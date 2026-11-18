@@ -26,6 +26,8 @@ export const PROVIDER_STATUS_STALE_MS = 30 * SECOND
 
 /** A swap in progress polls its provider's status on this interval until it reaches an end state. */
 export const STATUS_POLL_MS = 5 * SECOND
+/** Status checks failing this long (three in a row) is said on the tracker, not left to look like a slow bridge. */
+export const STATUS_TROUBLE_MS = 15 * SECOND
 
 /** The router closes idle sockets after a few minutes; a cheap quote on this interval keeps ours open. */
 export const ROUTER_KEEPALIVE_MS = 10 * SECOND

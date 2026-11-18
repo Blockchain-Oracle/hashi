@@ -23,9 +23,18 @@ import { celebrate } from '@/lib/feedback'
 import { persistSwap, takeAutostart, useSwapRecord } from './store'
 
 export interface RunLog {
+  /** When it last happened. */
   at: number
   step: string
   detail: string
+  /** How many times in a row the same line came up (a status check retried every few seconds). */
+  repeats: number
+}
+
+/** The bridge's status could not be read: since when, and the last reason. */
+export interface StatusTrouble {
+  since: number
+  message: string
 }
 
 /** Wallets refuse in many words; these are the ones people see. */
@@ -88,11 +97,19 @@ export function useSwapRunner(id: string) {
   /** After prices moved past the floor: the step to retry and the lower floor it would accept. */
   const [offer, setOffer] = useState<{ kind: 'deposit' | 'finish'; accept: Accept } | null>(null)
   const [log, setLog] = useState<RunLog[]>([])
+  const [statusTrouble, setStatusTrouble] = useState<StatusTrouble | null>(null)
   const checking = useRef(false)
   const lastStatus = useRef<SwapStatus | undefined>(undefined)
 
   const push = useCallback((step: string, detail: string) => {
-    setLog((entries) => [...entries.slice(-80), { at: Date.now(), step, detail }])
+    setLog((entries) => {
+      const last = entries.at(-1)
+      // The same line again (a retry every few seconds) counts up instead of filling the log.
+      if (last && last.step === step && last.detail === detail) {
+        return [...entries.slice(0, -1), { ...last, at: Date.now(), repeats: last.repeats + 1 }]
+      }
+      return [...entries.slice(-80), { at: Date.now(), step, detail, repeats: 1 }]
+    })
   }, [])
 
   const bch: BchSide | undefined =
@@ -186,9 +203,13 @@ export function useSwapRunner(id: string) {
       checking.current = true
       try {
         const next = await checkBridge(record, push)
+        if (!stopped) setStatusTrouble(null)
         if (!stopped && next !== record) await persistSwap(queryClient, next)
       } catch (e) {
-        push('status', `check failed, retrying: ${e instanceof Error ? e.message : String(e)}`)
+        const message = e instanceof Error ? e.message : String(e)
+        push('status', `check failed, retrying: ${message}`)
+        // Kept as state, so the tracker can say plainly that it cannot read the bridge (not that the bridge is slow).
+        if (!stopped) setStatusTrouble((t) => ({ since: t?.since ?? Date.now(), message }))
       } finally {
         checking.current = false
       }
@@ -223,6 +244,7 @@ export function useSwapRunner(id: string) {
     error,
     offer: Boolean(offer),
     log,
+    statusTrouble,
     deposit: () => deposit(),
     finish: () => finish(),
     acceptNewPrice,

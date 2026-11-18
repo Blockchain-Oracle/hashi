@@ -23,11 +23,12 @@ import { Spinner } from '@/components/ui/spinner'
 import { useBchWallet } from '@/features/wallets/bch-wallet'
 import { useEvmWallet } from '@/features/wallets/evm-wallet'
 import { CHAINS } from '@/lib/constants/chains'
+import { STATUS_TROUBLE_MS } from '@/lib/constants/limits'
 import type { SwapRecord, SwapStatus } from '@/lib/engine/swap'
 import { PROVIDERS } from '@/lib/engine/types'
 import { displayDecimals, formatAmount, shortAddress } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { headline, paySide, receiveSide, secondsLeft, trackerSteps } from './steps'
+import { bridgeExplorerUrl, headline, paySide, receiveSide, secondsLeft, trackerSteps } from './steps'
 import { useSwapRunner } from './use-swap-runner'
 
 export const STATUS_PILL: Record<SwapStatus, { tone: PillTone; label: string }> = {
@@ -114,7 +115,10 @@ export function Tracker({ id }: { id: string }) {
   const steps = trackerSteps(record, now)
   const received = record.receivedAmount ?? record.quoted?.amountOut
   const left = secondsLeft(record, now)
-  const slow = left !== undefined && record.quoted && left < -record.quoted.etaSeconds * 0.5
+  // Hashi cannot read the bridge's status: say that, rather than blame the bridge for being slow.
+  const unreadable = runner.statusTrouble !== null && now - runner.statusTrouble.since >= STATUS_TROUBLE_MS
+  const slow = !unreadable && left !== undefined && record.quoted && left < -record.quoted.etaSeconds * 0.5
+  const explorer = bridgeExplorerUrl(record)
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 pt-10 sm:pt-14">
@@ -173,6 +177,25 @@ export function Tracker({ id }: { id: string }) {
 
           <Action runner={runner} record={record} />
 
+          {unreadable ? (
+            <p className="flex items-start gap-2 rounded-2xl bg-(--warning)/10 p-3 text-sm">
+              <Icon icon={Alert02Icon} className="mt-0.5 shrink-0 text-(--warning)" />
+              <span>
+                Hashi can't get a status from {PROVIDERS[record.provider].name} right now, so this page is
+                waiting. The swap itself carries on without it, and Hashi keeps checking.{' '}
+                {explorer ? (
+                  <a
+                    href={explorer}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium underline underline-offset-4"
+                  >
+                    Follow it on {PROVIDERS[record.provider].name} ↗
+                  </a>
+                ) : null}
+              </span>
+            </p>
+          ) : null}
           {slow ? (
             <p className="flex items-start gap-2 rounded-2xl bg-(--warning)/10 p-3 text-sm">
               <Icon icon={Alert02Icon} className="mt-0.5 shrink-0 text-(--warning)" />
@@ -251,7 +274,10 @@ export function Tracker({ id }: { id: string }) {
           {runner.log.length ? (
             <pre className="mt-4 max-h-56 overflow-auto rounded-2xl bg-muted p-3 font-mono text-[0.6875rem] leading-relaxed">
               {runner.log
-                .map((l) => `${new Date(l.at).toISOString().slice(11, 19)} ${l.step.padEnd(8)} ${l.detail}`)
+                .map(
+                  (l) =>
+                    `${new Date(l.at).toISOString().slice(11, 19)} ${l.step.padEnd(8)} ${l.detail}${l.repeats > 1 ? ` (×${l.repeats})` : ''}`,
+                )
                 .join('\n')}
             </pre>
           ) : null}

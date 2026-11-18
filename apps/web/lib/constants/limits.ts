@@ -69,8 +69,15 @@ export const NEAR_UTXO_DEADLINE_MS = 4 * HOUR
  */
 export const CAULDRON_QUOTE_TTL_MS = HOUR
 
-/** Bitcoin Cash targets one block every 10 minutes. How many confirmations NEAR waits for is measured in T1. */
+/** Bitcoin Cash targets one block every 10 minutes. */
 export const BCH_BLOCK_SECONDS = 600
+
+/**
+ * Blocks NEAR Intents waits for before it takes a Bitcoin Cash deposit. Measured on a live sale (2026-11-18): still
+ * PENDING_DEPOSIT 17 minutes into the first confirmation, PROCESSING 10 minutes after the second, USDC on Base 6
+ * minutes later. NEAR does not publish the number.
+ */
+export const NEAR_BCH_CONFIRMATIONS = 2
 
 /** Seeing the bridged BCH, building the Cauldron trade and broadcasting it (the wallet's own approval aside). */
 export const CAULDRON_LEG_SECONDS = 15

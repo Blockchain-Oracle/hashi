@@ -5,6 +5,7 @@ import { ARRIVAL_RESERVE_SATS, BCH_SEND_FEE_SATS } from '@/lib/constants/fees'
 import {
   BCH_BLOCK_SECONDS,
   CAULDRON_LEG_SECONDS,
+  NEAR_BCH_CONFIRMATIONS,
   NEAR_DEADLINE_MS,
   NEAR_UTXO_DEADLINE_MS,
 } from '@/lib/constants/limits'
@@ -255,8 +256,8 @@ async function quoteOut(
       )
       amountOut = BigInt(response.quote.amountOut)
       minAmountOut = BigInt(response.quote.minAmountOut)
-      // NEAR's estimate starts once the BCH deposit confirms; a block takes ~10 minutes on average.
-      etaSeconds = BCH_BLOCK_SECONDS + response.quote.timeEstimate
+      // NEAR's estimate starts once it takes the deposit, two Bitcoin Cash blocks in (~10 minutes each on average).
+      etaSeconds = NEAR_BCH_CONFIRMATIONS * BCH_BLOCK_SECONDS + response.quote.timeEstimate
       usdIn = Number(response.quote.amountInUsd)
       usdOut = Number(response.quote.amountOutUsd)
       rawBridge = response

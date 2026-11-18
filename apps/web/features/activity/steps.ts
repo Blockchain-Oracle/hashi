@@ -232,7 +232,7 @@ export function trackerSteps(record: SwapRecord, now: number): TimelineStep[] {
       id: 'bridge',
       title: `${provider} turns it into ${stable.symbol}`,
       detail: refundAt
-        ? `Starts once NEAR Intents counts the deposit as confirmed, which can take a few Bitcoin Cash blocks. Not done by ${refundAt}? NEAR sends the BCH back to your wallet.`
+        ? `Starts after two Bitcoin Cash blocks (about 20 minutes, sometimes more). Not done by ${refundAt}? NEAR sends the BCH back to your wallet.`
         : `Starts once ${provider} counts the deposit as confirmed (one to three Bitcoin Cash blocks)`,
       state: state(record.status === 'completed', ['deposit-sent', 'bridging'].includes(record.status)),
       ...(bridgeAt ? { at: bridgeAt } : {}),

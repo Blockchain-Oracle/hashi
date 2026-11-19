@@ -29,6 +29,12 @@ export function SiteFooter() {
         >
           Demo
         </Link>
+        <Link
+          href="/slides"
+          className="font-medium transition-colors hover:text-primary focus-visible:text-primary"
+        >
+          Slides
+        </Link>
         {OUTSIDE.map((link) => (
           <a
             key={link.label}

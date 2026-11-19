@@ -66,6 +66,9 @@ export default async function DemoPage({
               <Button size="lg" variant="secondary" nativeButton={false} render={<a href={LINKS.docs} />}>
                 Read the docs
               </Button>
+              <Button size="lg" variant="secondary" nativeButton={false} render={<Link href="/slides" />}>
+                See the slides
+              </Button>
             </div>
           </div>
         </div>

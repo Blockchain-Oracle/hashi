@@ -4,6 +4,7 @@ import { Icon } from '@/components/kit/icon'
 import { LINKS } from '@/lib/links'
 
 const OUTSIDE = [
+  { href: LINKS.demo, label: 'Demo video' },
   { href: LINKS.guide, label: 'How it works' },
   { href: LINKS.docs, label: 'Docs' },
   { href: LINKS.source, label: 'Source' },

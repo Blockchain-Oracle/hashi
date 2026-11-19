@@ -20,7 +20,7 @@ Ready to paste. Character limits on the DoraHacks form are not visible without a
 - Source: https://github.com/Blockchain-Oracle/hashi
 - Widget Factory deck: https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing
 - CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
-- Demo video: the YouTube link, once uploaded
+- Demo video: https://youtu.be/bbLQ44UAdBU (2:40)
 - Mainnet proof: https://github.com/Blockchain-Oracle/hashi#proof-on-mainnet
 
 **The problem**
@@ -50,20 +50,20 @@ Paste [story.md](story.md). Upload these images where it says so, in this order:
 1. Sign in on DoraHacks and open https://dorahacks.io/hackathon/bchblaze2026, then **Submit BUIDL**.
 2. Fill in the fields above: name, logo, tagline, links (GitHub, website, video), and paste `story.md` as the description with the six images.
 3. Pick the **Mainnet Track** and, under bounties, **Apply** to **Stablecoin Bridge**. A BUIDL takes one track; it can apply to as many bounties as it meets.
-4. Submit now; add the YouTube link and any edits before Sunday 22 November, 14:00 UTC.
+4. Submit before Sunday 22 November, 14:00 UTC; edits are allowed until then.
 5. Say hello in the BCH BLAZE Telegram (https://t.me/bchblaze) so the organiser knows a real person is behind Hashi.
 
 ## Deliverables and their status
 
-| Required | Status |
-| --- | --- |
-| Registered and submitted on DoraHacks | to do by the team |
-| A live demo anyone can open | done: https://hashi.cash |
-| The app makes BCH mainnet transactions | done: real swaps both ways, transactions in the README's "Proof on mainnet" |
-| WizardConnect integration | done: every transaction from your Bitcoin Cash wallet is signed over WizardConnect |
-| Banner: Widget Factory deck | done |
-| Banner: repository link | done (public) |
-| Banner: CashTokens address | done, with its QR code, in the banner, the README and the deck |
-| Confirmed as real in the BCH BLAZE Telegram | to do by the team |
-| Roll call | closed before the team joined (judged in the low-priority queue, not disqualified) |
-| Demo video | optional on DoraHacks; the cut is ready to upload to YouTube |
+| Required                                    | Status                                                                             |
+| ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Registered and submitted on DoraHacks       | to do by the team                                                                  |
+| A live demo anyone can open                 | done: https://hashi.cash                                                           |
+| The app makes BCH mainnet transactions      | done: real swaps both ways, transactions in the README's "Proof on mainnet"        |
+| WizardConnect integration                   | done: every transaction from your Bitcoin Cash wallet is signed over WizardConnect |
+| Banner: Widget Factory deck                 | done                                                                               |
+| Banner: repository link                     | done (public)                                                                      |
+| Banner: CashTokens address                  | done, with its QR code, in the banner, the README and the deck                     |
+| Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                  |
+| Roll call                                   | closed before the team joined (judged in the low-priority queue, not disqualified) |
+| Demo video                                  | done: https://youtu.be/bbLQ44UAdBU (also https://hashi.cash/demo)                  |

@@ -22,6 +22,12 @@ export function BlazeBanner() {
       >
         BCH BLAZE 2026 · Stablecoin Bridge
       </a>
+      <a
+        href={LINKS.demo}
+        className="underline decoration-white/30 underline-offset-4 hover:decoration-white"
+      >
+        Demo video ↗
+      </a>
       {deck ? (
         <a href={deck} className="underline decoration-white/30 underline-offset-4 hover:decoration-white">
           Widget Factory deck ↗

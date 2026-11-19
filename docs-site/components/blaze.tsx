@@ -77,6 +77,10 @@ export function BlazeBanner() {
           {BLAZE.event} · {BLAZE.bounty}
         </span>
       </a>
+      <a href={BLAZE.demo} className={link}>
+        <span className="sm:hidden">Video</span>
+        <span className="hidden sm:inline">Demo video</span> ↗
+      </a>
       <a href={BLAZE.deck} className={link}>
         <span className="sm:hidden">Deck</span>
         <span className="hidden sm:inline">Widget Factory deck</span> ↗

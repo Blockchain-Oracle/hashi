@@ -34,6 +34,10 @@ const config: NextConfig = {
   // Keep `next dev` from writing agent instruction files into the repo.
   agentRules: false,
   experimental: { agentUpgrade: false },
+  // hashi.cash/demo opens the demo video (the same link as LINKS.demo).
+  async redirects() {
+    return [{ source: '/demo', destination: 'https://youtu.be/bbLQ44UAdBU', permanent: false }]
+  },
   async headers() {
     return [
       {

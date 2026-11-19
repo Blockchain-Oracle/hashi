@@ -15,12 +15,19 @@ licence still applies.
 
 ## Fonts
 
-| Font       | Terms                                                                  | Where                                                                                                     |
-| ---------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Figtree    | Copyright 2022 The Figtree Project Authors. SIL Open Font License 1.1. | the app, through `next/font/google`; the docs' link previews and diagrams, from `docs-site/assets/fonts/` |
-| Geist Mono | Copyright 2024 The Geist Project Authors. SIL Open Font License 1.1.   | the same                                                                                                  |
+| Font                            | Terms                                                                                | Where                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Figtree                         | Copyright 2022 The Figtree Project Authors. SIL Open Font License 1.1.               | the app, through `next/font/google`; the docs' link previews and diagrams, from `docs-site/assets/fonts/` |
+| Geist Mono                      | Copyright 2024 The Geist Project Authors. SIL Open Font License 1.1.                 | the same                                                                                                  |
+| Montserrat, Roboto, Roboto Mono | SIL Open Font License 1.1 (Montserrat, Roboto Mono) and Apache License 2.0 (Roboto). | the Widget Factory deck at `/slides`, through `next/font/google`                                          |
 
 The SIL Open Font License 1.1: https://openfontlicense.org
+
+## Presentation artwork
+
+The backgrounds, flame marks and closing character in `apps/web/public/slides/` come from BCH BLAZE's "Widget Factory"
+presentation template, which every BLAZE 2026 entry is asked to copy and fill in; they are used here only for that
+presentation.
 
 ## Icons and logos
 

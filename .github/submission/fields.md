@@ -18,7 +18,7 @@ Ready to paste. Character limits on the DoraHacks form are not visible without a
 - Live app: https://hashi.cash
 - Docs: https://docs.hashi.cash
 - Source: https://github.com/Blockchain-Oracle/hashi
-- Widget Factory deck: https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing
+- Widget Factory deck: https://hashi.cash/slides (full screen; the Google Slides copy: https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing)
 - CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
 - Demo video: https://youtu.be/bbLQ44UAdBU (2:40)
 - Live mainnet demo, signed on camera: https://youtu.be/ZGtYV9u5jW8 (3:10)
@@ -63,7 +63,7 @@ Paste [story.md](story.md). Upload these images where it says so, in this order:
 | A live demo anyone can open                 | done: https://hashi.cash                                                                                          |
 | The app makes BCH mainnet transactions      | done: real swaps both ways, transactions in the README's "Proof on mainnet"                                       |
 | WizardConnect integration                   | done: every transaction from your Bitcoin Cash wallet is signed over WizardConnect                                |
-| Banner: Widget Factory deck                 | done                                                                                                              |
+| Banner: Widget Factory deck                 | done: https://hashi.cash/slides                                                                                   |
 | Banner: repository link                     | done (public)                                                                                                     |
 | Banner: CashTokens address                  | done, with its QR code, in the banner, the README and the deck                                                    |
 | Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                                                 |

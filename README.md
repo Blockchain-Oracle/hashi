@@ -20,7 +20,7 @@
   &nbsp;·&nbsp;
   <a href="#how-hashi-meets-the-hackathon"><b>How it meets the bounty</b></a>
   &nbsp;·&nbsp;
-  <a href="https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing"><b>Widget Factory deck</b></a>
+  <a href="https://hashi.cash/slides"><b>Widget Factory deck</b></a>
   &nbsp;·&nbsp;
   <a href="#cashtokens-address"><b>CashTokens address</b></a>
 </p>

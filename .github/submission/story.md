@@ -8,7 +8,7 @@ Hashi is a bridge between the stablecoins of the big chains and Bitcoin Cash's o
 
 Built for the BCH BLAZE 2026 Stablecoin Bridge bounty. _Hashi_ (橋) is Japanese for bridge.
 
-**Watch:** https://youtu.be/bbLQ44UAdBU (2:40) · **Try it:** https://hashi.cash · **Docs:** https://docs.hashi.cash · **Code:** https://github.com/Blockchain-Oracle/hashi
+**Watch:** https://youtu.be/bbLQ44UAdBU (2:40) and, signed live, https://youtu.be/ZGtYV9u5jW8 (3:10) · **Try it:** https://hashi.cash · **Docs:** https://docs.hashi.cash · **Code:** https://github.com/Blockchain-Oracle/hashi
 
 **Widget Factory deck:** https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing · **CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`
 
@@ -17,6 +17,8 @@ Built for the BCH BLAZE 2026 Stablecoin Bridge bounty. _Hashi_ (橋) is Japanese
 [![Watch the Hashi demo: USDC in, PUSD out, one approval](https://raw.githubusercontent.com/Blockchain-Oracle/hashi/main/.github/assets/demo-cover.png)](https://youtu.be/bbLQ44UAdBU)
 
 2:40 on YouTube: Abu's intro, then real swaps on mainnet both ways, with how each part works drawn while the chains confirm.
+
+**Live on mainnet (3:10): https://youtu.be/ZGtYV9u5jW8.** Abu signs a swap on camera: 1 USDC on Base in, 0.98 PUSD in his Cashonize wallet out, in one approval, with BaseScan and the wallet's receipt as proof. Both videos play with chapters at https://hashi.cash/demo.
 
 ## The problem
 

@@ -21,6 +21,8 @@ Ready to paste. Character limits on the DoraHacks form are not visible without a
 - Widget Factory deck: https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing
 - CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
 - Demo video: https://youtu.be/bbLQ44UAdBU (2:40)
+- Live mainnet demo, signed on camera: https://youtu.be/ZGtYV9u5jW8 (3:10)
+- Both videos with chapters: https://hashi.cash/demo
 - Mainnet proof: https://github.com/Blockchain-Oracle/hashi#proof-on-mainnet
 
 **The problem**
@@ -55,15 +57,15 @@ Paste [story.md](story.md). Upload these images where it says so, in this order:
 
 ## Deliverables and their status
 
-| Required                                    | Status                                                                             |
-| ------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Registered and submitted on DoraHacks       | to do by the team                                                                  |
-| A live demo anyone can open                 | done: https://hashi.cash                                                           |
-| The app makes BCH mainnet transactions      | done: real swaps both ways, transactions in the README's "Proof on mainnet"        |
-| WizardConnect integration                   | done: every transaction from your Bitcoin Cash wallet is signed over WizardConnect |
-| Banner: Widget Factory deck                 | done                                                                               |
-| Banner: repository link                     | done (public)                                                                      |
-| Banner: CashTokens address                  | done, with its QR code, in the banner, the README and the deck                     |
-| Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                  |
-| Roll call                                   | closed before the team joined (judged in the low-priority queue, not disqualified) |
-| Demo video                                  | done: https://youtu.be/bbLQ44UAdBU (also https://hashi.cash/demo)                  |
+| Required                                    | Status                                                                                                            |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Registered and submitted on DoraHacks       | to do by the team                                                                                                 |
+| A live demo anyone can open                 | done: https://hashi.cash                                                                                          |
+| The app makes BCH mainnet transactions      | done: real swaps both ways, transactions in the README's "Proof on mainnet"                                       |
+| WizardConnect integration                   | done: every transaction from your Bitcoin Cash wallet is signed over WizardConnect                                |
+| Banner: Widget Factory deck                 | done                                                                                                              |
+| Banner: repository link                     | done (public)                                                                                                     |
+| Banner: CashTokens address                  | done, with its QR code, in the banner, the README and the deck                                                    |
+| Confirmed as real in the BCH BLAZE Telegram | to do by the team                                                                                                 |
+| Roll call                                   | closed before the team joined (judged in the low-priority queue, not disqualified)                                |
+| Demo video                                  | done: https://youtu.be/bbLQ44UAdBU and the live one https://youtu.be/ZGtYV9u5jW8, both at https://hashi.cash/demo |

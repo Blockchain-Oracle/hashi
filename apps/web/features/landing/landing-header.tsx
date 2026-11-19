@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button'
 import { env } from '@/lib/env'
 
 const LINKS = [
-  { href: '#how', label: 'How it works' },
-  { href: '#live', label: 'Live' },
-  { href: '#faq', label: 'FAQ' },
+  { href: '/#how', label: 'How it works' },
+  { href: '/#live', label: 'Live' },
+  { href: '/#faq', label: 'FAQ' },
+  { href: '/demo', label: 'Demo' },
   { href: env.NEXT_PUBLIC_DOCS_URL, label: 'Docs' },
 ] as const
 

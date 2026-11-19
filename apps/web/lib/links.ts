@@ -9,8 +9,8 @@ export const LINKS = {
   routes: `${env.NEXT_PUBLIC_DOCS_URL}/docs/routes`,
   source: env.NEXT_PUBLIC_REPO_URL,
   bounty: 'https://bchblaze.cash/bounties/stablecoin-bridge/',
-  /** The 2:40 demo: Abu's intro, then real mainnet swaps both ways (also at hashi.cash/demo). */
-  demo: 'https://youtu.be/bbLQ44UAdBU',
+  /** The demo page: the videos (played from YouTube) and every transaction they made on mainnet. */
+  demo: '/demo',
 } as const
 
 /** Hashi's logo as a full URL (public/icon-512.png), for wallets that show the app on their own screens. */

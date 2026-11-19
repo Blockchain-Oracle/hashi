@@ -18,7 +18,8 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "connect-src 'self' https: wss:",
   "worker-src 'self' blob:",
-  "frame-src 'self' https://verify.walletconnect.org https://verify.walletconnect.com",
+  // /demo plays the demo videos in YouTube's no-cookie player.
+  "frame-src 'self' https://verify.walletconnect.org https://verify.walletconnect.com https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -34,10 +35,6 @@ const config: NextConfig = {
   // Keep `next dev` from writing agent instruction files into the repo.
   agentRules: false,
   experimental: { agentUpgrade: false },
-  // hashi.cash/demo opens the demo video (the same link as LINKS.demo).
-  async redirects() {
-    return [{ source: '/demo', destination: 'https://youtu.be/bbLQ44UAdBU', permanent: false }]
-  },
   async headers() {
     return [
       {

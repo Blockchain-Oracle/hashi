@@ -26,7 +26,7 @@ export function BlazeBanner() {
         href={LINKS.demo}
         className="underline decoration-white/30 underline-offset-4 hover:decoration-white"
       >
-        Demo video ↗
+        Watch the demo
       </a>
       {deck ? (
         <a href={deck} className="underline decoration-white/30 underline-offset-4 hover:decoration-white">

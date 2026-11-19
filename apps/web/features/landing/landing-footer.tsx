@@ -5,6 +5,7 @@ import { env } from '@/lib/env'
 const PRODUCT = [
   { href: '/swap', label: 'Swap' },
   { href: '/activity', label: 'Activity' },
+  { href: '/demo', label: 'Demo' },
 ] as const
 
 const BUILT_ON = [

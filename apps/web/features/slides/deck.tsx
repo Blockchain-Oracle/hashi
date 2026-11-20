@@ -193,6 +193,18 @@ const SLIDES: readonly Slide[] = [
         <p style={at(206.4, 924.3, 400, undefined, { fontFamily: MONT, fontSize: pt(16) })}>
           <A href="https://hashi.cash">hashi.cash</A>
         </p>
+        <span
+          aria-hidden
+          className="absolute grid place-items-center rounded-full"
+          style={{ left: u(500), top: u(945.5), width: u(52.7), height: u(52.7), background: CRIMSON }}
+        >
+          <svg viewBox="0 0 24 24" style={{ width: u(30), height: u(30) }} fill="#fff" aria-hidden>
+            <path d="M21.6 3.2 2.9 10.4c-1.3.5-1.3 1.2-.2 1.6l4.8 1.5 1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.3 4.9 3.6c.9.5 1.5.2 1.8-.8l3.2-15.1c.3-1.3-.5-1.9-1.7-1.5Zm-3.4 3.5-8.9 8.1-.4 3.6-1.6-5.2 10.6-6.7c.5-.3.9-.1.3.2Z" />
+          </svg>
+        </span>
+        <p style={at(538.6, 924.3, 560, undefined, { fontFamily: MONT, fontSize: pt(16) })}>
+          <A href="https://t.me/BlockchainOracle_dev">@BlockchainOracle_dev</A>
+        </p>
         <Pic
           src="/slides/logo.webp"
           alt="Hashi"
@@ -227,28 +239,6 @@ const SLIDES: readonly Slide[] = [
           </p>
         </div>
       </>
-    ),
-  },
-  {
-    name: 'Watch the demo',
-    body: (active) => (
-      <VideoSlide
-        active={active}
-        title="Watch the demo"
-        id="bbLQ44UAdBU"
-        note="2:40, real swaps on mainnet"
-      />
-    ),
-  },
-  {
-    name: 'Live on mainnet',
-    body: (active) => (
-      <VideoSlide
-        active={active}
-        title="Signed live on mainnet"
-        id="ZGtYV9u5jW8"
-        note="3:10, one swap signed in our own wallets"
-      />
     ),
   },
   {
@@ -364,6 +354,36 @@ const SLIDES: readonly Slide[] = [
     ),
   },
   {
+    name: 'How Hashi Makes Money',
+    body: () => (
+      <>
+        <Bg src="list" />
+        <h2
+          style={at(166.3, 110.3, 438.4, 290.9, {
+            fontFamily: ROBOTO,
+            fontWeight: 700,
+            fontSize: pt(29),
+            lineHeight: 1.15,
+            color: '#fff',
+            paddingTop: u(10 + 29 * 2.6667 * 1.15),
+          })}
+        >
+          How Hashi Makes Money
+        </h2>
+        <Bullets
+          style={at(812.9, 110.3, 1004.3, 816.8, { paddingTop: u(36) })}
+          items={[
+            [0, 'A fee on every route, built into both bridges'],
+            [1, 'NEAR Intents: an app fee on each quote'],
+            [1, 'THORChain: an affiliate fee in the memo'],
+            [0, "Hashi's tag already rides on every NEAR Intents swap"],
+            [0, 'Next: inside Bitcoin Cash wallets and merchant checkouts'],
+          ]}
+        />
+      </>
+    ),
+  },
+  {
     name: 'The Vision for Hashi',
     body: () => (
       <>
@@ -391,6 +411,28 @@ const SLIDES: readonly Slide[] = [
           ]}
         />
       </>
+    ),
+  },
+  {
+    name: 'Watch the demo',
+    body: (active) => (
+      <VideoSlide
+        active={active}
+        title="Watch the demo"
+        id="bbLQ44UAdBU"
+        note="2:40, real swaps on mainnet"
+      />
+    ),
+  },
+  {
+    name: 'Live on mainnet',
+    body: (active) => (
+      <VideoSlide
+        active={active}
+        title="Signed live on mainnet"
+        id="ZGtYV9u5jW8"
+        note="3:10, one swap signed in our own wallets"
+      />
     ),
   },
   {

@@ -30,6 +30,12 @@ export function SiteFooter() {
           Demo
         </Link>
         <Link
+          href="/explorer"
+          className="font-medium transition-colors hover:text-primary focus-visible:text-primary"
+        >
+          Explorer
+        </Link>
+        <Link
           href="/slides"
           className="font-medium transition-colors hover:text-primary focus-visible:text-primary"
         >

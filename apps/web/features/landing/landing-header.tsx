@@ -9,6 +9,7 @@ const LINKS = [
   { href: '/#live', label: 'Live' },
   { href: '/#faq', label: 'FAQ' },
   { href: '/demo', label: 'Demo' },
+  { href: '/explorer', label: 'Explorer' },
   { href: env.NEXT_PUBLIC_DOCS_URL, label: 'Docs' },
 ] as const
 

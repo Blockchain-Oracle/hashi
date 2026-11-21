@@ -30,6 +30,13 @@ export function SiteHeader() {
           Swap
         </Link>
         <ActivityLink />
+        {/* Everyone's swaps (Activity is your own), from a small tablet up; on a phone it is in the footer. */}
+        <Link
+          href="/explorer"
+          className="hidden rounded-full px-3.5 py-1.5 text-[#fffaf5]/70 text-[0.9375rem] transition-colors hover:bg-white/10 hover:text-[#fffaf5] sm:inline-flex"
+        >
+          Explorer
+        </Link>
         {/* From a small tablet up; on a phone the docs are in the footer. */}
         <a
           href={LINKS.docs}

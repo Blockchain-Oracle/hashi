@@ -97,54 +97,72 @@ export default async function ExplorerPage() {
               ))}
             </div>
           </div>
-          <svg viewBox="0 0 400 140" className="w-full" aria-hidden>
-            <path
-              id="arch"
-              d="M20 120C110 10 290 10 380 120"
-              fill="none"
-              stroke="#ff2f00"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-            <path
-              d="M150 62V122M200 48V122M250 62V122"
-              stroke="#fffaf5"
-              strokeOpacity=".35"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-            <path
-              d="M10 126H390"
-              stroke="#fffaf5"
-              strokeOpacity=".15"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-            {into.length ? (
-              <circle r="7" fill="#fffaf5">
-                <animateMotion dur="3.2s" repeatCount="indefinite" rotate="auto">
-                  <mpath href="#arch" />
-                </animateMotion>
-              </circle>
-            ) : null}
-            {out.length ? (
-              <circle r="7" fill="#ff8a5c">
-                <animateMotion
-                  dur="3.2s"
-                  begin="1.6s"
-                  repeatCount="indefinite"
-                  keyPoints="1;0"
-                  keyTimes="0;1"
-                  calcMode="linear"
-                >
-                  <mpath href="#arch" />
-                </animateMotion>
-              </circle>
-            ) : null}
-            <text x="200" y="104" textAnchor="middle" className="fill-[#fffaf5] font-mono text-[13px]">
-              {into.length} in · {out.length} out
-            </text>
-          </svg>
+          <div className="flex flex-col items-center gap-4">
+            <svg viewBox="0 0 520 170" className="w-full" aria-hidden>
+              {/* Two lanes over one bridge: into Bitcoin Cash above, out of it below. */}
+              <path
+                id="lane-in"
+                d="M24 150C130 18 390 18 496 150"
+                fill="none"
+                stroke="#ff2f00"
+                strokeWidth="7"
+                strokeLinecap="round"
+              />
+              <path
+                id="lane-out"
+                d="M496 150C400 52 120 52 24 150"
+                fill="none"
+                stroke="#fffaf5"
+                strokeOpacity=".55"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray="2 12"
+              />
+              <path
+                d="M190 74V156M260 66V156M330 74V156"
+                stroke="#fffaf5"
+                strokeOpacity=".22"
+                strokeWidth="5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M8 160H512"
+                stroke="#fffaf5"
+                strokeOpacity=".14"
+                strokeWidth="5"
+                strokeLinecap="round"
+              />
+              {into.length ? (
+                <>
+                  <circle r="8" fill="#fffaf5">
+                    <animateMotion dur="3.6s" repeatCount="indefinite">
+                      <mpath href="#lane-in" />
+                    </animateMotion>
+                  </circle>
+                  <circle r="8" fill="#fffaf5" opacity=".5">
+                    <animateMotion dur="3.6s" begin="1.8s" repeatCount="indefinite">
+                      <mpath href="#lane-in" />
+                    </animateMotion>
+                  </circle>
+                </>
+              ) : null}
+              {out.length ? (
+                <circle r="6" fill="#ff8a5c">
+                  <animateMotion dur="4.4s" begin="0.9s" repeatCount="indefinite">
+                    <mpath href="#lane-out" />
+                  </animateMotion>
+                </circle>
+              ) : null}
+            </svg>
+            <div className="flex flex-wrap justify-center gap-2 font-mono text-xs">
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#ff2f00] px-3 py-1.5 text-[#fffaf5]">
+                <b className="font-semibold text-sm">{into.length}</b> INTO BITCOIN CASH →
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5">
+                ← <b className="font-semibold text-sm">{out.length}</b> OUT TO OTHER CHAINS
+              </span>
+            </div>
+          </div>
           <div className="flex flex-col gap-3 sm:items-end">
             <span className="label-mono text-foreground/50">Bitcoin Cash</span>
             <div className="flex flex-wrap gap-2 sm:justify-end">

@@ -16,10 +16,15 @@ import { serverEnv } from '@/lib/env.server'
 
 const EXPLORER_URL = 'https://explorer.near-intents.org/api/v0/transactions'
 const REFERRAL = 'hashi'
-/** NEAR allows one Explorer request every 5 s per partner; the page reads a copy at most a minute old. */
+/** NEAR allows one Explorer request every 5 s per partner; the page refreshes its copy once a minute. */
 const CACHE_MS = 60_000
 /** NEAR's largest page. */
 const MAX_ROWS = 1000
+/** The two requests of a refresh are this far apart (NEAR's limit is one every 5 s). */
+const REQUEST_GAP_MS = 5_500
+/** Swaps still waiting for their deposit: the latest ones, from the last day (older quotes ran out unpaid). */
+const WAITING_ROWS = 100
+const WAITING_WINDOW_MS = 24 * 60 * 60 * 1000
 
 /** The Explorer API lists hashes as strings; 1Click's status API wraps each in `{ hash }`. Both read as strings. */
 const txHashes = z
@@ -218,32 +223,77 @@ async function toCrossing(row: NearRow): Promise<Crossing | undefined> {
 
 let cached: Ledger | undefined
 let pending: Promise<Ledger> | undefined
+let attemptedAt = 0
+
+async function fetchRows(key: string, status?: string): Promise<NearRow[]> {
+  const params = new URLSearchParams({
+    referral: REFERRAL,
+    numberOfTransactions: String(status ? WAITING_ROWS : MAX_ROWS),
+  })
+  if (status) params.set('statuses', status)
+  const response = await fetch(`${EXPLORER_URL}?${params}`, {
+    headers: { Authorization: `Bearer ${key}` },
+    cache: 'no-store',
+  })
+  if (!response.ok) throw new Error(`NEAR Intents Explorer answered ${response.status}`)
+  return z.array(nearRow).parse(await response.json())
+}
+
+/**
+ * Swaps out of Bitcoin Cash whose deposit is on the chain but not yet registered by NEAR. NEAR marks a Bitcoin Cash
+ * deposit only once it confirms, and its Explorer leaves out a swap waiting for its deposit unless asked for that
+ * status by name; so for the first block after paying, the swap would be missing. One is kept when its deposit
+ * address holds a transaction (the mempool counts), which also gives its deposit; a quote nobody paid stays out.
+ */
+async function paidWhileWaiting(key: string): Promise<NearRow[]> {
+  const since = Date.now() - WAITING_WINDOW_MS
+  const waiting = (await fetchRows(key, 'PENDING_DEPOSIT')).filter(
+    (row) => row.originAsset === NEAR_BCH_ASSET_ID && row.createdAtTimestamp * 1000 >= since,
+  )
+  const paid = await Promise.all(
+    waiting.map(async (row) => {
+      const history = await addressHistory(row.depositAddress).catch(() => [])
+      return history.length ? { ...row, originChainTxHashes: history.map((h) => h.txid) } : undefined
+    }),
+  )
+  return paid.filter((row): row is NearRow => row !== undefined)
+}
 
 async function load(): Promise<Ledger> {
   const key = serverEnv.NEAR_INTENTS_EXPLORER_JWT
   if (!key) return { crossings: [], live: false, updatedAt: Date.now() }
-  const url = `${EXPLORER_URL}?${new URLSearchParams({ referral: REFERRAL, numberOfTransactions: String(MAX_ROWS) })}`
-  const response = await fetch(url, { headers: { Authorization: `Bearer ${key}` }, cache: 'no-store' })
-  if (!response.ok) throw new Error(`NEAR Intents Explorer answered ${response.status}`)
-  const rows = z.array(nearRow).parse(await response.json())
-  const crossings = (await Promise.all(rows.map(toCrossing))).filter((c): c is Crossing => c !== undefined)
+  const rows = await fetchRows(key)
+  await new Promise((resolve) => setTimeout(resolve, REQUEST_GAP_MS))
+  const listed = new Set(rows.map((row) => row.depositAddress))
+  const waiting = (await paidWhileWaiting(key).catch(() => [])).filter(
+    (row) => !listed.has(row.depositAddress),
+  )
+  const crossings = (await Promise.all([...rows, ...waiting].map(toCrossing))).filter(
+    (c): c is Crossing => c !== undefined,
+  )
   crossings.sort((a, b) => b.at - a.at)
   return { crossings, live: true, updatedAt: Date.now() }
 }
 
-/** The ledger, at most a minute old. A failed refresh keeps the last good copy. */
+/**
+ * The ledger, about a minute old at most. A visitor never waits on a refresh (two NEAR requests 5 s apart): the last
+ * copy answers at once while the next one loads, and only the very first load is waited for. A failed refresh keeps
+ * the last good copy and is tried again a minute later.
+ */
 export async function getLedger(): Promise<Ledger> {
-  if (cached && Date.now() - cached.updatedAt < CACHE_MS) return cached
-  pending ??= load()
-    .then((ledger) => {
-      cached = ledger
-      return ledger
-    })
-    .catch(() => cached ?? { crossings: [], live: false, updatedAt: Date.now() })
-    .finally(() => {
-      pending = undefined
-    })
-  return pending
+  if (!pending && Date.now() - attemptedAt >= CACHE_MS) {
+    attemptedAt = Date.now()
+    pending = load()
+      .then((ledger) => {
+        cached = ledger
+        return ledger
+      })
+      .catch(() => cached ?? { crossings: [], live: false, updatedAt: Date.now() })
+      .finally(() => {
+        pending = undefined
+      })
+  }
+  return cached ?? pending ?? { crossings: [], live: false, updatedAt: Date.now() }
 }
 
 export const PAGE_SIZE = 5

@@ -14,6 +14,7 @@ icon: Globe
 |---|---|
 | Every swap through NEAR Intents | NEAR Intents' own records of swaps carrying Hashi's referral, read with Hashi's partner key from their Explorer API, at most a minute old |
 | The PUSD or MUSD a swap contract paid | The contract's own Cauldron trade, read from the Bitcoin Cash chain over Electrum |
+| A swap out of Bitcoin Cash before its deposit confirms | NEAR registers a Bitcoin Cash deposit only once it is in a block; until then the swap comes from NEAR's list of swaps waiting for a deposit, shown once its deposit is on the chain, with the BCH it paid read from that transaction |
 
 The page asks the server again every 30 seconds, so a new swap shows up without a reload.
 

@@ -293,7 +293,7 @@ export function headline(record: SwapRecord): Headline {
       if (record.selfSend && stable)
         return {
           title: `Send your ${stable.symbol}`,
-          close: `Nothing has been sent yet. Send it to the address below; Hashi watches for it.`,
+          close: 'Nothing has been sent yet.',
         }
       return record.direction === 'local'
         ? { title: 'Approve the swap', close: 'Nothing has left your wallet yet.' }

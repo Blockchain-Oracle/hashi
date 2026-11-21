@@ -187,7 +187,7 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
             ok: false,
             provider: 'thorchain',
             reason: 'unsupported',
-            message: 'Sending it yourself goes through NEAR Intents; THORChain needs a connected wallet',
+            message: 'Needs a connected wallet',
           }
         : thor.data
     const outcomes = [near.data, thorOutcome, cauldron.data].filter((o): o is RouteOutcome => Boolean(o))

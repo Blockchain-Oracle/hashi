@@ -12,7 +12,7 @@ import type { useSwap } from './use-swap'
  * an address of the person's own (an exchange may not credit a refund sent to it).
  */
 export function PayBy({ swap }: { swap: ReturnType<typeof useSwap> }) {
-  const { state, dispatch, pair, selfSend, refundText, refundCheck, stableAddress } = swap
+  const { state, dispatch, pair, selfSend, refundCheck, stableAddress } = swap
   if (pair.direction !== 'in') return null
   const chain = CHAINS[pair.stable.chain].name
 
@@ -31,8 +31,8 @@ export function PayBy({ swap }: { swap: ReturnType<typeof useSwap> }) {
 
   const invalid = refundCheck && !refundCheck.ok
   return (
-    <div className="flex flex-col gap-2.5 rounded-2xl bg-muted/60 p-3.5">
-      <div className="flex items-center justify-between gap-3">
+    <div className="flex flex-col gap-2 rounded-2xl bg-muted/60 p-3">
+      <div className="flex items-center justify-between gap-3 px-1">
         <span className="flex items-center gap-2 font-medium text-sm">
           <Icon icon={QrCodeIcon} size={18} className="text-primary" />
           Send it yourself
@@ -46,28 +46,24 @@ export function PayBy({ swap }: { swap: ReturnType<typeof useSwap> }) {
           Use a wallet
         </button>
       </div>
-      <p className="text-foreground/70 text-sm leading-relaxed">
-        From an exchange or any wallet. Hashi shows the address and watches for your {pair.stable.symbol}.
-      </p>
-      <input
-        value={state.refundTo || stableAddress || ''}
-        onChange={(e) => dispatch({ type: 'refundTo', value: e.target.value })}
-        placeholder={`Refund address: yours, on ${chain}`}
-        aria-label={`Refund address on ${chain}`}
-        spellCheck={false}
-        autoComplete="off"
-        className={cn(
-          'h-11 w-full rounded-xl bg-card px-3 font-mono text-sm outline-none ring-1 ring-border focus:shadow-[inset_0_0_0_1.5px_var(--ring)]',
-          invalid && 'shadow-[inset_0_0_0_1.5px_var(--destructive)]',
-        )}
-      />
-      <p className={cn('text-xs leading-relaxed', invalid ? 'text-destructive' : 'text-muted-foreground')}>
-        {invalid
-          ? refundCheck.error
-          : refundText
-            ? `If the swap can't go through, the ${pair.stable.symbol} comes back here. Not an exchange address.`
-            : `A wallet of yours on ${chain}, for a refund. Not an exchange address: refunds sent there can be lost.`}
-      </p>
+      <label className="flex flex-col gap-1.5">
+        <span className="flex items-baseline justify-between gap-2 px-1 text-xs">
+          <span className="font-medium text-foreground/80">Refund address on {chain}</span>
+          <span className="text-muted-foreground">yours, not an exchange&apos;s</span>
+        </span>
+        <input
+          value={state.refundTo || stableAddress || ''}
+          onChange={(e) => dispatch({ type: 'refundTo', value: e.target.value })}
+          placeholder={CHAINS[pair.stable.chain].kind === 'solana' ? 'Solana address' : '0x…'}
+          spellCheck={false}
+          autoComplete="off"
+          className={cn(
+            'h-11 w-full rounded-xl bg-card px-3 font-mono text-sm outline-none ring-1 ring-border focus:shadow-[inset_0_0_0_1.5px_var(--ring)]',
+            invalid && 'shadow-[inset_0_0_0_1.5px_var(--destructive)]',
+          )}
+        />
+      </label>
+      {invalid ? <p className="px-1 text-destructive text-xs">{refundCheck.error}</p> : null}
     </div>
   )
 }

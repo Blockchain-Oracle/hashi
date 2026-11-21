@@ -1,20 +1,26 @@
 'use client'
 
-import { Alert02Icon, Clock01Icon } from '@hugeicons/core-free-icons'
+import {
+  Alert02Icon,
+  ArrowTurnBackwardIcon,
+  Clock01Icon,
+  Copy01Icon,
+  Tick02Icon,
+} from '@hugeicons/core-free-icons'
 import { useEffect, useState } from 'react'
 import { formatUnits } from 'viem'
 import { BrandQr } from '@/components/kit/brand-qr'
-import { CopyButton } from '@/components/kit/copy-button'
 import { Icon } from '@/components/kit/icon'
-import { AssetOnChain } from '@/components/kit/logos'
-import { Spinner } from '@/components/ui/spinner'
+import { AssetOnChain, ChainLogo } from '@/components/kit/logos'
 import { STABLES } from '@/lib/constants/assets'
 import { CHAINS } from '@/lib/constants/chains'
 import { quoteDeadline } from '@/lib/engine/expiry'
 import type { SwapRecord } from '@/lib/engine/swap'
-import { formatAmount, shortAddress } from '@/lib/format'
+import { shortAddress } from '@/lib/format'
 import { paymentLink } from '@/lib/pay-link'
 import { cn } from '@/lib/utils'
+
+const COPIED_MS = 1600
 
 function left(ms: number) {
   const s = Math.max(0, Math.floor(ms / 1000))
@@ -22,9 +28,34 @@ function left(ms: number) {
 }
 
 /**
- * A swap the person pays themselves: where to send, how much, on which network, and how long the address takes it.
- * The QR is a payment request (the coin, network and amount filled in) for a phone wallet; an exchange takes the
- * address and amount pasted. Hashi watches NEAR for the deposit and moves on by itself.
+ * An address as groups of four, in two even rows: easy to compare against what an exchange shows, and never broken
+ * mid-group on a narrow screen. `0x` stays with its first group.
+ */
+function addressRows(address: string): string[][] {
+  const hex = address.startsWith('0x')
+  const groups = (hex ? address.slice(2) : address).match(/.{1,4}/g) ?? [address]
+  if (hex) groups[0] = `0x${groups[0]}`
+  const half = Math.ceil(groups.length / 2)
+  return [groups.slice(0, half), groups.slice(half)]
+}
+
+function useCopy() {
+  const [copied, setCopied] = useState<string | null>(null)
+  useEffect(() => {
+    if (!copied) return
+    const id = setTimeout(() => setCopied(null), COPIED_MS)
+    return () => clearTimeout(id)
+  }, [copied])
+  const copy = (what: string, value: string) => {
+    void navigator.clipboard.writeText(value).then(() => setCopied(what))
+  }
+  return { copied, copy }
+}
+
+/**
+ * A swap the person pays themselves, laid out like a receive screen: the network, the amount, the QR (a payment
+ * request with the coin, network and amount filled in), the address to check and copy, and three short facts.
+ * Hashi watches NEAR for the deposit and moves on by itself.
  */
 export function SendPanel({ record }: { record: SwapRecord }) {
   const [now, setNow] = useState(() => Date.now())
@@ -32,6 +63,7 @@ export function SendPanel({ record }: { record: SwapRecord }) {
     const id = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(id)
   }, [])
+  const { copied, copy } = useCopy()
 
   const stable = STABLES.find((s) => s.chain === record.stable?.chain && s.symbol === record.stable?.symbol)
   const bridge = record.bridgeQuote as
@@ -43,102 +75,128 @@ export function SendPanel({ record }: { record: SwapRecord }) {
   const chain = CHAINS[stable.chain]
   const amount = BigInt(quote.amountIn)
   const least = quote.minAmountIn ? BigInt(quote.minAmountIn) : amount
-  const shown = formatAmount(amount, stable.decimals, stable.decimals)
+  const exact = formatUnits(amount, stable.decimals)
+  const shown = Number(exact).toFixed(2)
   // NEAR keeps a flexible quote's address open for days, but the price was set for the hour Hashi asked for: that
   // hour is the time to send. Past it a deposit is still watched for, though it may come back as a refund.
   const asked = Date.parse(bridge?.quoteRequest?.deadline ?? '')
   const sendBy = Number.isFinite(asked) ? asked : quoteDeadline(record)
   const late = sendBy !== undefined && now >= sendBy
-  const link = paymentLink(stable, to, amount)
+  const rows = addressRows(to)
+  const lastRow = rows.length - 1
 
   return (
-    <div className="flex flex-col gap-5 rounded-[1.75rem] bg-card p-5 shadow-card ring-1 ring-border sm:p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <AssetOnChain asset={stable.symbol} chain={stable.chain} size={40} />
-          <div className="flex flex-col">
-            <span className="font-medium text-[1.375rem] leading-tight tracking-[-0.02em]">
-              Send <span className="font-mono tabular-nums">{shown}</span> {stable.symbol}
-            </span>
-            <span className="font-medium text-primary text-sm">On {chain.name} only</span>
-          </div>
-        </div>
+    <div className="flex flex-col items-center gap-5 rounded-[1.75rem] bg-card px-5 pt-5 pb-4 shadow-card ring-1 ring-border sm:px-8 sm:pt-6">
+      <div className="flex w-full items-center justify-between">
+        <span className="flex items-center gap-2 rounded-full bg-muted py-1 pr-3 pl-1 font-medium text-sm">
+          <ChainLogo chain={stable.chain} size={22} />
+          {chain.name}
+        </span>
         {sendBy ? (
           <span
             title="Time to send at this price"
             className={cn(
-              'flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-xs tabular-nums',
-              late ? 'bg-destructive/15 text-destructive' : 'bg-muted',
+              'flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-sm tabular-nums',
+              late ? 'bg-destructive/12 text-destructive' : 'bg-muted',
             )}
           >
-            <Icon icon={Clock01Icon} size={14} className={late ? '' : 'text-muted-foreground'} />
+            <Icon icon={Clock01Icon} size={15} className={late ? '' : 'text-muted-foreground'} />
             {late ? 'Time is up' : left(sendBy - now)}
           </span>
         ) : null}
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-        <dl className="flex min-w-0 flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <dt className="label-mono">To this address</dt>
-            <dd className="flex items-start gap-1 rounded-2xl bg-muted py-2.5 pr-1.5 pl-3">
-              <span className="min-w-0 flex-1 break-all font-mono text-sm leading-relaxed">{to}</span>
-              <CopyButton value={to} label="Copy the deposit address" className="size-8 shrink-0" />
-            </dd>
-          </div>
-          <div className="flex flex-col gap-1">
-            <dt className="label-mono">Amount</dt>
-            <dd className="flex items-center gap-1 rounded-2xl bg-muted py-1.5 pr-1.5 pl-3">
-              <span className="flex-1 font-mono text-sm tabular-nums">
-                {formatUnits(amount, stable.decimals)} {stable.symbol}
-              </span>
-              <CopyButton
-                value={formatUnits(amount, stable.decimals)}
-                label="Copy the amount"
-                className="size-8 shrink-0"
-              />
-            </dd>
-          </div>
-        </dl>
-        <figure className="flex flex-col items-center gap-2">
-          <div className="rounded-3xl bg-white p-2 shadow-card ring-1 ring-black/5">
-            <BrandQr
-              value={link}
-              size={176}
-              label={`Payment request: ${shown} ${stable.symbol} on ${chain.name}`}
-            />
-          </div>
-          <figcaption className="max-w-[12rem] text-center text-muted-foreground text-xs leading-snug">
-            Scan with a phone wallet: coin, network and amount filled in
-          </figcaption>
-        </figure>
+      <div className="flex items-center gap-3">
+        <AssetOnChain asset={stable.symbol} chain={stable.chain} size={36} />
+        <span className="font-medium font-mono text-[2.5rem] leading-none tracking-[-0.04em] tabular-nums">
+          {shown}
+        </span>
+        <span className="self-end pb-1 font-medium text-lg text-muted-foreground">{stable.symbol}</span>
       </div>
 
-      {late ? (
-        <p className="rounded-2xl bg-destructive/10 px-4 py-3 text-destructive text-sm leading-relaxed">
-          The hour for this price is over. If you haven&apos;t sent yet, start a new swap: a late deposit may
-          come back as a refund.
-        </p>
-      ) : null}
+      <div className="rounded-[1.75rem] bg-white p-3 shadow-card ring-1 ring-black/5">
+        <BrandQr
+          value={paymentLink(stable, to, amount)}
+          size={208}
+          label={`Pay ${shown} ${stable.symbol} on ${chain.name}`}
+        />
+      </div>
 
-      <ul className="flex flex-col gap-1.5 text-sm">
-        <li className="flex gap-2 text-foreground/80">
-          <Icon icon={Alert02Icon} size={16} className="mt-0.5 shrink-0 text-(--warning)" />
-          Only {stable.symbol} on {chain.name}. Another coin or network won&apos;t reach this swap.
+      <button
+        type="button"
+        onClick={() => copy('address', to)}
+        aria-label={`Deposit address ${to}. Copy it`}
+        className="flex w-full max-w-[26rem] flex-col items-center gap-1 rounded-2xl px-4 py-3 font-mono text-[0.9375rem] tracking-[0.02em] transition-colors hover:bg-muted"
+      >
+        {rows.map((row, r) => (
+          <span key={row.join('')} className="flex gap-2.5">
+            {row.map((group, g) => (
+              <span
+                key={group + String(g)}
+                className={cn(
+                  (r === 0 && g === 0) || (r === lastRow && g === row.length - 1)
+                    ? 'font-semibold text-foreground'
+                    : 'text-muted-foreground',
+                )}
+              >
+                {group}
+              </span>
+            ))}
+          </span>
+        ))}
+      </button>
+
+      <div className="grid w-full max-w-[26rem] grid-cols-[1fr_auto] gap-2">
+        <button
+          type="button"
+          onClick={() => copy('address', to)}
+          className="flex h-12 items-center justify-center gap-2 rounded-full bg-foreground font-medium text-background transition-opacity hover:opacity-90"
+        >
+          <Icon icon={copied === 'address' ? Tick02Icon : Copy01Icon} size={18} />
+          {copied === 'address' ? 'Copied' : 'Copy address'}
+        </button>
+        <button
+          type="button"
+          onClick={() => copy('amount', exact)}
+          aria-label={`Copy the amount, ${exact}`}
+          className="flex h-12 items-center justify-center gap-2 rounded-full bg-muted px-4 font-medium font-mono text-sm tabular-nums transition-colors hover:bg-muted/70"
+        >
+          <Icon icon={copied === 'amount' ? Tick02Icon : Copy01Icon} size={16} />
+          {copied === 'amount' ? 'Copied' : shown}
+        </button>
+      </div>
+
+      <ul className="flex flex-wrap justify-center gap-1.5 text-[0.8125rem]">
+        <li className="flex items-center gap-1.5 rounded-full bg-(--warning)/12 px-2.5 py-1 font-medium text-foreground">
+          <Icon icon={Alert02Icon} size={14} className="text-(--warning)" />
+          {chain.name} only
         </li>
-        <li className="pl-6 text-muted-foreground">
-          Anything from {formatAmount(least, stable.decimals, stable.decimals)} {stable.symbol} up is swapped
-          (an exchange&apos;s fee is fine).
+        <li className="rounded-full bg-muted px-2.5 py-1 text-foreground/75">
+          Min <span className="font-mono">{Number(formatUnits(least, stable.decimals)).toFixed(2)}</span>
         </li>
-        <li className="pl-6 text-muted-foreground">
-          If it can&apos;t go through, it comes back to{' '}
-          {shortAddress(record.addresses.stableSide ?? '', 6, 4)}.
+        <li className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-foreground/75">
+          <Icon icon={ArrowTurnBackwardIcon} size={14} />
+          Refund <span className="font-mono">{shortAddress(record.addresses.stableSide ?? '', 4, 4)}</span>
         </li>
       </ul>
 
-      <div className="flex items-center gap-2.5 rounded-2xl bg-primary/8 px-4 py-3 text-sm">
-        <Spinner className="size-4 text-primary" />
-        Watching for your {stable.symbol}. This page moves on by itself when it lands.
+      <div
+        className={cn(
+          'flex w-full items-center justify-center gap-2 border-border border-t pt-4 text-sm',
+          late ? 'text-destructive' : 'text-muted-foreground',
+        )}
+      >
+        {late ? (
+          'Price expired. Start a new swap instead of sending.'
+        ) : (
+          <>
+            <span className="relative flex size-2" aria-hidden>
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-primary" />
+            </span>
+            Watching for your {stable.symbol}
+          </>
+        )}
       </div>
     </div>
   )

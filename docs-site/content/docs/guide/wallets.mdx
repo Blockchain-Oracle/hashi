@@ -20,7 +20,11 @@ Through **WizardConnect**, the Bitcoin Cash wallet protocol, which these wallets
 2. Scan the code, or paste the link (on a phone: **Open wallet app**).
 3. Approve Hashi in the wallet.
 
-The session stays until you disconnect, so a returning visit reconnects without scanning. Your wallet holds its keys and approves every transaction that spends from it; Hashi only asks.
+The session stays until you disconnect, so a returning visit reconnects without scanning: the page reads **Reconnecting to your wallet…**, then **Reading your wallet…**, and never asks you to connect again. Your wallet holds its keys and approves every transaction that spends from it; Hashi only asks.
+
+## When the wallet stops answering
+
+A connected wallet answers Hashi every 10 seconds. If it stays silent for 25 seconds while Hashi is on screen (the wallet app closed, the phone asleep, or Hashi removed in the wallet), the wallets menu and the swap's page say **Not answering** with **Pair again**: it drops the old session and shows a fresh code. A wallet that ends the session itself is announced the moment it does.
 
 ## The wallets menu
 

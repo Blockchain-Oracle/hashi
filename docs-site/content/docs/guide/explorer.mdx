@@ -24,7 +24,7 @@ The page asks the server again every 30 seconds, so a new swap shows up without 
 | Direction | An arrow badge: into Bitcoin Cash, or out of it |
 | Paid and received | The amount, the coin and its chain on each side: for example **1 USDC** on Base → **0.98 PUSD** on Bitcoin Cash |
 | Route | NEAR Intents, or NEAR Intents → swap contract → Cauldron for the one-approval swaps into PUSD and MUSD |
-| Status and time | Completed, In progress, Refunded or Failed, and how long ago |
+| Status and time | Completed, In progress (a pulsing dot; an amount not settled yet shows as a dash), Refunded or Failed, and how long ago |
 | Proof | Links to the deposit on its chain, the swap on NEAR Intents' explorer, the delivery on Bitcoin Cash and the contract's Cauldron trade |
 
 ## Finding a swap
@@ -32,10 +32,11 @@ The page asks the server again every 30 seconds, so a new swap shows up without 
 - **Search** takes any part of a transaction hash, an address, an amount or a coin: paste the hash from your wallet and your swap is the only one left.
 - **Direction:** All, Into Bitcoin Cash, or Out of Bitcoin Cash.
 - **Chain** and **coin:** pickers with each one's logo and its number of swaps; only the ones that have been used appear.
+- **Status:** In progress, Completed, Refunded or Failed, each with its number of swaps.
 - Five swaps per page, with numbered pages, so a long history never means a long scroll.
 
-The search and filters live in the link (for example `hashi.cash/explorer?coin=PUSD&dir=in`), so any view can be shared.
+The search and filters live in the link (for example `hashi.cash/explorer?coin=PUSD&dir=in` or `hashi.cash/explorer?status=pending`), so any view can be shared.
 
 ## At the top
 
-The totals count every swap: how many, the dollars moved (what was paid, valued by NEAR Intents at the time), the share that completed, and how many chains have been used. The bridge below them shows which chains and which Bitcoin Cash coins took part, with one lane for swaps into Bitcoin Cash and one for swaps out.
+The totals count every swap: how many, the dollars moved (what was paid, valued by NEAR Intents at the time), the share of finished swaps that completed, and how many chains have been used. The bridge below them shows which chains and which Bitcoin Cash coins took part, with one lane for swaps into Bitcoin Cash and one for swaps out.

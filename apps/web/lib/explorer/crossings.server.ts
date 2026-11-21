@@ -6,6 +6,7 @@ import { BCH_ASSETS, type BchAssetId, NEAR_BCH_ASSET_ID, STABLES } from '@/lib/c
 import { CHAINS, type ChainId } from '@/lib/constants/chains'
 import { nearIntentsUrl, txUrl } from '@/lib/constants/explorers'
 import { serverEnv } from '@/lib/env.server'
+import { type PoolTrade, purchaseAfterDelivery, saleBehindDeposit } from './bch-trades'
 
 /**
  * Every swap made through Hashi, for /explorer: NEAR Intents' own records of the swaps carrying Hashi's referral
@@ -65,6 +66,8 @@ export interface Crossing {
   get: Side
   /** The BCH the bridge delivered, when the swap went on into PUSD or MUSD through a swap contract. */
   via?: Side
+  /** The path it took, in order: "NEAR Intents", "Cauldron → NEAR Intents", "NEAR Intents → swap contract → Cauldron"… */
+  route: string
   links: { label: string; href: string }[]
   /** Server only, for search: every hash, address, amount and name on the swap, lower case. Never sent to a page. */
   match: string
@@ -141,6 +144,25 @@ async function contractTrade(contract: string, deliveryTxid: string | undefined)
   return null
 }
 
+/**
+ * The Cauldron trade on a swap's Bitcoin Cash side, once found, never changes: kept for the life of the server. Not
+ * found yet (a sale still unconfirmed, a delivery not spent yet) is asked again after a while.
+ */
+const tradeFound = new Map<string, PoolTrade>()
+const tradeMissing = new Map<string, number>()
+const TRADE_RECHECK_MS = 10 * 60_000
+
+async function cachedTrade(key: string, find: () => Promise<PoolTrade | null>): Promise<PoolTrade | null> {
+  const found = tradeFound.get(key)
+  if (found) return found
+  const missed = tradeMissing.get(key)
+  if (missed !== undefined && Date.now() - missed < TRADE_RECHECK_MS) return null
+  const trade = await find().catch(() => null)
+  if (trade) tradeFound.set(key, trade)
+  else tradeMissing.set(key, Date.now())
+  return trade
+}
+
 /** A deposit transaction never changes once seen: the BCH it paid each deposit address, kept for the server's life. */
 const depositCache = new Map<string, string>()
 
@@ -190,6 +212,7 @@ async function toCrossing(row: NearRow): Promise<Crossing | undefined> {
     direction,
     pay,
     get,
+    route: direction === 'in' ? 'NEAR Intents' : 'Bitcoin Cash → NEAR Intents',
     links,
     match: '',
   }
@@ -199,7 +222,42 @@ async function toCrossing(row: NearRow): Promise<Crossing | undefined> {
     if (trade) {
       crossing.via = get
       crossing.get = { amount: trade.amount, asset: trade.asset, chain: 'bch' }
+      crossing.route = 'NEAR Intents → swap contract → Cauldron'
       crossing.links.push({ label: 'Cauldron trade', href: txUrl('bch', trade.txid) })
+    }
+  }
+  // Into the person's own address, then finished in their wallet: the Cauldron purchase that spent the delivered BCH.
+  if (
+    direction === 'in' &&
+    row.recipient?.startsWith('bitcoincash:q') &&
+    crossing.status === 'done' &&
+    delivery
+  ) {
+    const recipient = row.recipient
+    const trade = await cachedTrade(`buy:${delivery}`, () => purchaseAfterDelivery(recipient, delivery))
+    if (trade) {
+      crossing.via = get
+      crossing.get = { amount: trade.amount, asset: trade.asset, chain: 'bch' }
+      crossing.route = 'NEAR Intents → Cauldron'
+      crossing.links.push({ label: 'Cauldron trade', href: txUrl('bch', trade.txid) })
+    }
+  }
+  // Out of Bitcoin Cash, starting from PUSD or MUSD: NEAR sees only the BCH its deposit received, the chain shows the
+  // token that was sold for it (in the deposit itself, or in a sale just before).
+  if (direction === 'out' && origin) {
+    const trade = await cachedTrade(`sell:${origin}`, () => saleBehindDeposit(origin, row.depositAddress))
+    if (trade) {
+      crossing.via = pay
+      crossing.pay = {
+        amount: trade.amount,
+        asset: trade.asset,
+        chain: 'bch',
+        ...(pay.usd ? { usd: pay.usd } : {}),
+      }
+      crossing.route = 'Cauldron → NEAR Intents'
+      const sale = { label: 'Cauldron sale', href: txUrl('bch', trade.txid) }
+      if (trade.txid === origin) crossing.links[0] = sale
+      else crossing.links.unshift(sale)
     }
   }
   crossing.match = [

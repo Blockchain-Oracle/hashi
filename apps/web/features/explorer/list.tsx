@@ -63,11 +63,6 @@ function Leg({ side }: { side: Side }) {
   )
 }
 
-function route(c: PublicCrossing) {
-  if (c.via) return 'NEAR Intents → swap contract → Cauldron'
-  return c.direction === 'in' ? 'NEAR Intents' : 'Bitcoin Cash → NEAR Intents'
-}
-
 /** The pages to offer: the first, the last, and the two either side of the current one; a gap is the next page, negated. */
 function pageNumbers(page: number, pages: number): number[] {
   const wanted = new Set([1, pages, page - 1, page, page + 1].filter((n) => n >= 1 && n <= pages))
@@ -174,7 +169,7 @@ export function CrossingList({
                 <Leg side={c.get} />
               </div>
               <span className="font-mono text-[0.6875rem] text-muted-foreground uppercase tracking-[0.08em] sm:pl-13">
-                {route(c)}
+                {c.route}
               </span>
             </div>
             <div className="flex flex-col gap-3 lg:items-end">

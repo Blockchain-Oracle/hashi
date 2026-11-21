@@ -13,7 +13,7 @@ icon: Globe
 | Part | Source |
 |---|---|
 | Every swap through NEAR Intents | NEAR Intents' own records of swaps carrying Hashi's referral, read with Hashi's partner key from their Explorer API, at most a minute old |
-| The PUSD or MUSD a swap contract paid | The contract's own Cauldron trade, read from the Bitcoin Cash chain over Electrum |
+| The PUSD or MUSD on the Bitcoin Cash side | The Cauldron trade, read from the Bitcoin Cash chain over Electrum: the sale that paid the bridge (the deposit itself, or a sale just before it), the swap contract's trade, or the purchase made in the person's wallet with what the bridge delivered. NEAR Intents sees only the BCH that crossed. |
 | A swap out of Bitcoin Cash before its deposit confirms | NEAR registers a Bitcoin Cash deposit only once it is in a block; until then the swap comes from NEAR's list of swaps waiting for a deposit, shown once its deposit is on the chain, with the BCH it paid read from that transaction |
 
 The page asks the server again every 30 seconds, so a new swap shows up without a reload.
@@ -24,9 +24,9 @@ The page asks the server again every 30 seconds, so a new swap shows up without 
 |---|---|
 | Direction | An arrow badge: into Bitcoin Cash, or out of it |
 | Paid and received | The amount, the coin and its chain on each side: for example **1 USDC** on Base → **0.98 PUSD** on Bitcoin Cash |
-| Route | NEAR Intents, or NEAR Intents → swap contract → Cauldron for the one-approval swaps into PUSD and MUSD |
+| Route | The path in order: NEAR Intents; NEAR Intents → swap contract → Cauldron (one approval into PUSD or MUSD); NEAR Intents → Cauldron (finished in the wallet); Cauldron → NEAR Intents (PUSD or MUSD sold to pay the bridge) |
 | Status and time | Completed, In progress (a pulsing dot; an amount not settled yet shows as a dash), Refunded or Failed, and how long ago |
-| Proof | Links to the deposit on its chain, the swap on NEAR Intents' explorer, the delivery on Bitcoin Cash and the contract's Cauldron trade |
+| Proof | Links to the deposit on its chain, the swap on NEAR Intents' explorer, the delivery, and the Cauldron sale or trade on Bitcoin Cash |
 
 ## Finding a swap
 

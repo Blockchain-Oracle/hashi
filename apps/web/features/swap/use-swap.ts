@@ -63,6 +63,7 @@ export type SwapStep =
   | { kind: 'below-minimum'; amount: string; symbol: string }
   | { kind: 'no-route'; message: string }
   | { kind: 'needs-refund'; message?: string }
+  | { kind: 'needs-recipient' }
   | { kind: 'review'; needsGasless?: boolean }
 
 /**
@@ -117,6 +118,9 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
   // Into Bitcoin Cash, sent from an exchange or any wallet: no wallet on the paying side, and the refund address the
   // person gives (their connected wallet's, if one is connected) stands where that wallet's address would.
   const selfSend = direction === 'in' && state.payBy === 'send'
+  // Out of Bitcoin Cash to an address typed in (a wallet or an exchange): no wallet to connect on that side. An
+  // address set in settings counts too.
+  const toAddress = direction === 'out' && (state.receiveBy === 'address' || Boolean(state.recipient.trim()))
   const refundText = state.refundTo.trim() || stableAddress || ''
   const refundCheck = selfSend && refundText ? checkRecipient(stableKind, refundText) : undefined
   const refundTo = refundCheck?.ok ? refundCheck.address : undefined
@@ -263,6 +267,7 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
       if (!bch.receive) return { kind: 'connect-bch' }
       if (state.recipient.trim() && recipient && !recipient.ok)
         return { kind: 'fix-recipient', message: recipient.error }
+      if (!customTo && toAddress) return { kind: 'needs-recipient' }
       if (!customTo && !stableAddress)
         return { kind: 'connect-stable', namespace: stableKind === 'solana' ? 'solana' : 'eip155' }
     }
@@ -335,6 +340,7 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
     selfSend,
     refundTo,
     refundCheck,
+    toAddress,
   ])
 
   return {
@@ -364,6 +370,8 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
     gaslessAvailable,
     /** Into Bitcoin Cash, sent by the person from an exchange or any wallet (see SwapState.payBy). */
     selfSend,
+    /** Out of Bitcoin Cash to a typed address instead of a connected wallet (see SwapState.receiveBy). */
+    toAddress,
     /** Sending it yourself: the refund address as given (or the connected wallet's), and whether it is valid. */
     refundText,
     refundCheck,

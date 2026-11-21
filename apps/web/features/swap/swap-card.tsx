@@ -162,7 +162,7 @@ export function SwapCard({
         </div>
 
         <div className="flex flex-col gap-3 p-1 pt-3">
-          {swap.selfSend ? <PayBy swap={swap} /> : null}
+          <PayBy swap={swap} />
           <StepButton
             step={step}
             onUseMinimum={(value) => dispatch({ type: 'amount', value })}
@@ -179,7 +179,6 @@ export function SwapCard({
             }
             onReview={() => setReviewOpen(true)}
           />
-          {swap.selfSend ? null : <PayBy swap={swap} />}
         </div>
       </div>
 
@@ -302,6 +301,12 @@ export function StepButton({
         <Button size="xl" variant="secondary" onClick={onConnectBch}>
           <Icon icon={Wallet01Icon} />
           Connect a Bitcoin Cash wallet
+        </Button>
+      )
+    case 'needs-recipient':
+      return (
+        <Button size="xl" disabled>
+          Add the address it goes to
         </Button>
       )
     case 'needs-refund':

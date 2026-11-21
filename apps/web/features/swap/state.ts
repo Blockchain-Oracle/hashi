@@ -31,6 +31,8 @@ export interface SwapState {
   payBy: 'wallet' | 'send'
   /** Sending it yourself: where a refund goes, an address of the person's own on the paying chain. */
   refundTo: string
+  /** Out of Bitcoin Cash: the stablecoin lands in a connected wallet, or at an address typed in (`recipient`). */
+  receiveBy: 'wallet' | 'address'
   /** Why the other side just changed, shown on the card until the next change. */
   notice: string | null
 }
@@ -47,6 +49,7 @@ export type SwapAction =
   | { type: 'route'; provider: RouteVia | null }
   | { type: 'payBy'; value: 'wallet' | 'send' }
   | { type: 'refundTo'; value: string }
+  | { type: 'receiveBy'; value: 'wallet' | 'address' }
 
 const DEFAULT_STABLE = STABLES[0] as StableAsset
 
@@ -61,6 +64,7 @@ export const INITIAL_STATE: SwapState = {
   provider: null,
   payBy: 'wallet',
   refundTo: '',
+  receiveBy: 'wallet',
   notice: null,
 }
 
@@ -122,6 +126,9 @@ export function swapReducer(state: SwapState, action: SwapAction): SwapState {
       return { ...state, payBy: action.value }
     case 'refundTo':
       return { ...state, refundTo: action.value }
+    case 'receiveBy':
+      // Back to the wallet: an address typed earlier no longer applies.
+      return { ...state, receiveBy: action.value, ...(action.value === 'wallet' ? { recipient: '' } : {}) }
     case 'flip': {
       const { pay, receive } = sidesOf(state)
       return {

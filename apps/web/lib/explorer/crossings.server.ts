@@ -44,6 +44,7 @@ const nearRow = z.object({
 type NearRow = z.infer<typeof nearRow>
 
 export interface Side {
+  /** Empty while not known yet (NEAR fills it in once the deposit is credited). */
   amount: string
   asset: string
   chain: ChainId
@@ -71,9 +72,14 @@ export interface Ledger {
   updatedAt: number
 }
 
-function side(assetId: string, amount: string, usd?: string | null): Side | undefined {
-  const value = usd ? Number(usd) : undefined
-  const base = value !== undefined && Number.isFinite(value) ? { usd: value } : {}
+/**
+ * One side of a swap. NEAR reports 0 for a side it has not settled yet (a deposit still confirming, a delivery not
+ * made): that is "not known yet" (an empty amount, no dollar value), never a real zero.
+ */
+function side(assetId: string, reported: string, usd?: string | null): Side | undefined {
+  const amount = Number(reported) > 0 ? reported : ''
+  const value = amount && usd ? Number(usd) : undefined
+  const base = value !== undefined && Number.isFinite(value) && value > 0 ? { usd: value } : {}
   if (assetId === NEAR_BCH_ASSET_ID) return { amount, asset: 'BCH', chain: 'bch', ...base }
   const stable = STABLES.find((s) => s.nearAssetId === assetId)
   return stable ? { amount, asset: stable.symbol, chain: stable.chain, ...base } : undefined
@@ -130,23 +136,45 @@ async function contractTrade(contract: string, deliveryTxid: string | undefined)
   return null
 }
 
+/** A deposit transaction never changes once seen: the BCH it paid each deposit address, kept for the server's life. */
+const depositCache = new Map<string, string>()
+
+/** The BCH a Bitcoin Cash transaction paid to `address`, as a decimal string; empty when it can't be read. */
+async function bchPaidTo(txid: string, address: string): Promise<string> {
+  const key = `${txid}:${address}`
+  const cached = depositCache.get(key)
+  if (cached !== undefined) return cached
+  const decoded = decodeTransaction(hexToBin(await rawTransaction(txid)))
+  const target = cashAddressToLockingBytecode(address)
+  if (typeof decoded === 'string' || typeof target === 'string') return ''
+  const sats = decoded.outputs
+    .filter((o) => Buffer.compare(Buffer.from(o.lockingBytecode), Buffer.from(target.bytecode)) === 0)
+    .reduce((sum, o) => sum + o.valueSatoshis, 0n)
+  const paid = sats > 0n ? (Number(sats) / 1e8).toFixed(8).replace(/\.?0+$/, '') : ''
+  depositCache.set(key, paid)
+  return paid
+}
+
 async function toCrossing(row: NearRow): Promise<Crossing | undefined> {
   const pay = side(row.originAsset, row.amountInFormatted, row.amountInUsd)
   const get = side(row.destinationAsset, row.amountOutFormatted, row.amountOutUsd)
   if (!pay || !get) return undefined
   const direction = pay.chain === 'bch' ? 'out' : 'in'
   const origin = row.originChainTxHashes[0]
+  // A Bitcoin Cash deposit NEAR has not credited yet (still confirming): the amount it paid is on the chain already.
+  if (!pay.amount && pay.chain === 'bch' && origin)
+    pay.amount = await bchPaidTo(origin, row.depositAddress).catch(() => '')
   const delivery = row.destinationChainTxHashes[0]
   const links: Crossing['links'] = []
   if (origin)
     links.push({
-      label: pay.chain === 'bch' ? 'Bitcoin Cash' : chainLabel(pay.chain),
+      label: CHAINS[pay.chain].name,
       href: txUrl(pay.chain, origin),
     })
   links.push({ label: 'NEAR Intents', href: nearIntentsUrl(row.depositAddress) })
   if (delivery)
     links.push({
-      label: get.chain === 'bch' ? 'Bitcoin Cash' : chainLabel(get.chain),
+      label: CHAINS[get.chain].name,
       href: txUrl(get.chain, delivery),
     })
 
@@ -188,10 +216,6 @@ async function toCrossing(row: NearRow): Promise<Crossing | undefined> {
   return crossing
 }
 
-function chainLabel(chain: ChainId) {
-  return chain.charAt(0).toUpperCase() + chain.slice(1)
-}
-
 let cached: Ledger | undefined
 let pending: Promise<Ledger> | undefined
 
@@ -231,8 +255,11 @@ export interface LedgerQuery {
   chain?: string | undefined
   /** A coin on either side: USDC, USDT, PUSD, MUSD, BCH. */
   coin?: string | undefined
+  status?: Crossing['status'] | undefined
   page?: number | undefined
 }
+
+export const STATUSES: Crossing['status'][] = ['pending', 'done', 'refunded', 'failed']
 
 export type PublicCrossing = Omit<Crossing, 'match'>
 
@@ -245,6 +272,7 @@ export function queryLedger(crossings: Crossing[], query: LedgerQuery) {
       (!query.dir || c.direction === query.dir) &&
       (!query.chain || other(c) === query.chain) &&
       (!query.coin || c.pay.asset === query.coin || c.get.asset === query.coin) &&
+      (!query.status || c.status === query.status) &&
       terms.every((t) => c.match.includes(t)),
   )
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
@@ -259,5 +287,7 @@ export function queryLedger(crossings: Crossing[], query: LedgerQuery) {
   }
   const chains = tally(crossings.map(other)) as { id: ChainId; n: number }[]
   const coins = tally(crossings.flatMap((c) => [...new Set([c.pay.asset, c.get.asset])]))
-  return { rows, total: filtered.length, page, pages, pageSize: PAGE_SIZE, chains, coins }
+  // Every status, even at zero: the filter shows what a swap can be, not only what has happened so far.
+  const statuses = STATUSES.map((id) => ({ id, n: crossings.filter((c) => c.status === id).length }))
+  return { rows, total: filtered.length, page, pages, pageSize: PAGE_SIZE, chains, coins, statuses }
 }

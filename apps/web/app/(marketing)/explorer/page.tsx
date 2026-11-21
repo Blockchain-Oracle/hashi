@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { CrossingList } from '@/features/explorer/list'
 import { ExplorerToolbar } from '@/features/explorer/toolbar'
 import type { ChainId } from '@/lib/constants/chains'
-import { getLedger, queryLedger } from '@/lib/explorer/crossings.server'
+import { getLedger, queryLedger, STATUSES } from '@/lib/explorer/crossings.server'
 
 const DESCRIPTION =
   'Every swap made through Hashi, live: dollars crossing between eight chains and Bitcoin Cash, each with its transactions on both chains.'
@@ -39,17 +39,21 @@ export default async function ExplorerPage({
   const asked = await searchParams
   const ledger = await getLedger()
   const dir = one(asked.dir)
+  const status = STATUSES.find((s) => s === one(asked.status))
   const result = queryLedger(ledger.crossings, {
     q: one(asked.q),
     dir: dir === 'in' || dir === 'out' ? dir : undefined,
     chain: one(asked.chain),
     coin: one(asked.coin),
+    status,
     page: Number(one(asked.page)) || 1,
   })
   const { crossings } = ledger
   const into = crossings.filter((c) => c.direction === 'in')
   const out = crossings.filter((c) => c.direction === 'out')
   const done = crossings.filter((c) => c.status === 'done').length
+  // Of the swaps that have ended: one still crossing is not a failure.
+  const ended = crossings.filter((c) => c.status !== 'pending').length
   const moved = crossings.reduce((sum, c) => sum + (c.pay.usd ?? 0), 0)
   const chains = new Map<ChainId, number>()
   for (const c of crossings) {
@@ -79,7 +83,7 @@ export default async function ExplorerPage({
           { term: 'Moved', value: usd(moved) },
           {
             term: 'Completed',
-            value: crossings.length ? `${Math.round((done / crossings.length) * 100)}%` : '—',
+            value: ended ? `${Math.round((done / ended) * 100)}%` : '—',
           },
           { term: 'Chains in use', value: String(chains.size) },
         ].map((stat) => (
@@ -210,6 +214,7 @@ export default async function ExplorerPage({
             <ExplorerToolbar
               chains={result.chains}
               coins={result.coins}
+              statuses={result.statuses}
               counts={{ all: crossings.length, in: into.length, out: out.length }}
             />
             <CrossingList

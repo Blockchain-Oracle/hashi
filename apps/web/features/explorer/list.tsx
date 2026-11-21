@@ -16,6 +16,7 @@ import type { BchAssetId, StableSymbol } from '@/lib/constants/assets'
 import { CHAINS } from '@/lib/constants/chains'
 import type { PublicCrossing, Side } from '@/lib/explorer/crossings.server'
 import { cn } from '@/lib/utils'
+import { STATUS } from './status'
 
 const REFRESH_MS = 30_000
 
@@ -46,19 +47,20 @@ function Leg({ side }: { side: Side }) {
       )}
       <span className="flex flex-col">
         <span className="whitespace-nowrap font-medium text-[0.9375rem] leading-tight sm:text-[1.0625rem]">
-          <span className="font-mono tabular-nums">{amount(side.amount)}</span> {side.asset}
+          {/* Not known until the bridge settles that side (a swap in progress): a dash, never a made-up zero. */}
+          {side.amount ? (
+            <span className="font-mono tabular-nums">{amount(side.amount)}</span>
+          ) : (
+            <span className="font-mono text-muted-foreground" title="Known once the swap settles">
+              —
+            </span>
+          )}{' '}
+          {side.asset}
         </span>
         <span className="whitespace-nowrap text-muted-foreground text-xs">{CHAINS[side.chain].name}</span>
       </span>
     </span>
   )
-}
-
-const STATUS: Record<PublicCrossing['status'], { label: string; dot: string }> = {
-  done: { label: 'Completed', dot: 'bg-(--success)' },
-  pending: { label: 'In progress', dot: 'bg-(--warning)' },
-  refunded: { label: 'Refunded', dot: 'bg-muted-foreground' },
-  failed: { label: 'Failed', dot: 'bg-destructive' },
 }
 
 function route(c: PublicCrossing) {
@@ -177,7 +179,14 @@ export function CrossingList({
             </div>
             <div className="flex flex-col gap-3 lg:items-end">
               <span className="flex items-center gap-2 text-sm">
-                <span className={cn('size-2 rounded-full', STATUS[c.status].dot)} aria-hidden />
+                <span
+                  className={cn(
+                    'size-2 rounded-full',
+                    STATUS[c.status].dot,
+                    c.status === 'pending' && 'animate-pulse',
+                  )}
+                  aria-hidden
+                />
                 <span className="font-medium">{STATUS[c.status].label}</span>
                 <span className="text-muted-foreground">· {ago(c.at, now)}</span>
               </span>

@@ -9,7 +9,9 @@ import { AssetLogo, ChainLogo } from '@/components/kit/logos'
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover'
 import type { BchAssetId, StableSymbol } from '@/lib/constants/assets'
 import { CHAINS, type ChainId } from '@/lib/constants/chains'
+import type { Crossing } from '@/lib/explorer/crossings.server'
 import { cn } from '@/lib/utils'
+import { STATUS } from './status'
 
 const SEARCH_DEBOUNCE_MS = 300
 
@@ -105,16 +107,19 @@ function Picker({
 }
 
 /**
- * Search and filters for /explorer. Everything lives in the link (?q=&dir=&chain=&coin=&page=), so the server answers
+ * Search and filters for /explorer. Everything lives in the link (?q=&dir=&chain=&coin=&status=&page=), so the server answers
  * with one page of the matching swaps, however many there are, and any view can be shared.
  */
 export function ExplorerToolbar({
   chains,
   coins,
+  statuses,
   counts,
 }: {
   chains: { id: ChainId; n: number }[]
   coins: { id: string; n: number }[]
+  /** Every status in the filter's order, with its count (zero included). */
+  statuses: { id: Crossing['status']; n: number }[]
   counts: { all: number; in: number; out: number }
 }) {
   const router = useRouter()
@@ -139,7 +144,8 @@ export function ExplorerToolbar({
   const dir = params.get('dir') ?? ''
   const chain = params.get('chain') ?? ''
   const coin = params.get('coin') ?? ''
-  const filtered = Boolean(params.get('q') || dir || chain || coin)
+  const status = params.get('status') ?? ''
+  const filtered = Boolean(params.get('q') || dir || chain || coin || status)
 
   return (
     <div className="flex flex-col gap-3">
@@ -224,6 +230,23 @@ export function ExplorerToolbar({
             name: c.id,
             n: c.n,
             logo: <AssetLogo asset={c.id as StableSymbol | BchAssetId} size={22} />,
+          }))}
+        />
+        <Picker
+          label="Status"
+          allLabel="Any status"
+          value={status}
+          total={counts.all}
+          onChange={(id) => update({ status: id })}
+          options={statuses.map((st) => ({
+            id: st.id,
+            name: STATUS[st.id].label,
+            n: st.n,
+            logo: (
+              <span className="grid size-[22px] place-items-center">
+                <span className={cn('size-2.5 rounded-full', STATUS[st.id].dot)} />
+              </span>
+            ),
           }))}
         />
         {filtered ? (

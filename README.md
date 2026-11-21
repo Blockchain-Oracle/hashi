@@ -190,7 +190,7 @@ Also checked:
 
 - **Swaps that stay on Bitcoin Cash**: PUSD ⇄ MUSD ⇄ BCH on Cauldron, one approval, about 15 seconds ([guide](https://docs.hashi.cash/docs/guide/on-bitcoin-cash)).
 - **Tracker and Activity**: every swap step by step across both chains, with explorer links, saved in your browser. While a bridge works, a live panel counts Bitcoin Cash blocks and shows the bridge's own countdown. A closed tab resumes where it stopped ([guide](https://docs.hashi.cash/docs/guide/tracking)).
-- **Send it yourself**: pay from an exchange or any wallet, no connection. Hashi shows NEAR Intents' deposit address, the amount and a payment QR that fills in the coin, network and amount, then watches for the deposit ([guide](https://docs.hashi.cash/docs/guide/send-it-yourself)).
+- **Send it yourself**: pay from an exchange or any wallet, no connection. Hashi shows NEAR Intents' deposit address, the amount and a payment QR that fills in the coin, network and amount, then watches for the deposit. Coming out, the dollars can land at any address, an exchange's included ([guide](https://docs.hashi.cash/docs/guide/send-it-yourself)).
 - **Gasless USDC on Base**: sign an authorisation and Hashi's relayer pays the gas ([guide](https://docs.hashi.cash/docs/guide/gasless)).
 - **Services checked live**: NEAR Intents, THORChain's pauses per chain, the Cauldron Router and the Bitcoin Cash network, in the swap card's status ([guide](https://docs.hashi.cash/docs/guide/swap-screen)).
 - **Settings**: slippage, and a different recipient with guards against token contracts and the wrong chain ([guide](https://docs.hashi.cash/docs/guide/settings)).

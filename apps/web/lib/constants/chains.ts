@@ -121,5 +121,9 @@ export type ExternalChainId = (typeof EXTERNAL_CHAIN_IDS)[number]
 /** Hashi runs on Bitcoin Cash mainnet only. */
 export const BCH_ADDRESS_PREFIX = 'bitcoincash'
 
-/** A CashTokens-aware block explorer that resolved real transactions on 2026-11-16 (Blockchair answered 401). */
-export const BCH_EXPLORER_TX_URL = 'https://explorer.salemkode.com/tx/'
+/**
+ * Bitcoin Cash's block explorer for transaction links: Selene Wallet's, which names CashTokens (PUSD, MUSD), shows a
+ * transaction still waiting for its block, and sends the page whole (checked 2026-11-21 against eight others;
+ * explorer.bch.ninja redirects here).
+ */
+export const BCH_EXPLORER_TX_URL = 'https://explorer.selene.cash/tx/'

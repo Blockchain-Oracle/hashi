@@ -98,6 +98,16 @@ export type NearQuoteResponse = z.infer<typeof quoteResponseSchema>
 /** Who receives Hashi's swaps in NEAR's records. Not an account; just a label. */
 const REFERRAL = 'hashi'
 
+/**
+ * In a browser, quotes go through Hashi's server (app/api/near/quote), which adds the partner key: quotes follow the
+ * partner fee schedule and the key stays on the server. On the server, the same key is sent directly.
+ */
+function quoteRequest(): { url: string; headers: Record<string, string> } {
+  if (typeof window !== 'undefined') return { url: '/api/near/quote', headers: {} }
+  const key = process.env.NEAR_INTENTS_JWT
+  return { url: `${NEAR_ONE_CLICK_URL}/v0/quote`, headers: key ? { 'x-api-key': key } : {} }
+}
+
 export async function getNearQuote(input: NearQuoteInput, signal?: AbortSignal): Promise<NearQuoteResponse> {
   const body = {
     dry: input.dry,
@@ -114,10 +124,12 @@ export async function getNearQuote(input: NearQuoteInput, signal?: AbortSignal):
     deadline: input.deadline.toISOString(),
     referral: REFERRAL,
   }
+  const { url, headers } = quoteRequest()
   try {
-    return await fetchJson(PROVIDER, `${NEAR_ONE_CLICK_URL}/v0/quote`, quoteResponseSchema, {
+    return await fetchJson(PROVIDER, url, quoteResponseSchema, {
       method: 'POST',
       body,
+      headers,
       ...(signal ? { signal } : {}),
     })
   } catch (error) {

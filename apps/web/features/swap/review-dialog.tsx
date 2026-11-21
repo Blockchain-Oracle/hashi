@@ -34,6 +34,20 @@ function approvals(route: Route): { wallet: string; count: number }[] {
   return [{ wallet: 'Bitcoin Cash wallet', count: route.signatures }]
 }
 
+/**
+ * The approvals line: each wallet that signs, how many times. Sent yourself, the paying side has none here (the
+ * person sends it from wherever they hold it); only a Bitcoin Cash trade, if any, still asks.
+ */
+function approvalsText(route: Route, o: { selfSend: boolean; gasless: boolean; symbol: string }): string {
+  const list = approvals(route)
+    .filter((a) => !o.selfSend || a.wallet === 'Bitcoin Cash wallet')
+    .map(
+      (a) =>
+        `${a.count} ${o.gasless && a.wallet !== 'Bitcoin Cash wallet' ? 'signature' : 'approval'}${a.count === 1 ? '' : 's'} in your ${a.wallet}`,
+    )
+  return (o.selfSend ? [`None to pay: you send the ${o.symbol} yourself`, ...list] : list).join(', ')
+}
+
 /** What happens if the price moves, per route, in the words the provider's own rules support. */
 function safetyNote(route: Route): string {
   if (route.provider === 'cauldron') {
@@ -77,7 +91,8 @@ export function ReviewDialog({
   const [gaslessChoice, setGaslessChoice] = useState(false)
   if (!route || !addresses) return null
   // Gasless: sign an authorisation instead of a transfer; Hashi's relayer pays the gas (NEAR route, Base USDC).
-  const gaslessOffered = swap.gaslessAvailable && route.provider === 'near'
+  const selfSend = swap.selfSend
+  const gaslessOffered = swap.gaslessAvailable && route.provider === 'near' && !selfSend
   const needsGasless = swap.step.kind === 'review' && swap.step.needsGasless === true
   const gasless = gaslessOffered && (gaslessChoice || needsGasless)
   const cost = costs[route.provider]
@@ -102,7 +117,8 @@ export function ReviewDialog({
 
   // Bitcoin Cash tokens live at the wallet's token-aware address; plain BCH at its plain one.
   const bchAddress = (side: SideAsset) => (side.symbol === 'BCH' ? addresses.bchPlain : addresses.bchToken)
-  const from = pay.stable ? addresses.stableSide : bchAddress(pay)
+  // Sent yourself: it comes from wherever the person sends it, so no "From" address is shown.
+  const from = selfSend ? undefined : pay.stable ? addresses.stableSide : bchAddress(pay)
   const to = receive.stable ? addresses.stableSide : bchAddress(receive)
   // A bridge refunds to the paying side; a Cauldron trade either happens or leaves everything where it was.
   const refund = local ? undefined : pair.direction === 'in' ? addresses.stableSide : addresses.bchPlain
@@ -117,7 +133,9 @@ export function ReviewDialog({
           <div ref={top} tabIndex={-1} className="px-6 pt-6 outline-none">
             <DialogTitle className="font-medium text-xl tracking-[-0.03em]">Review swap</DialogTitle>
             <DialogDescription className="mt-1">
-              Nothing moves until you approve in your wallet.
+              {selfSend
+                ? `Nothing moves until you send the ${pay.symbol}. Hashi shows where next.`
+                : 'Nothing moves until you approve in your wallet.'}
             </DialogDescription>
           </div>
 
@@ -225,12 +243,7 @@ export function ReviewDialog({
               </div>
             ) : null}
             <Row term="Approvals">
-              {approvals(route)
-                .map(
-                  (a) =>
-                    `${a.count} ${gasless && a.wallet !== 'Bitcoin Cash wallet' ? 'signature' : 'approval'}${a.count === 1 ? '' : 's'} in your ${a.wallet}`,
-                )
-                .join(', ')}
+              {approvalsText(route, { selfSend, gasless, symbol: pay.symbol })}
               {route.swapContract && route.pair.direction === 'in' && route.pair.bchAsset !== 'BCH'
                 ? `. The ${route.pair.bchAsset} trade on Bitcoin Cash runs by itself.`
                 : route.pair.direction === 'out' && route.pair.bchAsset !== 'BCH' && route.signatures === 1

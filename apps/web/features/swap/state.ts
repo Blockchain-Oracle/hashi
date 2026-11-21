@@ -24,6 +24,13 @@ export interface SwapState {
   recipient: string
   /** The route the person picked; null follows the best return. */
   provider: RouteVia | null
+  /**
+   * Into Bitcoin Cash: pay from a connected wallet, or send it yourself from an exchange or any wallet (NEAR
+   * Intents only; Hashi shows where to send and watches for it).
+   */
+  payBy: 'wallet' | 'send'
+  /** Sending it yourself: where a refund goes, an address of the person's own on the paying chain. */
+  refundTo: string
   /** Why the other side just changed, shown on the card until the next change. */
   notice: string | null
 }
@@ -38,6 +45,8 @@ export type SwapAction =
   | { type: 'slippage'; bps: number }
   | { type: 'recipient'; value: string }
   | { type: 'route'; provider: RouteVia | null }
+  | { type: 'payBy'; value: 'wallet' | 'send' }
+  | { type: 'refundTo'; value: string }
 
 const DEFAULT_STABLE = STABLES[0] as StableAsset
 
@@ -50,6 +59,8 @@ export const INITIAL_STATE: SwapState = {
   slippageBps: DEFAULT_SLIPPAGE_BPS,
   recipient: '',
   provider: null,
+  payBy: 'wallet',
+  refundTo: '',
   notice: null,
 }
 
@@ -107,6 +118,10 @@ export function swapReducer(state: SwapState, action: SwapAction): SwapState {
       return { ...state, recipient: action.value }
     case 'route':
       return { ...state, provider: action.provider }
+    case 'payBy':
+      return { ...state, payBy: action.value }
+    case 'refundTo':
+      return { ...state, refundTo: action.value }
     case 'flip': {
       const { pay, receive } = sidesOf(state)
       return {

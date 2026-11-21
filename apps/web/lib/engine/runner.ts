@@ -166,6 +166,11 @@ export interface StartParams {
   oneApproval: boolean
   /** Forward via NEAR with Base USDC: sign instead of paying gas. */
   gasless?: boolean
+  /**
+   * Forward via NEAR, paid by the person from an exchange or any wallet: no wallet is asked to send. The quote is
+   * FLEX_INPUT (an amount a little short still swaps) and `addresses.stableSide` is the refund address they gave.
+   */
+  selfSend?: boolean
   /** The numbers the review showed, kept on the record for the tracker and Activity. */
   quoted?: SwapRecord['quoted']
   /**
@@ -214,8 +219,11 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
     stable: { chain: pair.stable.chain, symbol: pair.stable.symbol },
     bchAsset: pair.bchAsset,
     ...(params.gasless ? { gasless: true } : {}),
+    ...(params.selfSend ? { selfSend: true } : {}),
   }
   const stableSide = stableSideOf(base)
+  if (params.selfSend && (pair.direction !== 'in' || provider !== 'near'))
+    throw new Error('Sending it yourself works into Bitcoin Cash through NEAR Intents only')
 
   if (pair.direction === 'out') {
     if (pair.bchAsset === 'BCH') {
@@ -302,7 +310,9 @@ export async function startSwap(params: StartParams, log: Log): Promise<SwapReco
   if (provider === 'near') {
     const response = await getNearQuote({
       dry: false,
-      swapType: 'EXACT_INPUT',
+      // Sent from an exchange, the amount can arrive a little short (its withdrawal fee): FLEX_INPUT swaps anything
+      // from minAmountIn up, where EXACT_INPUT would refund it.
+      swapType: params.selfSend ? 'FLEX_INPUT' : 'EXACT_INPUT',
       originAsset: pair.stable.nearAssetId,
       destinationAsset: NEAR_BCH_ASSET_ID,
       amount,
@@ -437,6 +447,8 @@ export async function sendDeposit(
   log: Log,
   options: StepOptions = {},
 ): Promise<SwapRecord> {
+  // The person pays a send-it-yourself swap from outside Hashi: a wallet here is never asked to send it too.
+  if (record.selfSend) throw new Error('You send this one yourself, from an exchange or any wallet')
   // Never pay into a quote that has run out: a NEAR address past its deadline, or a rotated THORChain vault.
   const deadline = quoteDeadline(record)
   if (deadline !== undefined && Date.now() >= deadline) return expireIfStale(record, Date.now(), log)
@@ -750,6 +762,18 @@ export async function checkBridge(
       at: Date.now(),
       near: { status: status.statusText, updatedAt: Number.isFinite(updatedAt) ? updatedAt : Date.now() },
     })
+    // Sent from outside Hashi: the first sign of the deposit is NEAR no longer waiting for one.
+    if (record.status === 'quoted') {
+      if (status.status === 'PENDING_DEPOSIT') return record
+      const tx = details.originChainTxHashes[0]?.hash
+      log('bridge', `NEAR saw the deposit${tx ? ` ${tx}` : ''}: ${status.statusText}`)
+      return advance(
+        record,
+        'deposit-sent',
+        'NEAR Intents received your deposit',
+        tx ? { depositTx: tx } : {},
+      )
+    }
     switch (status.status) {
       case 'SUCCESS': {
         const out = details.destinationChainTxHashes[0]?.hash
@@ -967,7 +991,8 @@ async function tradeOnCauldron(
 export function nextStep(record: SwapRecord): 'deposit' | 'wait' | 'finish' | 'done' {
   switch (record.status) {
     case 'quoted':
-      return 'deposit'
+      // Sent by the person from outside Hashi: nothing to ask a wallet, only NEAR to watch.
+      return record.selfSend ? 'wait' : 'deposit'
     case 'deposit-sent':
     case 'bridging':
       return 'wait'

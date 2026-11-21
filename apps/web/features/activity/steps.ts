@@ -131,7 +131,9 @@ export function trackerSteps(record: SwapRecord, now: number, live?: string): Ti
       title: `Deposit ${amountIn}`,
       detail: record.depositTx
         ? `On ${CHAINS[stable.chain].name}`
-        : `Approve in your ${CHAINS[stable.chain].name} wallet`,
+        : record.selfSend
+          ? `Send it from an exchange or any wallet, on ${CHAINS[stable.chain].name}`
+          : `Approve in your ${CHAINS[stable.chain].name} wallet`,
       chain: stable.chain,
       state: state(Boolean(record.depositTx) || reached(record, 'deposit-sent'), record.status === 'quoted'),
       ...(timeOf(record, 'deposit-sent') ? { at: timeOf(record, 'deposit-sent') as string } : {}),
@@ -288,6 +290,11 @@ export function headline(record: SwapRecord): Headline {
           close: `Your ${record.bchAsset} was sold and the BCH is in your wallet. One more approval sends it on.`,
         }
       }
+      if (record.selfSend && stable)
+        return {
+          title: `Send your ${stable.symbol}`,
+          close: `Nothing has been sent yet. Send it to the address below; Hashi watches for it.`,
+        }
       return record.direction === 'local'
         ? { title: 'Approve the swap', close: 'Nothing has left your wallet yet.' }
         : { title: 'Approve the deposit', close: 'Nothing has been sent yet.' }

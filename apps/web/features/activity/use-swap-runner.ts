@@ -266,9 +266,10 @@ export function useSwapRunner(id: string) {
     return () => clearTimeout(timer)
   }, [record, queryClient, push])
 
-  // A swap just started from the review asks the wallet right away; one reopened later waits for a click.
+  // A swap just started from the review asks the wallet right away; one reopened later waits for a click. One the
+  // person sends themselves asks no wallet: the status checks below watch NEAR for it.
   useEffect(() => {
-    if (record?.status === 'quoted' && takeAutostart(record.id)) deposit()
+    if (record?.status === 'quoted' && !record.selfSend && takeAutostart(record.id)) deposit()
   }, [record, deposit])
 
   // While the bridge works: one status check at a time, every 5 s, until an end state.

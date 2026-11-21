@@ -118,6 +118,14 @@ function RefreshRing({ updatedAt, fetching }: { updatedAt: number; fetching: boo
  * what arrives after every fee, how long it takes, what it costs in dollars including gas on the paying chain,
  * and how many approvals it needs. Routes that cannot run say why; a too-small amount offers the minimum.
  */
+/** Sent yourself, the deposit is no approval in Hashi: only a Bitcoin Cash trade, if any, still counts. */
+function approvalLabel(signatures: number, selfSend: boolean): string {
+  const count = selfSend ? signatures - 1 : signatures
+  const approvals = `${count} ${count === 1 ? 'approval' : 'approvals'}`
+  if (!selfSend) return approvals
+  return count > 0 ? `You send it · ${approvals}` : 'You send it'
+}
+
 export function RouteList({ swap, onUseMinimum }: { swap: Swap; onUseMinimum: (amount: string) => void }) {
   const { ranked, queries, selected, costs, receive, pay, pair, dispatch, updating } = swap
   // Only the routes that carry this pair: the two bridges, or Cauldron alone on Bitcoin Cash.
@@ -228,7 +236,7 @@ export function RouteList({ swap, onUseMinimum }: { swap: Swap; onUseMinimum: (a
                       ) : null}
                       <span className="flex items-center gap-1">
                         <Icon icon={SignatureIcon} />
-                        {route.signatures} {route.signatures === 1 ? 'approval' : 'approvals'}
+                        {approvalLabel(route.signatures, swap.selfSend && route.provider === 'near')}
                       </span>
                     </span>
                   </span>

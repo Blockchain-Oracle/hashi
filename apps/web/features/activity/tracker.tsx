@@ -33,6 +33,7 @@ import { displayDecimals, formatAmount, shortAddress } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { LiveProgressPanel } from './live-progress'
 import { liveProgress, shortProgress } from './progress'
+import { SendPanel } from './send-panel'
 import { bridgeExplorerUrl, headline, paySide, receiveSide, secondsLeft, trackerSteps } from './steps'
 import { useSwapRunner } from './use-swap-runner'
 
@@ -169,7 +170,7 @@ export function Tracker({ id }: { id: string }) {
           {/* Side by side from a small tablet up; stacked on a phone, where two amounts would cut each other short. */}
           <div className="grid grid-cols-1 items-center gap-3 rounded-[1.6rem] bg-muted p-4 sm:grid-cols-[1fr_auto_1fr]">
             <Amount
-              label="You paid"
+              label={record.status === 'quoted' ? 'You pay' : 'You paid'}
               amount={formatAmount(BigInt(record.amountIn), pay.decimals, displayDecimals(pay.symbol))}
               symbol={pay.symbol}
               chain={pay.chain}
@@ -400,6 +401,8 @@ function Action({ runner, record }: { runner: ReturnType<typeof useSwapRunner>; 
   )
 
   if (record.status === 'quoted') {
+    // Paid by the person from an exchange or any wallet: where to send, and Hashi watching for it.
+    if (record.selfSend) return <SendPanel record={record} />
     const needsBch = record.direction !== 'in'
     const what =
       record.direction === 'local'

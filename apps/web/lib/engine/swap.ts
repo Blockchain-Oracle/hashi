@@ -51,6 +51,12 @@ export interface SwapRecord {
   amountIn: string
   /** Forward NEAR with Base USDC: the person signs an EIP-3009 authorisation and Hashi's relayer pays the gas. */
   gasless?: boolean
+  /**
+   * Forward NEAR: the person sends the deposit themselves, from an exchange or any wallet, instead of a connected
+   * wallet. Hashi never asks a wallet to pay it; it watches NEAR for the deposit. `addresses.stableSide` is the refund
+   * address they gave. The quote is FLEX_INPUT, so an amount a little short (an exchange's fee) still swaps.
+   */
+  selfSend?: boolean
   /** Approvals asked for so far (for the record of what the route really cost the person). */
   approvals: number
   addresses: SwapAddresses

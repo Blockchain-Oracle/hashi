@@ -38,7 +38,9 @@ export function SwapScreen({ initialQuery }: { initialQuery: string }) {
           addresses: swap.addresses,
           // Selling PUSD or MUSD through NEAR: the sale pays NEAR's deposit address in the same transaction.
           oneApproval: ONE_APPROVAL_SALE,
-          gasless,
+          // Sent from an exchange or any wallet: no wallet signs the deposit, so nothing to make gasless either.
+          gasless: gasless && !swap.selfSend,
+          ...(swap.selfSend ? { selfSend: true } : {}),
           quoted: {
             amountOut: route.amountOut.toString(),
             minAmountOut: route.minAmountOut.toString(),

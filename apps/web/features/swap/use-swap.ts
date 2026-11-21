@@ -62,6 +62,7 @@ export type SwapStep =
   /** Every route that could carry the pair wants more: the smallest of their minimums, as an amount to type. */
   | { kind: 'below-minimum'; amount: string; symbol: string }
   | { kind: 'no-route'; message: string }
+  | { kind: 'needs-refund'; message?: string }
   | { kind: 'review'; needsGasless?: boolean }
 
 /**
@@ -113,9 +114,16 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
     state.recipient.trim() && recipientAllowed ? checkRecipient(destinationKind, state.recipient) : undefined
   const customTo = recipient?.ok ? recipient.address : undefined
 
+  // Into Bitcoin Cash, sent from an exchange or any wallet: no wallet on the paying side, and the refund address the
+  // person gives (their connected wallet's, if one is connected) stands where that wallet's address would.
+  const selfSend = direction === 'in' && state.payBy === 'send'
+  const refundText = state.refundTo.trim() || stableAddress || ''
+  const refundCheck = selfSend && refundText ? checkRecipient(stableKind, refundText) : undefined
+  const refundTo = refundCheck?.ok ? refundCheck.address : undefined
+
   const bchPlain = direction === 'in' && customTo ? customTo : bch.receive?.plain
   const bchToken = direction === 'in' && customTo ? toTokenAddress(customTo) : bch.receive?.token
-  const stableSide = direction === 'out' && customTo ? customTo : stableAddress
+  const stableSide = direction === 'out' && customTo ? customTo : selfSend ? refundTo : stableAddress
   const addresses = useMemo<SwapAddresses | undefined>(() => {
     if (!bchPlain || !bchToken) return undefined
     if (local) return { bchPlain, bchToken }
@@ -172,7 +180,17 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
   )
 
   const ranked = useMemo(() => {
-    const outcomes = [near.data, thor.data, cauldron.data].filter((o): o is RouteOutcome => Boolean(o))
+    // THORChain takes a token only through its router contract, which a plain send cannot call.
+    const thorOutcome: RouteOutcome | undefined =
+      selfSend && thor.data
+        ? {
+            ok: false,
+            provider: 'thorchain',
+            reason: 'unsupported',
+            message: 'Sending it yourself goes through NEAR Intents; THORChain needs a connected wallet',
+          }
+        : thor.data
+    const outcomes = [near.data, thorOutcome, cauldron.data].filter((o): o is RouteOutcome => Boolean(o))
     const outside: OutsideCosts = {}
     for (const outcome of outcomes) {
       if (!outcome.ok || !prices) continue
@@ -182,7 +200,7 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
       if (units !== undefined) outside[route.provider] = units
     }
     return rankRoutes(outcomes, outside)
-  }, [near.data, thor.data, cauldron.data, gasUsd, prices])
+  }, [near.data, thor.data, cauldron.data, gasUsd, prices, selfSend])
 
   const selected: Route | undefined =
     ranked.routes.find((r) => r.provider === state.provider) ?? ranked.routes[0]
@@ -232,11 +250,15 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
     if (direction === 'local') {
       if (!bch.receive) return { kind: 'connect-bch' }
     } else if (direction === 'in') {
-      if (!stableAddress)
+      if (!stableAddress && !selfSend)
         return { kind: 'connect-stable', namespace: stableKind === 'solana' ? 'solana' : 'eip155' }
       if (state.recipient.trim() && recipient && !recipient.ok)
         return { kind: 'fix-recipient', message: recipient.error }
       if (!customTo && !bch.receive) return { kind: 'connect-bch' }
+      if (selfSend && !refundTo)
+        return refundCheck && !refundCheck.ok
+          ? { kind: 'needs-refund', message: refundCheck.error }
+          : { kind: 'needs-refund' }
     } else {
       if (!bch.receive) return { kind: 'connect-bch' }
       if (state.recipient.trim() && recipient && !recipient.ok)
@@ -244,7 +266,7 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
       if (!customTo && !stableAddress)
         return { kind: 'connect-stable', namespace: stableKind === 'solana' ? 'solana' : 'eip155' }
     }
-    if (payBalance !== undefined && max !== undefined && typed > max)
+    if (!selfSend && payBalance !== undefined && max !== undefined && typed > max)
       return { kind: 'insufficient', symbol: pay.symbol }
     if (!selected) {
       const pending =
@@ -270,7 +292,8 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
       const plain = balances.assets.get('BCH')
       if (plain !== undefined && plain < need) return { kind: 'needs-bch-fee', sats: need }
     }
-    if (direction === 'in' && selected.provider !== 'cauldron') {
+    // Sent from outside Hashi, the gas on the paying chain is the sender's own business.
+    if (direction === 'in' && selected.provider !== 'cauldron' && !selfSend) {
       const fee = depositFees[selected.provider]
       const native = balances.native.get(stable.chain)
       if (fee && native !== undefined && native < fee.native) {
@@ -309,6 +332,9 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
     stable.chain,
     stableChain.name,
     gaslessAvailable,
+    selfSend,
+    refundTo,
+    refundCheck,
   ])
 
   return {
@@ -336,6 +362,11 @@ export function useSwap(initialParams: URLSearchParams, { syncUrl = true }: { sy
     maxText,
     step,
     gaslessAvailable,
+    /** Into Bitcoin Cash, sent by the person from an exchange or any wallet (see SwapState.payBy). */
+    selfSend,
+    /** Sending it yourself: the refund address as given (or the connected wallet's), and whether it is valid. */
+    refundText,
+    refundCheck,
     updating: Boolean(selected && (amount !== typed || queries[selected.provider].isPlaceholderData)),
   }
 }

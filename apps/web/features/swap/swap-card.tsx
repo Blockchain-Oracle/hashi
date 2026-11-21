@@ -18,6 +18,7 @@ import type { SideAsset } from '@/lib/engine/pair'
 import { displayDecimals, formatAmount, shortAddress } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { type PanelAsset, PayPanel, ReceivePanel } from './asset-panel'
+import { PayBy } from './pay-by'
 import { ReviewDialog } from './review-dialog'
 import { RouteList } from './route-list'
 import { SettingsPopover } from './settings-popover'
@@ -160,7 +161,8 @@ export function SwapCard({
           <RouteList swap={swap} onUseMinimum={(value) => dispatch({ type: 'amount', value })} />
         </div>
 
-        <div className="p-1 pt-3">
+        <div className="flex flex-col gap-3 p-1 pt-3">
+          {swap.selfSend ? <PayBy swap={swap} /> : null}
           <StepButton
             step={step}
             onUseMinimum={(value) => dispatch({ type: 'amount', value })}
@@ -177,6 +179,7 @@ export function SwapCard({
             }
             onReview={() => setReviewOpen(true)}
           />
+          {swap.selfSend ? null : <PayBy swap={swap} />}
         </div>
       </div>
 
@@ -299,6 +302,12 @@ export function StepButton({
         <Button size="xl" variant="secondary" onClick={onConnectBch}>
           <Icon icon={Wallet01Icon} />
           Connect a Bitcoin Cash wallet
+        </Button>
+      )
+    case 'needs-refund':
+      return (
+        <Button size="xl" disabled>
+          {step.message ? 'Check the refund address' : 'Add your refund address'}
         </Button>
       )
     case 'fix-recipient':

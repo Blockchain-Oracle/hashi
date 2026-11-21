@@ -42,14 +42,14 @@ function Switch({
             aria-pressed={on}
             onClick={() => onChange(o.id)}
             className={cn(
-              'flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full px-2 font-medium text-sm transition-colors',
+              'flex min-h-10 items-center justify-center gap-1.5 text-balance rounded-full px-2 py-1.5 text-center font-medium text-sm leading-tight transition-colors',
               on
                 ? 'bg-foreground text-background shadow-sm'
                 : 'text-foreground/70 hover:bg-card hover:text-foreground',
             )}
           >
-            {/* On a narrow phone the words alone fit on one line. */}
-            <Icon icon={o.icon} size={17} className="max-[400px]:hidden" />
+            {/* On a narrow phone the words alone have the room (they wrap onto two centred lines). */}
+            <Icon icon={o.icon} size={17} className="shrink-0 max-[400px]:hidden" />
             {o.text}
           </button>
         )
@@ -152,7 +152,7 @@ export function PayBy({ swap }: { swap: Swap }) {
           onChange={(id) => dispatch({ type: 'payBy', value: id === 'send' ? 'send' : 'wallet' })}
           options={[
             { id: 'wallet', icon: Wallet01Icon, text: 'Connect wallet' },
-            { id: 'send', icon: QrCodeIcon, text: 'Send from exchange' },
+            { id: 'send', icon: QrCodeIcon, text: 'Send from exchange or wallet' },
           ]}
         />
         {selfSend ? (
@@ -165,7 +165,7 @@ export function PayBy({ swap }: { swap: Swap }) {
                 : `If the swap can't go through, NEAR Intents sends the ${symbol} back here as a normal transfer. Your exchange's ${symbol} deposit address on ${chain.name} works, or any wallet. A refund under the exchange's minimum deposit may not be credited.`
             }
             value={state.refundTo || stableAddress || ''}
-            placeholder={solana ? 'Your Solana wallet address' : '0x… exchange deposit or wallet'}
+            placeholder={solana ? 'Your Solana wallet address' : '0x… wallet or exchange deposit'}
             error={refundCheck && !refundCheck.ok ? refundCheck.error : undefined}
             onChange={(value) => dispatch({ type: 'refundTo', value })}
           />
@@ -182,20 +182,20 @@ export function PayBy({ swap }: { swap: Swap }) {
         onChange={(id) => dispatch({ type: 'receiveBy', value: id === 'address' ? 'address' : 'wallet' })}
         options={[
           { id: 'wallet', icon: Wallet01Icon, text: 'Connect wallet' },
-          { id: 'address', icon: BankIcon, text: 'Send to exchange' },
+          { id: 'address', icon: BankIcon, text: 'Send to exchange or wallet' },
         ]}
       />
       {toAddress ? (
         <Field
-          label={`Exchange deposit address on ${chain.name}`}
+          label={`Receiving address on ${chain.name}`}
           warn={solana}
           tip={
             solana
-              ? `In your exchange, open the ${symbol} deposit page, pick Solana, and copy the address. On Solana the ${symbol} comes from NEAR's own program, which some exchanges don't credit: a wallet address is the safe choice.`
-              : `In your exchange, open the ${symbol} deposit page, pick the ${chain.name} network, and copy the address. The ${symbol} arrives as a normal transfer; check the exchange's minimum deposit. Any wallet address on ${chain.name} works too.`
+              ? `Where the ${symbol} lands: a wallet on Solana. On Solana the ${symbol} comes from NEAR's own program, which some exchanges don't credit, so an exchange deposit address is a risk there.`
+              : `Where the ${symbol} lands: any wallet on ${chain.name}, or your exchange's ${symbol} deposit address for the ${chain.name} network. It arrives as a normal transfer; an exchange credits it above its minimum deposit.`
           }
           value={state.recipient}
-          placeholder={solana ? 'Solana address' : '0x…'}
+          placeholder={solana ? 'Your Solana wallet address' : '0x… wallet or exchange deposit'}
           error={recipient && !recipient.ok ? recipient.error : undefined}
           onChange={(value) => dispatch({ type: 'recipient', value })}
         />

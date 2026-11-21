@@ -1,8 +1,9 @@
 'use client'
 
-import { ClipboardPasteIcon, QrCodeIcon, Wallet01Icon } from '@hugeicons/core-free-icons'
-import type { ReactNode } from 'react'
+import { BankIcon, InformationCircleIcon, QrCodeIcon, Wallet01Icon } from '@hugeicons/core-free-icons'
+import { type ReactNode, useId } from 'react'
 import { Icon } from '@/components/kit/icon'
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover'
 import { CHAINS } from '@/lib/constants/chains'
 import { cn } from '@/lib/utils'
 import type { useSwap } from './use-swap'
@@ -35,13 +36,14 @@ function Switch({
             aria-pressed={on}
             onClick={() => onChange(o.id)}
             className={cn(
-              'flex h-10 items-center justify-center gap-2 rounded-full font-medium text-sm transition-colors',
+              'flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full px-2 font-medium text-sm transition-colors',
               on
                 ? 'bg-foreground text-background shadow-sm'
                 : 'text-foreground/70 hover:bg-card hover:text-foreground',
             )}
           >
-            <Icon icon={o.icon} size={17} />
+            {/* On a narrow phone the words alone fit on one line. */}
+            <Icon icon={o.icon} size={17} className="max-[400px]:hidden" />
             {o.text}
           </button>
         )
@@ -50,29 +52,52 @@ function Switch({
   )
 }
 
-/** One labelled address field: the label and a few words beside it, the error under it only when there is one. */
+/** The why behind a field, one tap or hover away instead of a sentence on the card (a tap works on a phone). */
+function InfoTip({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <Popover>
+      <PopoverTrigger
+        openOnHover
+        delay={80}
+        aria-label={label}
+        className="grid size-5 place-items-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <Icon icon={InformationCircleIcon} size={15} />
+      </PopoverTrigger>
+      <PopoverPopup tooltipStyle side="top" className="max-w-[17rem] text-xs leading-relaxed">
+        {children}
+      </PopoverPopup>
+    </Popover>
+  )
+}
+
+/** One address field: a plain label with an info tip, and the error under it only when there is one. */
 function Field({
   label,
-  note,
+  tip,
   value,
   placeholder,
   error,
   onChange,
 }: {
   label: string
-  note: string
+  tip: ReactNode
   value: string
   placeholder: string
   error: string | undefined
   onChange: (value: string) => void
-}): ReactNode {
+}) {
+  const id = useId()
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="flex items-baseline justify-between gap-2 px-1 text-xs">
-        <span className="font-medium text-foreground/80">{label}</span>
-        <span className="text-muted-foreground">{note}</span>
+    <div className="flex flex-col gap-1.5">
+      <span className="flex items-center gap-1 px-1 text-xs">
+        <label htmlFor={id} className="font-medium text-foreground/80">
+          {label}
+        </label>
+        <InfoTip label={`About: ${label}`}>{tip}</InfoTip>
       </span>
       <input
+        id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -84,21 +109,22 @@ function Field({
         )}
       />
       {error ? <span className="px-1 text-destructive text-xs">{error}</span> : null}
-    </label>
+    </div>
   )
 }
 
 /**
  * The stablecoin side of a bridged swap needs no wallet of its own, either way. Paying in, the person can send it
- * themselves from an exchange or any wallet (and gives a refund address of their own). Receiving out, the stablecoin
- * can land at any address on that chain: NEAR Intents pays with a plain token transfer, which a wallet or an
- * exchange deposit address takes like any withdrawal.
+ * from an exchange (or any wallet) to the address Hashi shows, and gives a wallet of their own for a refund.
+ * Receiving out, the stablecoin can land at an exchange deposit address (or any wallet): NEAR Intents pays with a
+ * plain token transfer, which an exchange credits like any withdrawal.
  */
 export function PayBy({ swap }: { swap: Swap }) {
   const { state, dispatch, pair, selfSend, toAddress, refundCheck, recipient, stableAddress } = swap
   if (pair.direction === 'local') return null
   const chain = CHAINS[pair.stable.chain]
-  const placeholder = chain.kind === 'solana' ? 'Solana address' : '0x…'
+  const symbol = pair.stable.symbol
+  const solana = chain.kind === 'solana'
 
   if (pair.direction === 'in') {
     return (
@@ -108,16 +134,16 @@ export function PayBy({ swap }: { swap: Swap }) {
           value={selfSend ? 'send' : 'wallet'}
           onChange={(id) => dispatch({ type: 'payBy', value: id === 'send' ? 'send' : 'wallet' })}
           options={[
-            { id: 'wallet', icon: Wallet01Icon, text: 'From my wallet' },
-            { id: 'send', icon: QrCodeIcon, text: 'Send it yourself' },
+            { id: 'wallet', icon: Wallet01Icon, text: 'Connect wallet' },
+            { id: 'send', icon: QrCodeIcon, text: 'Send from exchange' },
           ]}
         />
         {selfSend ? (
           <Field
-            label={`Refund address on ${chain.name}`}
-            note="yours, not an exchange's"
+            label={`Your ${chain.name} wallet, for refunds`}
+            tip={`If the swap can't go through, NEAR Intents sends the ${symbol} back to this address. Use a wallet you own: an exchange may not credit a refund sent to it.`}
             value={state.refundTo || stableAddress || ''}
-            placeholder={placeholder}
+            placeholder={solana ? 'Your Solana wallet address' : `0x… your wallet on ${chain.name}`}
             error={refundCheck && !refundCheck.ok ? refundCheck.error : undefined}
             onChange={(value) => dispatch({ type: 'refundTo', value })}
           />
@@ -129,20 +155,20 @@ export function PayBy({ swap }: { swap: Swap }) {
   return (
     <div className="flex flex-col gap-2.5">
       <Switch
-        label={`Where the ${pair.stable.symbol} goes`}
+        label={`Where the ${symbol} goes`}
         value={toAddress ? 'address' : 'wallet'}
         onChange={(id) => dispatch({ type: 'receiveBy', value: id === 'address' ? 'address' : 'wallet' })}
         options={[
-          { id: 'wallet', icon: Wallet01Icon, text: 'To my wallet' },
-          { id: 'address', icon: ClipboardPasteIcon, text: 'To an address' },
+          { id: 'wallet', icon: Wallet01Icon, text: 'Connect wallet' },
+          { id: 'address', icon: BankIcon, text: 'Send to exchange' },
         ]}
       />
       {toAddress ? (
         <Field
-          label={`${pair.stable.symbol} lands at, on ${chain.name}`}
-          note="a wallet or an exchange"
+          label={`Exchange deposit address on ${chain.name}`}
+          tip={`In your exchange, open the ${symbol} deposit page, pick the ${chain.name} network, and copy the address. Any wallet address on ${chain.name} works too: the ${symbol} arrives as a normal transfer.`}
           value={state.recipient}
-          placeholder={placeholder}
+          placeholder={solana ? 'Solana address' : '0x…'}
           error={recipient && !recipient.ok ? recipient.error : undefined}
           onChange={(value) => dispatch({ type: 'recipient', value })}
         />

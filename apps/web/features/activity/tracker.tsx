@@ -8,6 +8,7 @@ import {
   InformationCircleIcon,
   Wallet01Icon,
 } from '@hugeicons/core-free-icons'
+import { useQuery } from '@tanstack/react-query'
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -22,6 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { useBchWallet } from '@/features/wallets/bch-wallet'
 import { useEvmWallet } from '@/features/wallets/evm-wallet'
+import { transactionHeight } from '@/lib/bch/electrum'
 import { CHAINS } from '@/lib/constants/chains'
 import { STATUS_TROUBLE_MS } from '@/lib/constants/limits'
 import { tradesOnArrival } from '@/lib/engine/arrival-terms'
@@ -453,19 +455,7 @@ function Action({ runner, record }: { runner: ReturnType<typeof useSwapRunner>; 
       </Button>
     )
   }
-  if (record.status === 'completed') {
-    return (
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <p className="flex flex-1 items-center gap-2 font-medium text-(--success)">
-          <Icon icon={CheckmarkCircle02Icon} size={22} />
-          Done in {Math.max(1, Math.round((record.updatedAt - record.createdAt) / 60_000))} min
-        </p>
-        <Button variant="secondary" render={<Link href={againHref(record)} />} nativeButton={false}>
-          Swap again
-        </Button>
-      </div>
-    )
-  }
+  if (record.status === 'completed') return <Completed record={record} />
   if (record.status === 'refunded' || record.status === 'failed' || record.status === 'expired') {
     return (
       <Button
@@ -484,5 +474,64 @@ function Action({ runner, record }: { runner: ReturnType<typeof useSwapRunner>; 
       <Spinner className="size-4" />
       Checking with {PROVIDERS[record.provider].name} every few seconds…
     </p>
+  )
+}
+
+/** The Bitcoin Cash transaction that put the swap's coins in the person's wallet, when the swap ends on Bitcoin Cash. */
+function deliveryTxid(record: SwapRecord): string | undefined {
+  if (record.direction === 'out') return undefined
+  if (record.direction === 'in' && record.bchAsset === 'BCH') return record.bchTxid
+  return record.cauldronTxid
+}
+
+const CONFIRM_POLL_MS = 15_000
+
+/**
+ * The finished swap's last line. When it ends on Bitcoin Cash, its transaction is watched until it is in a block:
+ * some wallets (Paytaca, for one) list incoming tokens only from then on, about ten minutes on average, so until
+ * then the swap says it is on its way rather than leaving the wallet looking empty.
+ */
+function Completed({ record }: { record: SwapRecord }) {
+  const txid = deliveryTxid(record)
+  const height = useQuery({
+    queryKey: ['bch-height', txid],
+    queryFn: async () => (await transactionHeight(txid as string)) ?? null,
+    enabled: txid !== undefined,
+    refetchInterval: (query) => ((query.state.data ?? 0) > 0 ? false : CONFIRM_POLL_MS),
+  })
+  const minutes = Math.max(1, Math.round((record.updatedAt - record.createdAt) / 60_000))
+  const waiting = height.data === 0
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
+        {waiting ? (
+          <p className="flex flex-1 items-center gap-2.5 font-medium text-(--warning)">
+            <span className="relative flex size-2.5 shrink-0" aria-hidden>
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-(--warning) opacity-60" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-(--warning)" />
+            </span>
+            Sent in {minutes} min · waiting for a block
+          </p>
+        ) : (
+          <p className="flex flex-1 items-center gap-2 font-medium text-(--success)">
+            <Icon icon={CheckmarkCircle02Icon} size={22} />
+            Done in {minutes} min
+          </p>
+        )}
+        <Button variant="secondary" render={<Link href={againHref(record)} />} nativeButton={false}>
+          Swap again
+        </Button>
+      </div>
+      {waiting ? (
+        <p className="rounded-2xl bg-muted px-4 py-3 text-sm leading-relaxed">
+          The {record.bchAsset} is on its way to your wallet. Bitcoin Cash puts it in a block in about 10
+          minutes; some wallets show it only after that.
+        </p>
+      ) : typeof height.data === 'number' && height.data > 0 ? (
+        <p className="text-muted-foreground text-sm">
+          Confirmed on Bitcoin Cash in block {height.data.toLocaleString('en-US')}.
+        </p>
+      ) : null}
+    </div>
   )
 }

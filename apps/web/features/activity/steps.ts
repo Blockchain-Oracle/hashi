@@ -314,7 +314,11 @@ export function headline(record: SwapRecord): Headline {
             close: `The BCH is in your wallet. Approve the swap into ${record.bchAsset} whenever you are ready.`,
           }
     case 'completed':
-      return { title: 'Swap complete', close: 'All done.' }
+      // Ending on Bitcoin Cash, the last transaction may still be waiting for its block: the tracker says so below.
+      return {
+        title: 'Swap complete',
+        close: record.direction === 'out' ? 'All done.' : `Sent to your wallet.`,
+      }
     case 'refunded':
       return { title: 'Refunded', close: 'Your deposit went back to the refund address.' }
     case 'failed':

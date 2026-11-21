@@ -12,7 +12,7 @@ Into Bitcoin Cash, the USDC or USDT can come from anywhere that sends tokens: an
 
 <Steps>
 <Step>
-On the swap card, switch **Connect wallet** to **Send from exchange**, and paste **your wallet, for refunds**: one of yours, on the chain you pay from (the ⓘ beside it says why).
+On the swap card, switch **Connect wallet** to **Send from exchange**, and paste a **refund address** on the chain you pay from: your exchange's deposit address for that coin, or a wallet (on Solana, a wallet).
 </Step>
 <Step>
 **Review swap**, then **Start swap**. NEAR Intents gives this swap its own deposit address.
@@ -37,11 +37,13 @@ Hashi checks NEAR Intents every 5 seconds. Once the deposit is seen, the swap ru
 | Only the coin and network shown | The address takes that coin on that network. The same address on another network, or another coin, does not reach the swap. |
 | At least the minimum shown | Anything from the minimum up is swapped (NEAR Intents' flexible amount), so an exchange's withdrawal fee is fine. Less than the minimum is refunded. |
 | Within the countdown | The price was set for an hour. NEAR Intents keeps the address open for 72 hours, but a deposit after the hour comes back as a refund if the price has moved past your slippage. |
-| A refund address of your own | A refund goes back on the chain you paid from. An exchange may not credit a refund sent to its address. |
+| A refund address that takes the coin | A refund goes back on the chain you paid from. On Base and the other EVM chains it is a plain token transfer, so your exchange's deposit address for that coin works, above its minimum deposit. On Solana it comes from NEAR Intents' own program, which some exchanges miss: use a wallet. |
 
 ## Coming out of Bitcoin Cash
 
-The other way needs no wallet on the other chain either: switch **Connect wallet** to **Send to exchange** and paste your exchange's deposit address for that coin and network (any wallet address works too). NEAR Intents pays out with a plain token transfer from an ordinary account (checked on a real payout on Base), which an exchange credits like any withdrawal. Your Bitcoin Cash wallet still approves the sale.
+The other way needs no wallet on the other chain either: switch **Connect wallet** to **Send to exchange** and paste your exchange's deposit address for that coin and network (any wallet address works too). On Base and the other EVM chains NEAR Intents pays out with a plain token transfer from an ordinary account, which an exchange credits like any withdrawal above its minimum deposit. On Solana the payout comes from NEAR Intents' own program, so a wallet address is the safe choice there. Your Bitcoin Cash wallet still approves the sale.
+
+<Callout title="Checked on chain, 21 November 2026">On Base, five NEAR Intents refunds of USDC (3.99 to 807.91 USDC) and a payout were each a plain `transfer` call on the USDC contract from one ordinary account to the address given. On Solana, three refunds and three payouts of USDC were token transfers made inside NEAR Intents' program.</Callout>
 
 <Phones>
   <Phone src="/shots/phone/receive-to-address.webp" alt="The swap card on a phone, PUSD to USDC on Base: the switch set to Send to exchange instead of Connect wallet, the field Exchange deposit address on Base with an address filled in, and the receive side showing to 0x4812…3210" caption="Out of Bitcoin Cash: Send to exchange, with its deposit address." />

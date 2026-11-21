@@ -10,7 +10,7 @@ Built for the BCH BLAZE 2026 Stablecoin Bridge bounty. _Hashi_ (橋) is Japanese
 
 **Watch:** https://youtu.be/bbLQ44UAdBU (2:40) and, signed live, https://youtu.be/ZGtYV9u5jW8 (3:10) · **Try it:** https://hashi.cash · **Docs:** https://docs.hashi.cash · **Code:** https://github.com/Blockchain-Oracle/hashi
 
-**Widget Factory deck:** https://hashi.cash/slides (also as [Google Slides](https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing)) · **CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9`
+**Widget Factory deck:** https://hashi.cash/slides (also as [Google Slides](https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing)) · **CashTokens address** (prizes and EMBER2026 votes): `bitcoincash:zrrac20n7tmqwysz2l6aqxyw5w6npqv9pssndrqjnh`
 
 ## Demo video
 

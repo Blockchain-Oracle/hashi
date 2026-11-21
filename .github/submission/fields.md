@@ -19,7 +19,7 @@ Ready to paste. Character limits on the DoraHacks form are not visible without a
 - Docs: https://docs.hashi.cash
 - Source: https://github.com/Blockchain-Oracle/hashi
 - Widget Factory deck: https://hashi.cash/slides (full screen; the Google Slides copy: https://docs.google.com/presentation/d/1GsuhBp2tMZBT6PexcLFE3e43yriJf5NbqJEEuzlpjQ4/edit?usp=sharing)
-- CashTokens address: bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
+- CashTokens address: bitcoincash:zrrac20n7tmqwysz2l6aqxyw5w6npqv9pssndrqjnh
 - Demo video: https://youtu.be/bbLQ44UAdBU (2:40)
 - Live mainnet demo, signed on camera: https://youtu.be/ZGtYV9u5jW8 (3:10)
 - Both videos with chapters: https://hashi.cash/demo

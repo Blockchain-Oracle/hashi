@@ -34,7 +34,7 @@ export const BLAZE = {
   bountyUrl: "https://bchblaze.cash/bounties/stablecoin-bridge/",
   deck: "https://hashi.cash/slides",
   demo: "https://youtu.be/bbLQ44UAdBU",
-  cashtokens: "bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9",
+  cashtokens: "bitcoincash:zrrac20n7tmqwysz2l6aqxyw5w6npqv9pssndrqjnh",
   qr: "/cashtokens-qr.svg",
 } as const
 

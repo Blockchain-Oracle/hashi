@@ -158,9 +158,9 @@ The docs walk through [the bounty line by line](https://docs.hashi.cash/docs/bui
 ## CashTokens address
 
 <p align="center">
-  <img src=".github/assets/cashtokens-qr.png" width="240" alt="QR code for Hashi's CashTokens address, bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9" />
+  <img src=".github/assets/cashtokens-qr.png" width="240" alt="QR code for Hashi's CashTokens address, bitcoincash:zrrac20n7tmqwysz2l6aqxyw5w6npqv9pssndrqjnh" />
 </p>
-<p align="center"><code>bitcoincash:zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9</code></p>
+<p align="center"><code>bitcoincash:zrrac20n7tmqwysz2l6aqxyw5w6npqv9pssndrqjnh</code></p>
 
 Hashi's token-aware Bitcoin Cash address, the one the banner shows. BCH BLAZE sends prizes here, and EMBER2026 holders vote for Hashi in Community Choice by sending their tokens here. Scan it with Paytaca, Selene or Cashonize.
 

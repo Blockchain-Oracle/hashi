@@ -481,7 +481,7 @@ const SLIDES: readonly Slide[] = [
         >
           bitcoincash:
           <br />
-          zqnvys4cpkjk9qtsmjwmhysgtlm9vvf6uvms3x8sh9
+          zrrac20n7tmqwysz2l6aqxyw5w6npqv9pssndrqjnh
         </p>
       </>
     ),

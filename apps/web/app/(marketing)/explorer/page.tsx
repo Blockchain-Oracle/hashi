@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { AssetLogo, ChainLogo } from '@/components/kit/logos'
 import { Button } from '@/components/ui/button'
-import { CrossingFeed } from '@/features/explorer/feed'
+import { CrossingList } from '@/features/explorer/list'
+import { ExplorerToolbar } from '@/features/explorer/toolbar'
 import type { ChainId } from '@/lib/constants/chains'
-import { getLedger } from '@/lib/explorer/crossings.server'
+import { getLedger, queryLedger } from '@/lib/explorer/crossings.server'
 
 const DESCRIPTION =
   'Every swap made through Hashi, live: dollars crossing between eight chains and Bitcoin Cash, each with its transactions on both chains.'
@@ -28,8 +29,23 @@ function usd(value: number) {
  * carrying Hashi's referral, and from the Bitcoin Cash chain for the swap contracts' trades; nothing here comes from a
  * browser.
  */
-export default async function ExplorerPage() {
+const one = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)
+
+export default async function ExplorerPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const asked = await searchParams
   const ledger = await getLedger()
+  const dir = one(asked.dir)
+  const result = queryLedger(ledger.crossings, {
+    q: one(asked.q),
+    dir: dir === 'in' || dir === 'out' ? dir : undefined,
+    chain: one(asked.chain),
+    coin: one(asked.coin),
+    page: Number(one(asked.page)) || 1,
+  })
   const { crossings } = ledger
   const into = crossings.filter((c) => c.direction === 'in')
   const out = crossings.filter((c) => c.direction === 'out')
@@ -82,8 +98,8 @@ export default async function ExplorerPage() {
           aria-hidden
           className="absolute -bottom-48 left-1/2 -z-10 h-96 w-[130%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_47_0/0.45),rgb(255_120_40/0.15)_55%,transparent)] blur-2xl"
         />
-        <div className="grid items-center gap-6 sm:grid-cols-[1fr_minmax(0,1.4fr)_1fr]">
-          <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-2 items-center gap-x-4 gap-y-5 sm:grid-cols-[1fr_minmax(0,1.4fr)_1fr] sm:gap-6">
+          <div className="order-1 flex flex-col gap-3">
             <span className="label-mono text-foreground/50">Other chains</span>
             <div className="flex flex-wrap gap-2">
               {[...chains].map(([chain, n]) => (
@@ -97,7 +113,7 @@ export default async function ExplorerPage() {
               ))}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-4">
+          <div className="order-3 col-span-2 flex flex-col items-center gap-4 sm:order-2 sm:col-span-1">
             <svg viewBox="0 0 520 170" className="w-full" aria-hidden>
               {/* Two lanes over one bridge: into Bitcoin Cash above, out of it below. */}
               <path
@@ -139,7 +155,8 @@ export default async function ExplorerPage() {
                       <mpath href="#lane-in" />
                     </animateMotion>
                   </circle>
-                  <circle r="8" fill="#fffaf5" opacity=".5">
+                  <circle r="8" fill="#fffaf5" opacity="0">
+                    <set attributeName="opacity" to=".5" begin="1.8s" />
                     <animateMotion dur="3.6s" begin="1.8s" repeatCount="indefinite">
                       <mpath href="#lane-in" />
                     </animateMotion>
@@ -147,25 +164,32 @@ export default async function ExplorerPage() {
                 </>
               ) : null}
               {out.length ? (
-                <circle r="6" fill="#ff8a5c">
+                <circle r="6" fill="#ff8a5c" opacity="0">
+                  <set attributeName="opacity" to="1" begin="0.9s" />
                   <animateMotion dur="4.4s" begin="0.9s" repeatCount="indefinite">
                     <mpath href="#lane-out" />
                   </animateMotion>
                 </circle>
               ) : null}
             </svg>
-            <div className="flex flex-wrap justify-center gap-2 font-mono text-xs">
+            <div className="flex flex-nowrap justify-center gap-2 font-mono text-xs">
               <span className="inline-flex items-center gap-2 rounded-full bg-[#ff2f00] px-3 py-1.5 text-[#fffaf5]">
-                <b className="font-semibold text-sm">{into.length}</b> INTO BITCOIN CASH →
+                <b className="font-semibold text-sm">{into.length}</b>
+                <span>
+                  IN<span className="max-sm:hidden">TO BITCOIN CASH</span> →
+                </span>
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5">
-                ← <b className="font-semibold text-sm">{out.length}</b> OUT TO OTHER CHAINS
+                ←<b className="font-semibold text-sm">{out.length}</b>
+                <span>
+                  OUT<span className="max-sm:hidden"> TO OTHER CHAINS</span>
+                </span>
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-3 sm:items-end">
+          <div className="order-2 flex flex-col items-end gap-3 sm:order-3">
             <span className="label-mono text-foreground/50">Bitcoin Cash</span>
-            <div className="flex flex-wrap gap-2 sm:justify-end">
+            <div className="flex flex-wrap justify-end gap-2">
               {[...assets].map(([asset, n]) => (
                 <span
                   key={asset}
@@ -180,9 +204,22 @@ export default async function ExplorerPage() {
         </div>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-12 flex flex-col gap-5">
         {crossings.length ? (
-          <CrossingFeed crossings={crossings} />
+          <>
+            <ExplorerToolbar
+              chains={result.chains}
+              coins={result.coins}
+              counts={{ all: crossings.length, in: into.length, out: out.length }}
+            />
+            <CrossingList
+              rows={result.rows}
+              total={result.total}
+              page={result.page}
+              pages={result.pages}
+              pageSize={result.pageSize}
+            />
+          </>
         ) : (
           <div className="flex flex-col items-start gap-4 rounded-3xl bg-muted p-6">
             <p className="text-foreground/70">

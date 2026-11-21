@@ -1,0 +1,41 @@
+---
+title: Explorer
+description: "Every swap anyone has made through Hashi, live: what crossed, which way, and the transactions on both chains that prove it."
+icon: Globe
+---
+
+[The Explorer](https://hashi.cash/explorer) lists every swap made through Hashi, by anyone, newest first. [Activity](/docs/guide/activity) is yours alone and lives in your browser; the Explorer is everyone's, and nothing on it comes from a browser.
+
+<Shot src="/shots/wide/explorer.webp" alt="The Explorer on 21 November 2026: 11 swaps, $8.07 moved, 100% completed, one chain in use; the bridge with 8 into Bitcoin Cash and 3 out; a search box, direction, chain and coin filters; and swap cards such as 1 USDC on Base to 0.98 PUSD on Bitcoin Cash through NEAR Intents, a swap contract and Cauldron" caption="The Explorer on 21 Nov 2026: every swap so far, each one linked on both chains." />
+
+## Where it comes from
+
+| Part | Source |
+|---|---|
+| Every swap through NEAR Intents | NEAR Intents' own records of swaps carrying Hashi's referral, read with Hashi's partner key from their Explorer API, at most a minute old |
+| The PUSD or MUSD a swap contract paid | The contract's own Cauldron trade, read from the Bitcoin Cash chain over Electrum |
+
+The page asks the server again every 30 seconds, so a new swap shows up without a reload.
+
+## What each swap shows
+
+| Part | Shows |
+|---|---|
+| Direction | An arrow badge: into Bitcoin Cash, or out of it |
+| Paid and received | The amount, the coin and its chain on each side: for example **1 USDC** on Base → **0.98 PUSD** on Bitcoin Cash |
+| Route | NEAR Intents, or NEAR Intents → swap contract → Cauldron for the one-approval swaps into PUSD and MUSD |
+| Status and time | Completed, In progress, Refunded or Failed, and how long ago |
+| Proof | Links to the deposit on its chain, the swap on NEAR Intents' explorer, the delivery on Bitcoin Cash and the contract's Cauldron trade |
+
+## Finding a swap
+
+- **Search** takes any part of a transaction hash, an address, an amount or a coin: paste the hash from your wallet and your swap is the only one left.
+- **Direction:** All, Into Bitcoin Cash, or Out of Bitcoin Cash.
+- **Chain** and **coin:** pickers with each one's logo and its number of swaps; only the ones that have been used appear.
+- Five swaps per page, with numbered pages, so a long history never means a long scroll.
+
+The search and filters live in the link (for example `hashi.cash/explorer?coin=PUSD&dir=in`), so any view can be shared.
+
+## At the top
+
+The totals count every swap: how many, the dollars moved (what was paid, valued by NEAR Intents at the time), the share that completed, and how many chains have been used. The bridge below them shows which chains and which Bitcoin Cash coins took part, with one lane for swaps into Bitcoin Cash and one for swaps out.

@@ -3,7 +3,7 @@ import { cashAddressToLockingBytecode, decodeTransaction, hexToBin } from '@bita
 import { z } from 'zod'
 import { addressHistory, rawTransaction } from '@/lib/bch/electrum'
 import { BCH_ASSETS, type BchAssetId, NEAR_BCH_ASSET_ID, STABLES } from '@/lib/constants/assets'
-import type { ChainId } from '@/lib/constants/chains'
+import { CHAINS, type ChainId } from '@/lib/constants/chains'
 import { nearIntentsUrl, txUrl } from '@/lib/constants/explorers'
 import { serverEnv } from '@/lib/env.server'
 
@@ -18,7 +18,8 @@ const EXPLORER_URL = 'https://explorer.near-intents.org/api/v0/transactions'
 const REFERRAL = 'hashi'
 /** NEAR allows one Explorer request every 5 s per partner; the page reads a copy at most a minute old. */
 const CACHE_MS = 60_000
-const MAX_ROWS = 200
+/** NEAR's largest page. */
+const MAX_ROWS = 1000
 
 /** The Explorer API lists hashes as strings; 1Click's status API wraps each in `{ hash }`. Both read as strings. */
 const txHashes = z
@@ -30,6 +31,7 @@ const nearRow = z.object({
   destinationAsset: z.string(),
   depositAddress: z.string(),
   recipient: z.string().nullable(),
+  senders: z.array(z.string()).nullable().optional(),
   status: z.string(),
   createdAtTimestamp: z.number(),
   amountInFormatted: z.string(),
@@ -58,6 +60,8 @@ export interface Crossing {
   /** The BCH the bridge delivered, when the swap went on into PUSD or MUSD through a swap contract. */
   via?: Side
   links: { label: string; href: string }[]
+  /** Server only, for search: every hash, address, amount and name on the swap, lower case. Never sent to a page. */
+  match: string
 }
 
 export interface Ledger {
@@ -154,6 +158,7 @@ async function toCrossing(row: NearRow): Promise<Crossing | undefined> {
     pay,
     get,
     links,
+    match: '',
   }
   // Into a swap contract (a P2SH address): the person's PUSD or MUSD comes from the contract's own trade.
   if (direction === 'in' && row.recipient?.startsWith('bitcoincash:p') && crossing.status === 'done') {
@@ -164,6 +169,22 @@ async function toCrossing(row: NearRow): Promise<Crossing | undefined> {
       crossing.links.push({ label: 'Cauldron trade', href: txUrl('bch', trade.txid) })
     }
   }
+  crossing.match = [
+    row.depositAddress,
+    row.recipient ?? '',
+    ...(row.senders ?? []),
+    ...row.originChainTxHashes,
+    ...row.destinationChainTxHashes,
+    ...crossing.links.map((l) => l.href.split('/').pop() ?? ''),
+    crossing.pay.amount,
+    crossing.pay.asset,
+    crossing.get.amount,
+    crossing.get.asset,
+    CHAINS[crossing.pay.chain].name,
+    CHAINS[crossing.get.chain].name,
+  ]
+    .join(' ')
+    .toLowerCase()
   return crossing
 }
 
@@ -199,4 +220,44 @@ export async function getLedger(): Promise<Ledger> {
       pending = undefined
     })
   return pending
+}
+
+export const PAGE_SIZE = 5
+
+export interface LedgerQuery {
+  q?: string | undefined
+  dir?: 'in' | 'out' | undefined
+  /** The other chain (not Bitcoin Cash). */
+  chain?: string | undefined
+  /** A coin on either side: USDC, USDT, PUSD, MUSD, BCH. */
+  coin?: string | undefined
+  page?: number | undefined
+}
+
+export type PublicCrossing = Omit<Crossing, 'match'>
+
+/** One page of the ledger after search and filters, and what the filters can offer. */
+export function queryLedger(crossings: Crossing[], query: LedgerQuery) {
+  const terms = (query.q ?? '').toLowerCase().split(/\s+/).filter(Boolean)
+  const other = (c: Crossing) => (c.direction === 'in' ? c.pay.chain : c.get.chain)
+  const filtered = crossings.filter(
+    (c) =>
+      (!query.dir || c.direction === query.dir) &&
+      (!query.chain || other(c) === query.chain) &&
+      (!query.coin || c.pay.asset === query.coin || c.get.asset === query.coin) &&
+      terms.every((t) => c.match.includes(t)),
+  )
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const page = Math.min(Math.max(1, Math.floor(query.page ?? 1)), pages)
+  const rows: PublicCrossing[] = filtered
+    .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    .map(({ match: _match, ...rest }) => rest)
+  const tally = (values: string[]) => {
+    const counts = new Map<string, number>()
+    for (const v of values) counts.set(v, (counts.get(v) ?? 0) + 1)
+    return [...counts].map(([id, n]) => ({ id, n })).sort((x, y) => y.n - x.n)
+  }
+  const chains = tally(crossings.map(other)) as { id: ChainId; n: number }[]
+  const coins = tally(crossings.flatMap((c) => [...new Set([c.pay.asset, c.get.asset])]))
+  return { rows, total: filtered.length, page, pages, pageSize: PAGE_SIZE, chains, coins }
 }

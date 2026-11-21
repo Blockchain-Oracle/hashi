@@ -381,8 +381,23 @@ function toAddress(record: SwapRecord): string | undefined {
 /** The one thing the person can do now, if anything. */
 function Action({ runner, record }: { runner: ReturnType<typeof useSwapRunner>; record: SwapRecord }) {
   const evm = useEvmWallet()
-  const { openConnect } = useBchWallet()
+  const { openConnect, restoring, answering, paired } = useBchWallet()
   const chain = record.stable ? CHAINS[record.stable.chain] : CHAINS.bch
+  // After a refresh the paired wallet comes back on its own: say so, never ask to connect it again.
+  // Paired, with its addresses still being read: say that, not "connect".
+  const reconnecting = (
+    <Button size="xl" variant="secondary" disabled>
+      <Spinner className="size-4" />
+      {restoring ? 'Reconnecting to your wallet…' : 'Reading your wallet…'}
+    </Button>
+  )
+  // A paired wallet that stopped answering would leave an approval hanging: pair it again first.
+  const pairAgain = (
+    <Button size="xl" variant="secondary" onClick={openConnect}>
+      <Icon icon={Wallet01Icon} />
+      Your wallet is not answering · Pair again
+    </Button>
+  )
 
   if (record.status === 'quoted') {
     const needsBch = record.direction !== 'in'
@@ -393,6 +408,8 @@ function Action({ runner, record }: { runner: ReturnType<typeof useSwapRunner>; 
           ? `the sale of ${record.bchAsset}`
           : 'the deposit'
     const connected = needsBch ? runner.bchConnected : runner.stableConnected
+    if (needsBch && !connected && (restoring || paired)) return reconnecting
+    if (needsBch && connected && !answering && runner.busy === null) return pairAgain
     if (!connected) {
       return (
         <Button
@@ -439,6 +456,8 @@ function Action({ runner, record }: { runner: ReturnType<typeof useSwapRunner>; 
     )
   }
   if (record.status === 'bch-arrived' || record.status === 'swapping') {
+    if (!runner.bchConnected && (restoring || paired)) return reconnecting
+    if (runner.bchConnected && !answering && runner.busy === null) return pairAgain
     if (!runner.bchConnected) {
       return (
         <Button size="xl" variant="secondary" onClick={openConnect}>

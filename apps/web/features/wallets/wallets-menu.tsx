@@ -17,13 +17,13 @@ import { useEvmWallet } from './evm-wallet'
  */
 export function WalletsMenu() {
   const evm = useEvmWallet()
-  const { wc, paired, receive, openConnect } = useBchWallet()
+  const { wc, paired, checking, restoring, answering, receive, openConnect } = useBchWallet()
   // Paired includes a session restored after a refresh, whose relay is still reconnecting.
   const bchConnected = paired
   const logos = [
     evm.evmAddress ? 'ethereum' : null,
     evm.solanaAddress ? 'solana' : null,
-    bchConnected ? 'bch' : null,
+    bchConnected || restoring ? 'bch' : null,
   ].filter((c): c is 'ethereum' | 'solana' | 'bch' => c !== null)
 
   return (
@@ -47,7 +47,8 @@ export function WalletsMenu() {
           <Icon icon={Wallet01Icon} className="ml-0.5" />
         )}
         {/* Connected, a phone shows only the wallets' marks; the label stays for the screen reader. */}
-        {logos.length ? <span className="hidden sm:inline">Wallets</span> : 'Connect'}
+        {/* Before the browser has looked for a stored wallet (first paint), the mark alone: never "Connect" to a returning wallet. */}
+        {logos.length ? <span className="hidden sm:inline">Wallets</span> : checking ? null : 'Connect'}
       </PopoverTrigger>
       <PopoverPopup align="end" className="w-[min(22rem,calc(100vw-2rem))]">
         <div className="flex flex-col gap-1 p-1">
@@ -82,7 +83,10 @@ export function WalletsMenu() {
             name={wc.walletName ?? 'Bitcoin Cash wallet'}
             hint="WizardConnect: Selene, Paytaca, Cashonize"
             address={bchConnected ? receive?.token : undefined}
-            pending={!paired && (wc.state === 'connecting' || wc.state === 'reconnecting')}
+            pending={restoring || (!paired && (wc.state === 'connecting' || wc.state === 'reconnecting'))}
+            pendingLabel={restoring ? 'Reconnecting…' : 'Waiting…'}
+            disabled={restoring}
+            silent={paired && !answering}
             onConnect={openConnect}
             onDisconnect={() => void wc.disconnect()}
           />
@@ -99,6 +103,8 @@ function Row({
   address,
   disabled = false,
   pending = false,
+  pendingLabel = 'Waiting…',
+  silent = false,
   onConnect,
   onDisconnect,
 }: {
@@ -108,6 +114,9 @@ function Row({
   address: string | undefined
   disabled?: boolean
   pending?: boolean
+  pendingLabel?: string
+  /** Paired, but the wallet has stopped answering (closed, asleep, or it removed the connection). */
+  silent?: boolean
   onConnect: () => void
   onDisconnect: () => void
 }) {
@@ -116,7 +125,9 @@ function Row({
       {logo}
       <span className="min-w-0 flex-1">
         <span className="block font-medium text-sm">{name}</span>
-        {address ? (
+        {address && silent ? (
+          <span className="block text-(--warning) text-xs">Not answering: open it, or pair again</span>
+        ) : address ? (
           <span className="flex items-center gap-0.5 font-mono text-muted-foreground text-xs">
             {shortAddress(address, 6, 4)}
             <CopyButton value={address} label={`Copy ${name} address`} className="size-6" />
@@ -125,13 +136,17 @@ function Row({
           <span className="block truncate text-muted-foreground text-xs">{hint}</span>
         )}
       </span>
-      {address ? (
+      {address && silent ? (
+        <Button variant="soft" size="xs" onClick={onConnect}>
+          Pair again
+        </Button>
+      ) : address ? (
         <Button variant="ghost" size="xs" onClick={onDisconnect}>
           Disconnect
         </Button>
       ) : (
         <Button variant="soft" size="xs" onClick={onConnect} disabled={disabled}>
-          {pending ? 'Waiting…' : 'Connect'}
+          {pending ? pendingLabel : 'Connect'}
         </Button>
       )}
     </div>

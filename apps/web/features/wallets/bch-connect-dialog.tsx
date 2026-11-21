@@ -52,7 +52,10 @@ export function BchConnectDialog({
       started.current = false
       return
     }
-    if (started.current || paired) return
+    if (paired) return
+    // A pairing that ends while the dialog is open (the wallet refused or dropped it) starts again at once: the code
+    // on screen would otherwise be dead. A failed start lands on "idle" with an error and waits for "Try again".
+    if (started.current && wc.state !== 'disconnected') return
     if (wc.state === 'idle' || wc.state === 'disconnected') {
       started.current = true
       wc.connect()

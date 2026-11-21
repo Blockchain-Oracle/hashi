@@ -172,6 +172,8 @@ export function useSwapRunner(id: string) {
     })
   }, [])
 
+  // The wallet's coins for a signature, read fresh: a step that just spent coins (a sale before its send) must not
+  // be handed them again. The read is one round trip on most wallets (lib/bch/wallet.ts).
   const bch: BchSide | undefined =
     wc.manager && receive
       ? { manager: wc.manager, receive, coins: async () => (await scan.refetch()).data?.utxos ?? [] }

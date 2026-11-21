@@ -166,6 +166,15 @@ export function SwapCard({
             onUseMinimum={(value) => dispatch({ type: 'amount', value })}
             onConnectStable={(ns) => evm.connect(ns)}
             onConnectBch={bch.openConnect}
+            bchWaiting={
+              bch.checking
+                ? 'checking'
+                : bch.restoring
+                  ? 'restoring'
+                  : bch.paired && !bch.receive
+                    ? 'reading'
+                    : null
+            }
             onReview={() => setReviewOpen(true)}
           />
         </div>
@@ -246,12 +255,15 @@ export function StepButton({
   onUseMinimum,
   onConnectStable,
   onConnectBch,
+  bchWaiting = null,
   onReview,
 }: {
   step: SwapStep
   onUseMinimum: (amount: string) => void
   onConnectStable: (namespace: 'eip155' | 'solana') => void
   onConnectBch: () => void
+  /** Not known yet (first paint), a paired wallet coming back after a refresh, or one whose addresses are being read. */
+  bchWaiting?: 'checking' | 'restoring' | 'reading' | null
   onReview: () => void
 }) {
   switch (step.kind) {
@@ -269,6 +281,20 @@ export function StepButton({
         </Button>
       )
     case 'connect-bch':
+      // A paired wallet coming back after a refresh, or whose addresses are still being read, is not asked to connect.
+      if (bchWaiting === 'checking')
+        return (
+          <Button size="xl" variant="secondary" disabled aria-label="Loading your wallet">
+            <Spinner className="size-4" />
+          </Button>
+        )
+      if (bchWaiting)
+        return (
+          <Button size="xl" variant="secondary" disabled>
+            <Spinner className="size-4" />
+            {bchWaiting === 'restoring' ? 'Reconnecting to your wallet…' : 'Reading your wallet…'}
+          </Button>
+        )
       return (
         <Button size="xl" variant="secondary" onClick={onConnectBch}>
           <Icon icon={Wallet01Icon} />

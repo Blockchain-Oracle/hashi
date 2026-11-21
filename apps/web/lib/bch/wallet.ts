@@ -12,8 +12,15 @@ export type WalletPath = 'receive' | 'change'
 
 const CHILD_INDEX: Record<WalletPath, number> = { receive: 0, change: 1 }
 
-/** Stop scanning a path after this many unused addresses in a row. */
-const GAP_LIMIT = 10
+/** Stop scanning a path after this many unused addresses in a row: the gap limit wallets such as Cashonize use. */
+const GAP_LIMIT = 20
+/** A path is never read past this index (a wallet that far out is beyond any test or demo). */
+const MAX_SCAN_PER_PATH = 400
+
+/** Addresses seen used once stay used: later scans read their coins without asking about their history again. */
+const knownUsed = new Set<string>()
+/** Each path's last used index at the previous scan (keyed by the path's first address): rescans start from there. */
+const lastUsedOf = new Map<string, number>()
 
 export interface WalletAddress {
   path: WalletPath
@@ -59,37 +66,63 @@ export interface WalletScan {
   utxos: WalletUtxo[]
 }
 
-/** Walk each path until `GAP_LIMIT` unused addresses in a row, and collect every coin on the used ones. */
-export async function scanWallet(manager: DappConnectionManager): Promise<WalletScan> {
-  const addresses: WalletAddress[] = []
-  const utxos: WalletUtxo[] = []
-  for (const path of ['receive', 'change'] as const) {
-    let index = 0
-    let unusedInARow = 0
-    let firstFreshAdded = false
-    while (unusedInARow < GAP_LIMIT) {
-      const batch = Array.from({ length: GAP_LIMIT }, (_, i) =>
-        deriveAddress(manager, path, index + i),
-      ).filter((a): a is WalletAddress => Boolean(a))
-      if (batch.length === 0) break
-      const used = await Promise.all(batch.map((a) => historyLength(a.plain)))
-      for (const [i, address] of batch.entries()) {
-        if ((used[i] ?? 0) > 0) {
-          unusedInARow = 0
-          addresses.push(address)
-          const coins = await listUnspent(address.plain)
-          for (const coin of coins) utxos.push({ ...coin, address })
-        } else {
-          unusedInARow++
-          if (!firstFreshAdded) {
-            addresses.push(address)
-            firstFreshAdded = true
-          }
-        }
-      }
-      index += batch.length
-    }
+async function everUsed(address: WalletAddress): Promise<boolean> {
+  if (knownUsed.has(address.plain)) return true
+  const used = (await historyLength(address.plain)) > 0
+  if (used) knownUsed.add(address.plain)
+  return used
+}
+
+/**
+ * One path, read the way the wallet itself discovers it (addresses until GAP_LIMIT unused ones follow the last used
+ * one), in as few round trips as it allows: the first window already covers two gaps past the last address used at
+ * the previous scan, every history check in a window goes out at once, and coins are read in the same burst wherever
+ * they are likely (the first gap and addresses known used). A used address found further out costs one more trip.
+ * The earlier scan read each used address's coins one after another, which on a well-used wallet held the signature
+ * prompt for seconds.
+ */
+async function scanPath(manager: DappConnectionManager, path: WalletPath) {
+  const first = deriveAddress(manager, path, 0)
+  if (!first) return { used: [] as WalletAddress[], fresh: undefined, utxos: [] as WalletUtxo[] }
+  const reads = new Map<number, Promise<WalletUtxo[]>>()
+  const read = (address: WalletAddress) => {
+    if (!reads.has(address.index))
+      reads.set(
+        address.index,
+        listUnspent(address.plain).then((coins) => coins.map((coin) => ({ ...coin, address }))),
+      )
   }
+  const used: WalletAddress[] = []
+  let lastUsed = -1
+  let from = 0
+  let to = Math.min((lastUsedOf.get(first.plain) ?? -1) + 1 + 2 * GAP_LIMIT, MAX_SCAN_PER_PATH)
+  while (from < to) {
+    const window = Array.from({ length: to - from }, (_, i) => deriveAddress(manager, path, from + i)).filter(
+      (a): a is WalletAddress => Boolean(a),
+    )
+    if (window.length === 0) break
+    for (const address of window) if (address.index < GAP_LIMIT || knownUsed.has(address.plain)) read(address)
+    const seen = await Promise.all(window.map(everUsed))
+    window.forEach((address, i) => {
+      if (!seen[i]) return
+      lastUsed = address.index
+      used.push(address)
+      read(address)
+    })
+    from = to
+    to = Math.min(lastUsed + 1 + GAP_LIMIT, MAX_SCAN_PER_PATH)
+  }
+  lastUsedOf.set(first.plain, lastUsed)
+  const utxos = (await Promise.all(reads.values())).flat()
+  return { used, fresh: deriveAddress(manager, path, lastUsed + 1), utxos }
+}
+
+/** The whole wallet, both paths at once: every address with history, the next fresh one on each path, every coin. */
+export async function scanWallet(manager: DappConnectionManager): Promise<WalletScan> {
+  const paths = await Promise.all((['receive', 'change'] as const).map((path) => scanPath(manager, path)))
+  const addresses = paths.flatMap((p) => (p.fresh ? [...p.used, p.fresh] : p.used))
+  // A coin read for an address that turned out unused has nothing in it; keep only real coins.
+  const utxos = paths.flatMap((p) => p.utxos)
   return { addresses, utxos }
 }
 

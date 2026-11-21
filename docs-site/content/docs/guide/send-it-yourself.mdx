@@ -1,5 +1,5 @@
 ---
-title: Send from an exchange
+title: Send from an exchange or wallet
 description: "Pay from an exchange or any wallet, or receive into one: Hashi shows where to send your USDC or USDT and watches for it. No wallet to connect on that side."
 icon: QrCode
 ---
@@ -12,7 +12,7 @@ Into Bitcoin Cash, the USDC or USDT can come from anywhere that sends tokens: an
 
 <Steps>
 <Step>
-On the swap card, switch **Connect wallet** to **Send from exchange**, and paste a **refund address** on the chain you pay from: your exchange's deposit address for that coin, or a wallet (on Solana, a wallet).
+On the swap card, switch **Connect wallet** to **Send from exchange or wallet**, and paste a **refund address** on the chain you pay from: your exchange's deposit address for that coin, or a wallet (on Solana, a wallet).
 </Step>
 <Step>
 **Review swap**, then **Start swap**. NEAR Intents gives this swap its own deposit address.
@@ -26,7 +26,7 @@ Hashi checks NEAR Intents every 5 seconds. Once the deposit is seen, the swap ru
 </Steps>
 
 <Phones>
-  <Phone src="/shots/phone/send-it-yourself-card.webp" alt="The swap card on a phone: USDC on Base to PUSD, the switch set to Send from exchange instead of Connect wallet, the NEAR Intents route marked You send it, THORChain not offered (needs a connected wallet), and the refund address on Base" caption="Switch to Send from exchange, add your wallet for refunds." />
+  <Phone src="/shots/phone/send-it-yourself-card.webp" alt="The swap card on a phone: USDC on Base to PUSD, the switch set to Send from exchange or wallet instead of Connect wallet, the NEAR Intents route marked You send it, THORChain not offered (needs a connected wallet), and the refund address on Base" caption="Send from exchange or wallet, with a refund address." />
   <Phone src="/shots/phone/send-it-yourself-send.webp" alt="The send screen on a phone: Base and a countdown, 1.00 USDC, the payment QR, the deposit address in two rows of groups, Copy address, and the chips Base only, Min 0.99 and the refund address" caption="Then send it: paste, or scan the QR." />
 </Phones>
 
@@ -41,12 +41,12 @@ Hashi checks NEAR Intents every 5 seconds. Once the deposit is seen, the swap ru
 
 ## Coming out of Bitcoin Cash
 
-The other way needs no wallet on the other chain either: switch **Connect wallet** to **Send to exchange** and paste your exchange's deposit address for that coin and network (any wallet address works too). On Base and the other EVM chains NEAR Intents pays out with a plain token transfer from an ordinary account, which an exchange credits like any withdrawal above its minimum deposit. On Solana the payout comes from NEAR Intents' own program, so a wallet address is the safe choice there. Your Bitcoin Cash wallet still approves the sale.
+The other way needs no wallet on the other chain either: switch **Connect wallet** to **Send to exchange or wallet** and paste the **receiving address**: a wallet, or your exchange's deposit address for that coin and network. On Base and the other EVM chains NEAR Intents pays out with a plain token transfer from an ordinary account, which an exchange credits like any withdrawal above its minimum deposit. On Solana the payout comes from NEAR Intents' own program, so a wallet address is the safe choice there. Your Bitcoin Cash wallet still approves the sale.
 
 <Callout title="Checked on chain, 21 November 2026">On Base, five NEAR Intents refunds of USDC (3.99 to 807.91 USDC) and a payout were each a plain `transfer` call on the USDC contract from one ordinary account to the address given. On Solana, three refunds and three payouts of USDC were token transfers made inside NEAR Intents' program.</Callout>
 
 <Phones>
-  <Phone src="/shots/phone/receive-to-address.webp" alt="The swap card on a phone, PUSD to USDC on Base: the switch set to Send to exchange instead of Connect wallet, the field Exchange deposit address on Base with an address filled in, and the receive side showing to 0x4812…3210" caption="Out of Bitcoin Cash: Send to exchange, with its deposit address." />
+  <Phone src="/shots/phone/receive-to-address.webp" alt="The swap card on a phone, PUSD to USDC on Base: the switch set to Send to exchange or wallet instead of Connect wallet, the field Receiving address on Base with an address filled in, and the receive side showing to 0x4812…3210" caption="Out of Bitcoin Cash: Send to exchange or wallet, with the receiving address." />
 </Phones>
 
 ## Where it works

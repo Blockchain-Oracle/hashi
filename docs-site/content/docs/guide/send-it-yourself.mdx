@@ -1,0 +1,44 @@
+---
+title: Send it yourself
+description: "Pay from an exchange or any wallet: Hashi shows where to send your USDC or USDT and watches for it. No wallet to connect."
+icon: QrCode
+---
+
+<Shot src="/shots/wide/send-it-yourself.webp" alt="Hashi's tracker for a swap paid from outside: Send 1 USDC, on Base only, a 50-minute countdown, NEAR Intents' deposit address and the amount with copy buttons, a payment QR that fills in the coin, network and amount, and the notes: only USDC on Base, anything from 0.99 USDC up is swapped, refunds go to the address given" caption="A swap waiting for its USDC: the address, the amount, a payment QR, and Hashi watching for it." />
+
+Into Bitcoin Cash, the USDC or USDT can come from anywhere that sends tokens: an exchange withdrawal, a hardware wallet, a wallet with no WalletConnect. Nothing to connect on that side. A wallet that connects (a browser extension, a phone wallet) is still the quickest way: one approval.
+
+## How it works
+
+<Steps>
+<Step>
+On the swap card, pick **Or send it from an exchange or another wallet**, and paste a **refund address**: one of yours, on the chain you pay from.
+</Step>
+<Step>
+**Review swap**, then **Start swap**. NEAR Intents gives this swap its own deposit address.
+</Step>
+<Step>
+Send the amount shown, **on the network shown**. From an exchange, paste the address and the amount into its withdrawal form. From a phone wallet, scan the QR: it carries the coin, the network and the amount.
+</Step>
+<Step>
+Hashi checks NEAR Intents every 5 seconds. Once the deposit is seen, the swap runs like any other: into BCH, or on through the swap contract into PUSD or MUSD.
+</Step>
+</Steps>
+
+<Phones>
+  <Phone src="/shots/phone/send-it-yourself-card.webp" alt="The swap card on a phone with Send it yourself open: USDC on Base to PUSD, the NEAR Intents route marked You send it, THORChain not offered, and a refund address filled in" caption="Pick it on the card, add a refund address." />
+  <Phone src="/shots/phone/send-it-yourself-send.webp" alt="The send screen on a phone: Send 1 USDC on Base only, a countdown, the deposit address and amount with copy buttons, and the payment QR" caption="Then send it: paste, or scan the QR." />
+</Phones>
+
+## Before you send
+
+| Check | Why |
+|---|---|
+| Only the coin and network shown | The address takes that coin on that network. The same address on another network, or another coin, does not reach the swap. |
+| At least the minimum shown | Anything from the minimum up is swapped (NEAR Intents' flexible amount), so an exchange's withdrawal fee is fine. Less than the minimum is refunded. |
+| Within the countdown | The price was set for an hour. NEAR Intents keeps the address open for 72 hours, but a deposit after the hour comes back as a refund if the price has moved past your slippage. |
+| A refund address of your own | A refund goes back on the chain you paid from. An exchange may not credit a refund sent to its address. |
+
+## Where it works
+
+Every swap into Bitcoin Cash through NEAR Intents, from all eight chains: Base, Ethereum, Arbitrum, Optimism, Polygon, Avalanche, BNB Chain and Solana. THORChain shows as **Not offered** in this mode: a token deposit there goes through its router contract, which a plain transfer cannot call. The Bitcoin Cash wallet stays connected: WizardConnect gives Hashi the address the BCH, PUSD or MUSD goes to.
